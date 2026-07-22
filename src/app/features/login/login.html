@@ -1,0 +1,28 @@
+<div class="login-container">
+
+    <div class="login-card">
+
+        <img
+            src="assets/images/logo.png"
+            class="logo"
+            alt="Ferretería">
+
+        <h2>Sistema Gestión Ferretería</h2>
+
+        <input
+            type="email"
+            placeholder="Correo"
+            [(ngModel)]="email">
+
+        <input
+            type="password"
+            placeholder="Contraseña"
+            [(ngModel)]="password">
+
+        <button (click)="login()">
+            Ingresar
+        </button>
+
+    </div>
+
+</div>
