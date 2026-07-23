@@ -14,13 +14,36 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(request: LoginRequest): Observable<LoginResponse> {
+    login(request: LoginRequest): Observable<LoginResponse> {
 
-    return this.http.post<LoginResponse>(
-      `${this.api}/login`,
-      request
-    );
+        return this.http.post<LoginResponse>(
+        `${this.api}/login`,
+        request
+        );
 
-  }
+    }
+    saveToken(token: string): void {
+
+        localStorage.setItem("token", token);
+
+    }
+
+    getToken(): string |null {
+
+        return localStorage.getItem("token");
+
+    }
+
+    logout(): void {
+
+        localStorage.removeItem("token");
+
+    }
+
+    isAuthenticated(): boolean {
+
+        return this.getToken() != null;
+
+    }
 
 }
