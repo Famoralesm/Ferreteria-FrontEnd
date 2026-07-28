@@ -22,7 +22,7 @@ export class AuthService {
         );
 
     }
-    saveToken(token: string): void {
+  /*   saveToken(token: string): void {
 
         localStorage.setItem("token", token);
 
@@ -39,11 +39,11 @@ export class AuthService {
         localStorage.removeItem("token");
 
     }
-
+ 
     isAuthenticated(): boolean {
 
         return this.getToken() != null;
 
-    }
+    } */
 
 }
