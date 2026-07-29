@@ -1,1 +1,102 @@
 /* You can add global styles to this file, and also import other style files */
+@use "styles/variables";
+
+@use "styles/theme";
+@import "primeicons/primeicons.css";
+
+.fc-menu{
+
+    border:none !important;
+
+}
+
+.fc-menu .p-panelmenu-panel{
+
+    border:none !important;
+
+    background:transparent !important;
+
+}
+
+.fc-menu .p-panelmenu-header-link{
+
+    background:transparent !important;
+
+    color:white !important;
+
+    border:none !important;
+
+    padding:15px 20px;
+
+    font-weight:500;
+
+}
+
+.fc-menu .p-panelmenu-header-link:hover{
+
+    background:#1d4f81 !important;
+
+}
+
+.fc-menu .p-panelmenu-content{
+
+    background:#123B63 !important;
+
+    border:none !important;
+
+}
+
+.fc-menu .p-menuitem-link{
+
+    color:#dfe9f4 !important;
+
+    padding-left:45px !important;
+
+}
+
+.fc-menu .p-menuitem-link:hover{
+
+    background:#295d90 !important;
+
+}
+
+.fc-menu .p-menuitem-icon{
+
+    margin-right:12px;
+
+}
+
+.fc-menu .p-submenu-icon{
+
+    color:#ffffff;
+
+}
+
+.fc-menu .p-panelmenu-content .p-menuitem-link{
+
+    padding:12px 20px 12px 55px !important;
+
+    font-size:.95rem;
+
+}
+
+.fc-menu .p-panelmenu-content .p-menuitem-icon{
+
+    margin-right:10px;
+
+}
+.fc-menu .p-panelmenu-submenu .p-menuitem{
+    margin:6px 0;
+}
+.fc-menu .p-panelmenu-item-label{
+    font-size:.95rem;
+}
+.fc-menu .p-menuitem-link{
+
+    min-height:42px;
+
+    display:flex;
+
+    align-items:center;
+
+}
