@@ -1,0 +1,29 @@
+@use "variables" as *;
+
+body{
+
+    margin:0;
+
+    background:$background;
+
+    font-family:Inter,Arial,sans-serif;
+
+    color:$text;
+
+}
+
+*{
+
+    box-sizing:border-box;
+
+}
+
+.card{
+
+    background:$surface;
+
+    border-radius:$radius;
+
+    box-shadow:$shadow;
+
+}

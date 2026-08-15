@@ -1,0 +1,76 @@
+import { Component } from '@angular/core';
+import { PanelMenuModule } from 'primeng/panelmenu';
+import { MenuItem } from 'primeng/api';
+import { RouterModule } from '@angular/router';
+
+@Component({
+  selector: 'app-sidebar',
+  standalone: true,
+  imports: [PanelMenuModule, RouterModule],
+  templateUrl: './sidebar.html',
+  styleUrl: './sidebar.scss'
+})
+export class Sidebar {
+
+  items: MenuItem[] = [
+
+    {
+      label: 'Dashboard',
+      icon: 'pi pi-home',
+      routerLink: ['/dashboard']
+    },
+
+    
+    {
+      label: 'Pedidos',
+      icon: 'pi pi-shopping-cart',
+      routerLink: ['/orders']
+    },
+
+    {
+      label: 'Productos',
+      icon: 'pi pi-box',
+      items: [
+
+        {
+            label:'Listado',
+            icon:'pi pi-list',
+            routerLink:'/products'
+        },
+
+        {
+            label:'Nuevo',
+            icon:'pi pi-plus',
+            routerLink:'/products/new'
+        }
+
+      ]
+    },
+
+    {
+      label:'Clientes',
+      icon:'pi pi-users',
+      routerLink:['/clientes']
+    },
+
+    {
+      label: 'Usuarios',
+      icon: 'pi pi-truck',
+      routerLink:['/usuarios']
+    },
+
+    {
+      label: 'Reportes',
+      icon: 'pi pi-chart-line',
+      routerLink:['/reportes']
+    },
+
+    {
+      label: 'Configuración',
+      icon: 'pi pi-cog',
+      routerLink:['/configuracion']
+    }
+
+  ];
+
+}

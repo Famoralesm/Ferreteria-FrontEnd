@@ -1,0 +1,235 @@
+<h2>
+  {{ id ? 'Editar producto' : 'Nuevo producto' }}
+</h2>
+
+
+<form
+  [formGroup]="form"
+  class="form-grid">
+
+
+  <!-- SKU -->
+
+  <div class="form-field">
+
+    <label for="sku">
+      SKU
+    </label>
+
+    <input
+      id="sku"
+      pInputText
+      formControlName="sku">
+
+  </div>
+
+
+  <!-- NOMBRE -->
+
+  <div class="form-field">
+
+    <label for="name">
+      Nombre
+    </label>
+
+    <input
+      id="name"
+      pInputText
+      formControlName="name">
+
+  </div>
+
+
+  <!-- DESCRIPCIÓN -->
+
+  <div class="form-field">
+
+    <label for="description">
+      Descripción
+    </label>
+
+    <textarea
+      id="description"
+      pInputTextarea
+      rows="4"
+      formControlName="description">
+    </textarea>
+
+  </div>
+
+
+  <!-- PRECIO -->
+
+  <div class="form-field">
+
+    <label for="price">
+      Precio
+    </label>
+
+    <p-inputNumber
+      id="price"
+      formControlName="price"
+      mode="currency"
+      currency="CLP"
+      locale="es-CL"
+      [min]="0">
+    </p-inputNumber>
+
+  </div>
+
+
+  <!-- STOCK -->
+
+  <div class="form-field">
+
+    <label for="stock">
+      Stock
+    </label>
+
+    <p-inputNumber
+      id="stock"
+      formControlName="stock"
+      [min]="0">
+    </p-inputNumber>
+
+  </div>
+
+
+  <!-- CATEGORÍA -->
+
+  <div class="form-field">
+
+    <label for="category">
+      Categoría
+    </label>
+
+    <p-select
+      id="category"
+      [options]="categories"
+      optionLabel="label"
+      optionValue="value"
+      formControlName="category"
+      placeholder="Seleccione categoría"
+      class="w-full">
+    </p-select>
+
+  </div>
+
+
+  <!-- MARCA -->
+
+  <div class="form-field">
+
+    <label for="brand">
+      Marca
+    </label>
+
+    <input
+      id="brand"
+      pInputText
+      formControlName="brand">
+
+  </div>
+
+
+  <!-- UNIDAD -->
+
+  <div class="form-field">
+
+    <label for="unit">
+      Unidad
+    </label>
+
+    <p-select
+      id="unit"
+      [options]="units"
+      optionLabel="label"
+      optionValue="value"
+      formControlName="unit"
+      placeholder="Seleccione unidad"
+      class="w-full">
+    </p-select>
+
+  </div>
+
+
+  <!-- ACTIVO -->
+
+  <div class="form-field">
+
+    <label>
+      Estado
+    </label>
+
+    <div>
+
+      <p-checkbox
+        formControlName="active"
+        [binary]="true">
+      </p-checkbox>
+
+      <span>
+        Producto activo
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- FECHAS -->
+
+  <div class="form-field">
+
+    <label for="createdAt">
+      Fecha creación
+    </label>
+
+    <input
+      id="createdAt"
+      pInputText
+      formControlName="createdAt">
+
+  </div>
+
+
+  <div class="form-field">
+
+    <label for="updatedAt">
+      Última actualización
+    </label>
+
+    <input
+      id="updatedAt"
+      pInputText
+      formControlName="updatedAt">
+
+  </div>
+
+
+  <!-- ACCIONES -->
+
+  <div class="form-actions">
+
+    <button
+      pButton
+      type="button"
+      label="Guardar"
+      icon="pi pi-check"
+      severity="success"
+      (click)="save()">
+    </button>
+
+
+    <button
+      pButton
+      type="button"
+      label="Cancelar"
+      icon="pi pi-times"
+      severity="secondary"
+      (click)="cancel()">
+    </button>
+
+  </div>
+
+</form>

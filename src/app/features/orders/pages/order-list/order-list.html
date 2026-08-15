@@ -1,0 +1,27 @@
+<app-page-title
+    title="Pedidos"
+    subtitle="Administración de pedidos">
+</app-page-title>
+
+<app-order-toolbar></app-order-toolbar>
+
+<app-order-filter></app-order-filter> 
+<h1>Pedidos </h1>
+
+<!-- <pre>{{ orders | json }}</pre> -->
+
+<app-order-table
+
+    [orders]="orders"
+
+    (edit)="edit($event)"
+
+    (view)="view($event)"
+
+    (delete)="delete($event)"
+
+    (duplicate)="duplicate($event)"
+
+    (print)="print($event)">
+
+</app-order-table>

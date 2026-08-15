@@ -1,0 +1,33 @@
+.dashboard{
+
+    padding:30px;
+
+}
+
+.cards{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:20px;
+
+}
+.stats{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+    gap:24px;
+
+    margin-top:30px;
+
+}
+.fc-menu .p-panelmenu-item-label{
+
+    font-size:0.9rem;
+
+    color: #fdfafa !important;;
+
+}

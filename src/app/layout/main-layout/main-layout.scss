@@ -1,0 +1,19 @@
+:host{
+
+    display:flex;
+
+    background:#f5f6fa;
+
+}
+
+.content{
+
+    flex:1;
+
+    min-height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+}

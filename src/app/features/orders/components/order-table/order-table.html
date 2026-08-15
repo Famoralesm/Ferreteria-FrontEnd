@@ -1,0 +1,91 @@
+<p>Total pedidos: {{ orders.length }}</p>
+<p-table
+    [value]="orders"
+    [paginator]="true"
+    [rows]="10">
+
+    <ng-template pTemplate="header">
+
+        <tr>
+
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Estado - Tiempo</th>
+             <th>Fecha</th>
+            <th>Acciones</th>
+
+        </tr>
+
+    </ng-template>
+
+    <ng-template pTemplate="body" let-order>
+
+        <tr>
+
+            <td>{{ order.id }}</td>
+
+            <td>{{ order.cliente }}</td>
+
+            <td>{{ order.total | currency:'CLP':'symbol':'1.0-0':'es-CL' }}</td>
+            <td><div class="status-badge" [ngClass]="getStatusColor(order)">{{ order.estado }}</div> 
+                <div class="status-timer" >  <i class="pi pi-clock"> </i>{{ getElapsedTime(order) }}</div>
+            </td>
+            
+            <td>{{ order.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+
+            <td>
+                <button
+                    pButton
+                    icon="pi pi-eye"
+                    severity="info"
+                    rounded
+                    (click)="view.emit(order.id)">
+                </button>
+
+                <button
+                    pButton
+                    icon="pi pi-pencil"
+                    severity="warn"
+                    rounded
+                    (click)="edit.emit(order.id)">
+                </button>
+
+                <button
+                    pButton
+                    icon="pi pi-copy"
+                    severity="secondary"
+                    rounded
+                    (click)="duplicate.emit(order.id)">
+                </button>
+
+                <button
+                    pButton
+                    icon="pi pi-print"
+                    severity="help"
+                    rounded
+                    (click)="print.emit(order.id)">
+                </button>
+
+                <button
+                    pButton
+                    icon="pi pi-trash"
+                    severity="danger"
+                    rounded
+                    (click)="delete.emit(order.id)">
+                </button>
+
+
+            </td>
+            <td>
+
+
+
+</td>
+
+
+        </tr>
+
+    </ng-template>
+
+</p-table>

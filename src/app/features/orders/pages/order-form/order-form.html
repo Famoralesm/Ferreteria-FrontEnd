@@ -1,0 +1,285 @@
+<h2>
+  {{ id ? 'Editar pedido' : 'Nuevo pedido' }}
+</h2>
+
+<form [formGroup]="form" class="form-grid" >
+
+  <!-- ========================= -->
+  <!-- INFORMACIÓN DEL PEDIDO -->
+  <!-- ========================= -->
+
+  <div class="form-field">
+
+    <label for="orderNumber">
+      Número de pedido
+    </label>
+
+    <input
+      id="orderNumber"
+      pInputText
+      formControlName="orderNumber"
+      readonly>
+
+  </div>
+
+
+  <div class="form-field">
+
+    <label for="customerName">
+      Cliente
+    </label>
+
+    <input
+      id="customerName"
+      pInputText
+      formControlName="customerName">
+
+  </div>
+
+
+  <div class="form-field">
+
+    <label for="phone">
+      Teléfono
+    </label>
+
+    <input
+      id="phone"
+      pInputText
+      formControlName="phone">
+
+  </div>
+
+
+  <!-- ========================= -->
+  <!-- DIRECCIÓN -->
+  <!-- ========================= -->
+
+<div class="form-field address-field">
+
+  <label for="address">
+    Dirección
+  </label>
+
+
+  <div class="address-input">
+
+    <input
+      id="address"
+      pInputText
+      formControlName="address"
+      placeholder="Pegue una ubicación de Google Maps o escriba una dirección"
+      (paste)="onAddressPaste($event)"
+      (input)="onAddressChange()">
+
+  </div>
+
+
+
+
+  <div class="map-actions">
+
+    <a
+      [href]="wazeLink"
+      target="_blank"
+      class="map-button waze-button">
+
+      <i class="pi pi-map-marker"></i>
+
+      Abrir en Waze
+
+    </a>
+
+    <a
+      [href]="googleMapsLink"
+      target="_blank"
+      class="map-button">
+
+      <i class="pi pi-map"></i>
+
+      Abrir en Google Maps
+
+    </a>
+
+  </div>
+</div>
+
+
+  <!-- ========================= -->
+  <!-- MÉTODO DE PAGO -->
+  <!-- ========================= -->
+
+  <div class="form-field">
+
+    <label for="paymentMethod">
+      Método de pago
+    </label>
+
+    <p-select
+      id="paymentMethod"
+      [options]="paymentMethods"
+      optionLabel="label"
+      optionValue="value"
+      formControlName="paymentMethod"
+      placeholder="Seleccione método de pago"
+      class="w-full">
+    </p-select>
+
+  </div>
+
+
+  <!-- ========================= -->
+  <!-- ESTADO -->
+  <!-- ========================= -->
+
+  <div class="form-field">
+
+    <label for="status">
+      Estado
+    </label>
+
+    <input
+      id="status"
+      pInputText
+      formControlName="status"
+      readonly>
+
+  </div>
+  <div class="status-info">
+
+    <div class="status-label">
+      Estado actual
+    </div>
+
+    <div class="status-value">
+      {{ form.get('status')?.value }}
+    </div>
+
+    <div class="status-time">
+      <i class="pi pi-clock"></i>
+
+      {{ elapsedTime }}
+
+    </div>
+  </div>
+
+
+  <!-- ========================= -->
+  <!-- TOTAL -->
+  <!-- ========================= -->
+
+  <div class="form-field">
+
+    <label for="totalAmount">
+      Total
+    </label>
+
+    <input
+      id="totalAmount"
+      pInputText
+      formControlName="totalAmount"
+      readonly>
+
+  </div>
+
+
+  <!-- ========================= -->
+  <!-- CREADO POR -->
+  <!-- ========================= -->
+
+  <div class="form-field">
+
+    <label for="createdBy">
+      Creado por
+    </label>
+
+    <input
+      id="createdBy"
+      pInputText
+      formControlName="createdBy"
+      readonly>
+
+  </div>
+
+
+  <!-- ========================= -->
+  <!-- FECHAS -->
+  <!-- ========================= -->
+
+  <div class="form-field">
+
+    <label for="createdAt">
+      Fecha de creación
+    </label>
+
+    <input
+      id="createdAt"
+      pInputText
+      formControlName="createdAt"
+      readonly>
+
+  </div>
+
+
+  <div class="form-field">
+
+    <label for="updated_at">
+      Última actualización
+    </label>
+
+    <input
+      id="updated_at"
+      pInputText
+      formControlName="updated_at"
+      readonly>
+
+  </div>
+
+
+  <!-- ========================= -->
+  <!-- OBSERVACIONES -->
+  <!-- ========================= -->
+
+  <div class="form-field">
+
+    <label for="notes">
+      Observaciones
+    </label>
+
+    <textarea
+      id="notes"
+      pInputText
+      rows="5"
+      formControlName="notes">
+    </textarea>
+
+  </div>
+
+
+  <!-- ========================= -->
+  <!-- ACCIONES -->
+  <!-- ========================= -->
+
+  <div class="form-actions">
+
+    <button
+      pButton
+      type="button"
+      label="Guardar"
+      icon="pi pi-check"
+      severity="success"
+      (click)="updateOrder()">
+    </button>
+
+    <button
+      pButton
+      type="button"
+      label="Cancelar"
+      icon="pi pi-times"
+      severity="secondary"
+      (click)="cancel()">
+    </button>
+
+  </div>
+
+</form>

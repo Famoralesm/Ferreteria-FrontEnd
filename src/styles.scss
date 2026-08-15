@@ -1,1 +1,105 @@
-/* You can add global styles to this file, and also import other style files */
+
+@use "styles/variables";
+
+@use "styles/theme";
+@import "primeicons/primeicons.css";
+
+.fc-menu {
+    border: none !important;
+}
+
+.fc-menu .p-panelmenu-panel {
+    border: none !important;
+    background: transparent !important;
+}
+
+/* Items principales */
+.fc-menu .p-panelmenu-header-link {
+    background: transparent !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 15px 20px !important;
+    font-weight: 500;
+}
+
+.fc-menu .p-panelmenu-header-link:hover {
+    background: #ffffff !important;
+    color: #6c757d !important;
+}
+
+/* Texto de los items principales */
+.fc-menu .p-panelmenu-header-link .p-menuitem-text {
+    color: #ffffff !important;
+}
+
+.fc-menu .p-panelmenu-header-link:hover .p-menuitem-text {
+    color: #6c757d !important;
+}
+
+/* Contenedor de submenús */
+.fc-menu .p-panelmenu-content {
+    background: #123B63 !important;
+    border: none !important;
+}
+
+/* SUBITEMS */
+
+
+/* TEXTO DEL SUBITEM */
+.fc-menu .p-menuitem-link .p-menuitem-text {
+    color: #ffffff !important;
+}
+
+/* ICONO DEL SUBITEM */
+.fc-menu .p-menuitem-link .p-menuitem-icon {
+    color: #ffffff !important;
+    margin-right: 10px;
+}
+
+
+
+/* TEXTO AL HACER HOVER */
+.fc-menu .p-menuitem-link:hover .p-menuitem-text {
+    color: #6c757d !important;
+}
+
+/* ICONO AL HACER HOVER */
+.fc-menu .p-menuitem-link:hover .p-menuitem-icon {
+    color: #6c757d !important;
+}
+/* =========================================================
+   FERRETERIA FC - SIDEBAR SUBMENU
+   ========================================================= */
+
+.fc-menu .p-panelmenu-content .p-menuitem-link,
+.fc-menu .p-panelmenu-content .p-menuitem-link .p-menuitem-text,
+.fc-menu .p-panelmenu-content .p-menuitem-link .p-menuitem-icon {
+    color: #ffffff !important;
+}
+
+
+/* Hover */
+
+.fc-menu .p-panelmenu-content .p-menuitem-link:hover,
+.fc-menu .p-panelmenu-content .p-menuitem-link:hover .p-menuitem-text,
+.fc-menu .p-panelmenu-content .p-menuitem-link:hover .p-menuitem-icon {
+    background: #ffffff !important;
+    color: #6c757d !important;
+}
+.fc-menu .p-panelmenu-content ul.p-submenu-list li.p-menuitem > .p-menuitem-content > .p-menuitem-link {
+    color: #ffffff !important;
+    background: transparent !important;
+}
+
+.fc-menu .p-panelmenu-content ul.p-submenu-list li.p-menuitem > .p-menuitem-content > .p-menuitem-link .p-menuitem-text {
+    color: #ffffff !important;
+}
+
+.fc-menu .p-panelmenu-content ul.p-submenu-list li.p-menuitem > .p-menuitem-content > .p-menuitem-link:hover {
+    color: #6c757d !important;
+    background: #ffffff !important;
+}
+
+.fc-menu .p-panelmenu-content ul.p-submenu-list li.p-menuitem > .p-menuitem-content > .p-menuitem-link:hover .p-menuitem-text {
+    color: #6c757d !important;
+}

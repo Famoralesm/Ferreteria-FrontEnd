@@ -1,0 +1,28 @@
+<div class="product-list-header">
+
+  <div>
+    <h2>Productos</h2>
+
+    <p>
+      Total productos: {{ products.length }}
+    </p>
+  </div>
+
+  <button
+    pButton
+    type="button"
+    label="Nuevo Producto"
+    icon="pi pi-plus"
+    severity="success"
+    (click)="newProduct()">
+  </button>
+
+</div>
+
+
+<app-product-table
+  [products]="products"
+  (edit)="edit($event)"
+  (view)="view($event)"
+  (delete)="delete($event)">
+</app-product-table>

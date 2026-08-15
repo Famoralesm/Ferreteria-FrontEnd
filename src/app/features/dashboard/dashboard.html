@@ -1,0 +1,82 @@
+<app-page-title
+    title="Dashboard"
+    subtitle="Resumen general de la ferretería">
+</app-page-title>
+
+@let orders = (orders$ | async);
+
+@if (orders) {
+
+    Cantidad {{ orders.length }}
+
+    <p-table [value]="orders">
+    <ng-template pTemplate="header">
+
+        <tr>
+
+            <th>#</th>
+
+            <th>Cliente</th>
+
+            <th>Fecha</th>
+
+            <th>Total</th>
+
+            <th>Estado</th>
+
+        </tr>
+
+    </ng-template>
+
+    <ng-template pTemplate="body" let-order>
+
+        <tr>
+
+            <td>{{order.id}}</td>
+
+            <td>{{order.cliente}}</td>
+
+            <td>{{ order.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+
+            <td>{{ order.total | currency:'CLP':'symbol':'1.0-0' }}</td>
+
+            <td>
+                <p-tag [severity]="getSeverity(order.estado)"
+                       [value]="getStatusLabel(order.estado)" >
+                </p-tag>
+            </td>
+
+        </tr>
+
+    </ng-template>
+
+</p-table>
+}
+
+<div class="stats">
+
+    <app-stat-card
+        title="Productos"
+        value="156"
+        icon="pi pi-box">
+    </app-stat-card>
+
+    <app-stat-card
+        title="Pedidos"
+        value="42"
+        icon="pi pi-shopping-cart">
+    </app-stat-card>
+
+    <app-stat-card
+        title="Clientes"
+        value="387"
+        icon="pi pi-users">
+    </app-stat-card>
+
+    <app-stat-card
+        title="Ventas Hoy"
+        value="$870.000"
+        icon="pi pi-dollar">
+    </app-stat-card>
+
+</div>
