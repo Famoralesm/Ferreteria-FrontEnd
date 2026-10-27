@@ -1,11 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from './../../../environments/environment';
-import { OrderSummary } from '../models/order-summary';
+import { OrderSummary } from '../models/order/order-summary';
 
-import { Order } from '../models/order';
-import { CreateOrderRequest } from '../models/create-order-request';
-import { UpdateOrderRequest } from '../models/update-order-request';
+import { Order } from '../models/order/order';
+import { CreateOrderRequest } from '../models/order/create-order-request';
+import { UpdateOrderRequest } from '../models/order/update-order-request';
 
 @Injectable({
   providedIn: 'root'

@@ -1,27 +1,49 @@
-<app-page-title
-    title="Pedidos"
-    subtitle="Administración de pedidos">
-</app-page-title>
+<div class="page-shell">
 
-<app-order-toolbar></app-order-toolbar>
+  <div class="page-header">
 
-<app-order-filter></app-order-filter> 
-<h1>Pedidos </h1>
+    <div class="page-header-content">
 
-<!-- <pre>{{ orders | json }}</pre> -->
+      <span class="page-kicker">
+        PEDIDOS
+      </span>
 
-<app-order-table
+      <h1>
+        Pedidos
+      </h1>
 
-    [orders]="orders"
+      <p>
+        Administración y seguimiento de pedidos
+      </p>
 
-    (edit)="edit($event)"
+    </div>
 
-    (view)="view($event)"
+  </div>
 
-    (delete)="delete($event)"
 
-    (duplicate)="duplicate($event)"
+  <div class="order-tools">
 
-    (print)="print($event)">
+    <app-order-toolbar></app-order-toolbar>
 
-</app-order-table>
+    <app-order-filter></app-order-filter>
+
+  </div>
+
+
+  <div class="page-card">
+
+    <app-order-table
+
+      [orders]="orders"
+
+      (edit)="edit($event)"
+      (view)="view($event)"
+      (delete)="delete($event)"
+      (duplicate)="duplicate($event)"
+      (print)="print($event)">
+
+    </app-order-table>
+
+  </div>
+
+</div>

@@ -1,4 +1,13 @@
-<p>Total pedidos: {{ orders.length }}</p>
+<div class="page-info">
+
+  <i class="pi pi-shopping-cart"></i>
+
+  <span>
+    Total de pedidos:
+    <strong>{{ orders.length }}</strong>
+  </span>
+
+</div>
 <p-table
     [value]="orders"
     [paginator]="true"

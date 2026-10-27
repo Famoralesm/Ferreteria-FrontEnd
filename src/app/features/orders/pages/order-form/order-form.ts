@@ -10,6 +10,13 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
 import { OrderService } from '../../../../core/services/order.service';
+import { ProductService } from '../../../../core/services/product.service';
+import { Product } from '../../../../core/models/product/product';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { ORDER_STATUSES,OrderStatus } from '../../../../core/models/order/order-status';
+import { OrderSummary } from '../../../../core/models/order/order-summary';
 
 @Component({
   selector: 'app-order-form',
@@ -19,7 +26,11 @@ import { OrderService } from '../../../../core/services/order.service';
     InputTextModule,
     ButtonModule,
     CardModule,
-    SelectModule
+    SelectModule,
+    FormsModule,
+    CommonModule,
+    InputNumberModule
+    
   ],
   templateUrl: './order-form.html',
   styleUrl: './order-form.scss',
@@ -29,7 +40,20 @@ export class OrderForm implements OnInit , OnDestroy {
   id?: number;
 
   form!: FormGroup;
+  products: Product[] = []; 
+  searchResults: Product[] = [];
+  selectedProduct?: Product;
+  quantity = 1;
+  items: {
+  productId: number;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+  }[] = [];
+  orderStatuses = ORDER_STATUSES;
 
+  private productService = inject(ProductService);
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private orderService = inject(OrderService);
@@ -47,12 +71,6 @@ export class OrderForm implements OnInit , OnDestroy {
       if (!url) {
         return null;
       }
-
-      /*
-      * Formato típico:
-      *
-      * https://www.google.com/maps/@-33.520..., -70.600...,17z
-      */
 
       let match = url.match(
         /@(-?\d+\.\d+),(-?\d+\.\d+)/
@@ -139,7 +157,7 @@ export class OrderForm implements OnInit , OnDestroy {
       notes: [''],
 
       // Solo lectura
-      status: [{ value: '', disabled: true }],
+      status: ['CREATED'],
 
       // Información de auditoría
       orderNumber: [{ value: '', disabled: true }],
@@ -156,15 +174,24 @@ export class OrderForm implements OnInit , OnDestroy {
 
   ngOnInit(): void {
 
-    this.id = Number(
-      this.route.snapshot.paramMap.get('id')
-    );
+  const idParam =
+    this.route.snapshot.paramMap.get('id');
 
-    if (this.id) {
-      this.loadOrder(this.id);
-      this.updateElapsedTime();
-      this.startTimer();
-    }
+  this.id = idParam
+    ? Number(idParam)
+    : undefined;
+
+  this.loadProducts();
+
+  if (this.id) {
+
+    this.loadOrder(this.id);
+
+    this.updateElapsedTime();
+
+    this.startTimer();
+
+  }
 
   }
   ngOnDestroy(): void {
@@ -174,7 +201,35 @@ export class OrderForm implements OnInit , OnDestroy {
   }
 
  
+private loadProducts(): void {
 
+  this.productService
+    .findAll()
+    .subscribe({
+
+      next: products => {
+
+        console.log(
+          'PRODUCTOS PARA PEDIDO:',
+          products
+        );
+
+        this.products = products;
+
+      },
+
+      error: err => {
+
+        console.error(
+          'Error cargando productos:',
+          err
+        );
+
+      }
+
+    });
+
+  }
   loadOrder(id: number): void {
 
     this.orderService.findById(id)
@@ -182,7 +237,6 @@ export class OrderForm implements OnInit , OnDestroy {
 
         next: order => {
 
-          console.log('Pedido:', order);
 
           this.form.patchValue({
 
@@ -200,10 +254,19 @@ export class OrderForm implements OnInit , OnDestroy {
             createdBy: `${order.createdBy?.name} — ${order.createdBy?.role}`,
             updated_at: order.updated_at,
             totalAmount: order.totalAmount,
-            statusChangedAt : order.statusChangedAt
 
 
           });
+          this.items = order.items.map(item => ({
+                productId: item.productId,
+                productName: item.productName,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                total: item.totalPrice
+              }));
+
+          this.statusChangedAt = order.statusChangedAt
+          this.updateElapsedTime();
           this.updateMapLinks();
 
 
@@ -217,62 +280,61 @@ export class OrderForm implements OnInit , OnDestroy {
 
   }
 
-  updateOrder(): void {
+ updateOrder(): void {
 
-    if (!this.id) {
-      return;
-    }
+  if (!this.id) {
+    return;
+  }
 
-    /*
-     * getRawValue() incluye también los campos disabled.
-     *
-     * Pero NO queremos enviar los campos de solo lectura
-     * al backend para actualizar.
-     */
+  const formValue = this.form.getRawValue();
 
-    const formValue = this.form.getRawValue();
+  const data = {
 
-    const data = {
+    customerName: formValue.customerName,
+    phone: formValue.phone,
+    address: formValue.address,
+    latitude: formValue.latitude,
+    longitude: formValue.longitude,
+    deliveryDate: formValue.deliveryDate,
+    paymentMethod: formValue.paymentMethod,
+    notes: formValue.notes,
+    status: formValue.status,
 
-      customerName: formValue.customerName,
-      phone: formValue.phone,
-      address: formValue.address,
-      latitude: formValue.latitude,
-      longitude: formValue.longitude,
-      deliveryDate: formValue.deliveryDate,
-      paymentMethod: formValue.paymentMethod,
-      notes: formValue.notes,
-      status: formValue.status
+    items: this.items.map(item => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice
+    }))
 
-    };
+  };
 
-    console.log('ID:', this.id);
-    console.log('Datos a actualizar:', data);
+  console.log('ID:', this.id);
+  console.log('Datos a actualizar:', data);
 
-    this.orderService.update(this.id, data)
-      .subscribe({
+  this.orderService.update(this.id, data)
+    .subscribe({
 
-        next: order => {
+      next: order => {
 
-          console.log(
-            'Pedido actualizado:',
-            order
-          );
+        console.log(
+          'Pedido actualizado:',
+          order
+        );
 
-          this.router.navigate(['/orders']);
+        this.router.navigate(['/orders']);
 
-        },
+      },
 
-        error: err => {
+      error: err => {
 
-          console.error(
-            'Error actualizando pedido:',
-            err
-          );
+        console.error(
+          'Error actualizando pedido:',
+          err
+        );
 
-        }
+      }
 
-      });
+    });
 
   }
 
@@ -281,6 +343,83 @@ export class OrderForm implements OnInit , OnDestroy {
     this.router.navigate(['/orders']);
 
   }
+
+  addProduct(): void {
+
+  console.log('Producto seleccionado:', this.selectedProduct);
+  console.log('Cantidad:', this.quantity);
+
+  if (!this.selectedProduct) {
+    console.warn('No hay producto seleccionado');
+    return;
+  }
+
+  if (this.quantity <= 0) {
+    console.warn('Cantidad inválida');
+    return;
+  }
+
+  const existing = this.items.find(
+    item => item.productId === this.selectedProduct!.id
+  );
+
+  if (existing) {
+
+    existing.quantity += this.quantity;
+
+    existing.total =
+      existing.quantity * existing.unitPrice;
+
+  } else {
+
+    this.items.push({
+
+      productId: this.selectedProduct.id,
+
+      productName: this.selectedProduct.name,
+
+      quantity: this.quantity,
+
+      unitPrice: this.selectedProduct.price,
+
+      total:
+        this.selectedProduct.price *
+        this.quantity
+
+    });
+
+  }
+
+  this.selectedProduct = undefined;
+  this.quantity = 1;
+
+  this.updateTotal();
+
+  console.log('Items:', this.items);
+}
+removeProduct(productId: number): void {
+
+  this.items =
+    this.items.filter(
+      item => item.productId !== productId
+    );
+
+  this.updateTotal();
+
+}
+private updateTotal(): void {
+
+  const total =
+    this.items.reduce(
+      (sum, item) => sum + item.total,
+      0
+    );
+
+  this.form.patchValue({
+    totalAmount: total
+  });
+
+}
 
   private startTimer(): void {
 
@@ -297,29 +436,58 @@ export class OrderForm implements OnInit , OnDestroy {
 
 private updateElapsedTime(): void {
 
+  const status = this.form.get('status')?.value;
+
+  if (
+    status === 'DELIVERED' ||
+    status === 'CANCELED' ||
+    status === 'REJECTED'
+  ) {
+    this.elapsedTime = '';
+    return;
+  }
+
   if (!this.statusChangedAt) {
     this.elapsedTime = '00:00:00';
     return;
   }
 
-  const start = new Date(this.statusChangedAt).getTime();
-  const now = Date.now();
+  const elapsed =
+    Math.max(
+      0,
+      Date.now() -
+      new Date(this.statusChangedAt).getTime()
+    );
 
-  const difference = Math.max(0, now - start);
+  const totalSeconds =
+    Math.floor(elapsed / 1000);
 
-  const totalSeconds = Math.floor(difference / 1000);
+  const days =
+    Math.floor(totalSeconds / 86400);
 
-  const hours = Math.floor(totalSeconds / 3600);
+  const hours =
+    Math.floor(
+      (totalSeconds % 86400) / 3600
+    );
 
-  const minutes = Math.floor(
-    (totalSeconds % 3600) / 60
-  );
+  const minutes =
+    Math.floor(
+      (totalSeconds % 3600) / 60
+    );
 
-  const seconds = totalSeconds % 60;
+  const seconds =
+    totalSeconds % 60;
+
+  if (days > 0) {
+
+    this.elapsedTime =
+      `${days}d ${this.pad(hours)}:${this.pad(minutes)}:${this.pad(seconds)}`;
+
+    return;
+  }
 
   this.elapsedTime =
     `${this.pad(hours)}:${this.pad(minutes)}:${this.pad(seconds)}`;
-
 }
 
 
@@ -428,4 +596,101 @@ onAddressChange(): void {
   this.updateMapLinks();
 
 }
+
+saveOrder(): void {
+
+  const formValue = this.form.getRawValue();
+
+  if (this.items.length === 0) {
+    console.warn('El pedido debe tener al menos un producto');
+    return;
+  }
+
+  const data = {
+
+    customerName: formValue.customerName,
+    phone: formValue.phone,
+    address: formValue.address,
+    deliveryDate: formValue.deliveryDate,
+    paymentMethod: formValue.paymentMethod,
+    notes: formValue.notes,
+    status: formValue.status,
+
+    items: this.items.map(item => ({
+      productId: item.productId,
+      productName: item.productName,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice
+    }))
+
+  };
+
+  console.log('ENVIANDO PEDIDO:', data);
+
+  if (this.id) {
+
+    this.orderService.update(this.id, data)
+      .subscribe({
+
+        next: order => {
+
+          console.log('Pedido actualizado:', order);
+
+          this.router.navigate(['/orders']);
+
+        },
+
+        error: err => {
+
+          console.error(
+            'Error actualizando pedido:',
+            err
+          );
+
+        }
+
+      });
+
+  } else {
+
+    this.orderService.create(data)
+      .subscribe({
+
+        next: order => {
+
+          console.log('Pedido creado:', order);
+
+          this.router.navigate(['/orders']);
+
+        },
+
+        error: err => {
+
+          console.error(
+            'Error creando pedido:',
+            err
+          );
+
+        }
+
+      });
+
+  }
+
+}
+
+  getStatusLabel(status: string | null | undefined): string {
+
+    if (!status) {
+      return '';
+    }
+
+    const found = this.orderStatuses.find(
+      item => item.value === status
+    );
+
+    return found?.label ?? status;
+  }
+
+  
 }

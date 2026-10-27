@@ -2,9 +2,10 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { environment } from '../../../environments/environment';
-import { Product } from '../models/product';
-import { CreateProductRequest } from '../models/create-product-request';
-import { UpdateProductRequest } from '../models/update-product-request';
+import { Product } from '../models/product/product';
+import { CreateProductRequest } from '../models/product/create-product-request';
+import { UpdateProductRequest } from '../models/product/update-product-request';
+import { Observable } from 'rxjs';
 
 
 
@@ -81,5 +82,18 @@ export class ProductService {
     );
 
   }
+
+  search(query: string): Observable<Product[]> {
+
+  return this.http.get<Product[]>(
+    `${this.API}/search`,
+    {
+      params: {
+        query
+      }
+    }
+  );
+
+}
 
 }

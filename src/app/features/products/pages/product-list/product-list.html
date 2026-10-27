@@ -1,28 +1,60 @@
-<div class="product-list-header">
+<div class="page-shell">
 
-  <div>
-    <h2>Productos</h2>
+  <div class="page-header">
 
-    <p>
-      Total productos: {{ products.length }}
-    </p>
+    <div class="page-header-content">
+
+      <span class="page-kicker">
+        PRODUCTOS
+      </span>
+
+      <h1>
+        Productos
+      </h1>
+
+      <p>
+        Administración del catálogo e inventario
+      </p>
+
+    </div>
+
+    <div class="page-actions">
+
+      <button
+        pButton
+        type="button"
+        label="Nuevo Producto"
+        icon="pi pi-plus"
+        severity="success"
+        (click)="newProduct()">
+      </button>
+
+    </div>
+
   </div>
 
-  <button
-    pButton
-    type="button"
-    label="Nuevo Producto"
-    icon="pi pi-plus"
-    severity="success"
-    (click)="newProduct()">
-  </button>
+
+  <div class="page-info">
+
+    <i class="pi pi-box"></i>
+
+    <span>
+      Total de productos:
+      <strong>{{ products.length }}</strong>
+    </span>
+
+  </div>
+
+
+  <div class="page-card">
+
+    <app-product-table
+      [products]="products"
+      (edit)="edit($event)"
+      (view)="view($event)"
+      (delete)="delete($event)">
+    </app-product-table>
+
+  </div>
 
 </div>
-
-
-<app-product-table
-  [products]="products"
-  (edit)="edit($event)"
-  (view)="view($event)"
-  (delete)="delete($event)">
-</app-product-table>

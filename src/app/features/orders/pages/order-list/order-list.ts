@@ -7,14 +7,12 @@ import {
 } from '@angular/core';
 
 import { OrderTable } from '../../components/order-table/order-table';
-import { PageTitle } from '../../../../shared/components/page-title/page-title';
 import { OrderToolbar } from '../../components/order-toolbar/order-toolbar';
 import { OrderFilter } from '../../components/order-filter/order-filter';
 import { OrderService } from '../../../../core/services/order.service';
-import { OrderSummary } from '../../../../core/models/order-summary';
+import { OrderSummary } from '../../../../core/models/order/order-summary';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { interval, Subscription } from 'rxjs';
 
 
 
@@ -23,7 +21,6 @@ import { interval, Subscription } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
-    PageTitle,
     OrderToolbar,
     OrderFilter,
     OrderTable

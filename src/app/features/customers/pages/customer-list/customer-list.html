@@ -1,0 +1,60 @@
+<div class="page-shell">
+
+  <div class="page-header">
+
+    <div class="page-header-content">
+
+      <span class="page-kicker">
+        CLIENTES
+      </span>
+
+      <h1>
+        Clientes
+      </h1>
+
+      <p>
+        Administración y gestión de clientes
+      </p>
+
+    </div>
+
+    <div class="page-actions">
+
+      <button
+        pButton
+        type="button"
+        label="Nuevo Cliente"
+        icon="pi pi-plus"
+        severity="success"
+        (click)="newCustomer()">
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="page-info">
+
+    <i class="pi pi-users"></i>
+
+    <span>
+      Total de clientes:
+      <strong>{{ customers.length }}</strong>
+    </span>
+
+  </div>
+
+
+  <div class="page-card">
+
+    <app-customer-table
+      [customers]="customers"
+      (view)="view($event)"
+      (edit)="edit($event)"
+      (delete)="delete($event)">
+    </app-customer-table>
+
+  </div>
+
+</div>

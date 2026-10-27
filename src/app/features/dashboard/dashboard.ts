@@ -1,24 +1,23 @@
 
 import { Component , OnInit,ChangeDetectorRef , ChangeDetectionStrategy} from '@angular/core';
-import { PageTitle } from '../../shared/components/page-title/page-title';
 import { StatCard } from '../../shared/components/stat-card/stat-card';
-import { OrderSummary } from '../../core/models/order-summary';
+import { OrderSummary } from '../../core/models/order/order-summary';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { TableModule } from 'primeng/table';
-import { CurrencyPipe , DatePipe, AsyncPipe} from '@angular/common';
+import { AsyncPipe} from '@angular/common';
 import { TagModule } from 'primeng/tag';
 import { Observable } from 'rxjs';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    PageTitle,
+   
     StatCard,
     TableModule,
-    CurrencyPipe,
-    DatePipe,
     TagModule,
-    AsyncPipe
+    AsyncPipe,
+    CommonModule
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',

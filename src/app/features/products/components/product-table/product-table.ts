@@ -11,7 +11,7 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 
-import { Product } from '../../../../core/models/product';
+import { Product } from '../../../../core/models/product/product';
 
 @Component({
   selector: 'app-product-table',

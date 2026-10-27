@@ -23,8 +23,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { CheckboxModule } from 'primeng/checkbox';
 
-import { CreateProductRequest } from '../../../../core/models/create-product-request';
-import { UpdateProductRequest } from '../../../../core/models/update-product-request';
+import { CreateProductRequest } from '../../../../core/models/product/create-product-request';
+import { UpdateProductRequest } from '../../../../core/models/product/update-product-request';
 import {  ProductService} from '../../../../core/services/product.service';
 
 

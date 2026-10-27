@@ -1,7 +1,7 @@
 import { Component, OnDestroy,OnInit ,  ChangeDetectorRef} from '@angular/core';
 import { Input, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
-import { OrderSummary } from '../../../../core/models/order-summary';
+import { OrderSummary } from '../../../../core/models/order/order-summary';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
@@ -110,6 +110,11 @@ export class OrderTable implements OnInit, OnDestroy{
     }
 
     if (order.estado === 'CANCELED') {
+
+      return 'red';
+
+    }
+    if (order.estado === 'REJECTED') {
 
       return 'red';
 

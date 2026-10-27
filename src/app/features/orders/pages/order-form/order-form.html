@@ -1,14 +1,34 @@
-<h2>
-  {{ id ? 'Editar pedido' : 'Nuevo pedido' }}
-</h2>
+<div class="page-shell">
 
-<form [formGroup]="form" class="form-grid" >
+  <div class="page-header">
 
-  <!-- ========================= -->
-  <!-- INFORMACIÓN DEL PEDIDO -->
-  <!-- ========================= -->
+    <div class="page-header-content">
 
-  <div class="form-field">
+      <span class="page-kicker">
+        PEDIDOS
+      </span>
+
+      <h1>
+        {{ id ? 'Editar pedido' : 'Nuevo pedido' }}
+      </h1>
+
+      <p>
+        {{ id
+          ? 'Actualiza la información del pedido.'
+          : 'Registra un nuevo pedido.'
+        }}
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="page-card order-form-card">
+
+    <form
+      [formGroup]="form"
+      class="form-grid">
 
     <label for="orderNumber">
       Número de pedido
@@ -20,7 +40,7 @@
       formControlName="orderNumber"
       readonly>
 
-  </div>
+  
 
 
   <div class="form-field">
@@ -138,11 +158,15 @@
       Estado
     </label>
 
-    <input
-      id="status"
-      pInputText
-      formControlName="status"
-      readonly>
+  <p-select
+    id="status"
+    [options]="orderStatuses"
+    optionLabel="label"
+    optionValue="value"
+    formControlName="status"
+    placeholder="Seleccione estado"
+    class="w-full">
+  </p-select>
 
   </div>
   <div class="status-info">
@@ -151,14 +175,16 @@
       Estado actual
     </div>
 
-    <div class="status-value">
-      {{ form.get('status')?.value }}
-    </div>
+  <div class="status-value">
+    {{ getStatusLabel(form.get('status')?.value) }}
+  </div>
 
     <div class="status-time">
       <i class="pi pi-clock"></i>
 
-      {{ elapsedTime }}
+            <td>
+                <div class="status-timer" >  <i class="pi pi-clock"> </i>{{ elapsedTime }}</div>
+            </td>
 
     </div>
   </div>
@@ -234,6 +260,166 @@
       readonly>
 
   </div>
+  <!-- ========================= -->
+<!-- PRODUCTOS -->
+<!-- ========================= -->
+
+<section class="order-items-section">
+
+  <div class="section-title">
+
+    <div class="section-icon">
+      <i class="pi pi-shopping-cart"></i>
+    </div>
+
+    <div>
+
+      <h3>
+        Productos del pedido
+      </h3>
+
+      <p>
+        Selecciona los productos y cantidades.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="product-selector">
+
+    <div class="form-field">
+
+      <label for="product">
+        Producto
+      </label>
+
+      <p-select
+        id="product"
+        [options]="products"
+        optionLabel="name"
+        [(ngModel)]="selectedProduct"
+        [ngModelOptions]="{standalone: true}"
+        placeholder="Seleccione un producto"
+        class="w-full">
+      </p-select>
+
+    </div>
+
+
+    <div class="form-field quantity-field">
+
+      <label for="quantity">
+        Cantidad
+      </label>
+
+    <p-inputNumber 
+      [(ngModel)]="quantity" 
+      mode="decimal" 
+      id="quantity"
+      [ngModelOptions]="{standalone: true}"
+      [showButtons]="true" 
+      inputId="minmax-buttons" 
+      [min]="0" 
+      [max]="100" /> 
+
+    </div>
+
+
+    <div class="add-product-button">
+
+      <button
+        pButton
+        type="button"
+        label="Agregar"
+        icon="pi pi-plus"
+        severity="success"
+        (click)="addProduct()">
+      </button>
+
+    </div>
+
+  </div>
+
+
+  @if (items.length > 0) {
+
+    <div class="items-table">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>Producto</th>
+
+            <th>Cantidad</th>
+
+            <th>Precio</th>
+
+            <th>Total</th>
+
+            <th></th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (item of items; track item.productId) {
+
+            <tr>
+
+              <td>
+                <strong>
+                  {{ item.productName }}
+                </strong>
+              </td>
+
+              <td>
+                {{ item.quantity }}
+              </td>
+
+              <td>
+                {{ item.unitPrice | currency:'CLP':'symbol':'1.0-0':'es-CL' }}
+              </td>
+
+              <td>
+                <strong>
+                  {{ item.total | currency:'CLP':'symbol':'1.0-0':'es-CL' }}
+                </strong>
+              </td>
+
+              <td>
+
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-trash"
+                  severity="danger"
+                  rounded
+                  text
+                  (click)="removeProduct(item.productId)">
+                </button>
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+</section>
 
 
   <!-- ========================= -->
@@ -268,7 +454,7 @@
       label="Guardar"
       icon="pi pi-check"
       severity="success"
-      (click)="updateOrder()">
+      (click)="saveOrder()">
     </button>
 
     <button

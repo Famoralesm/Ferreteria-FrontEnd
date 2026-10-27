@@ -1,0 +1,118 @@
+<p-table
+  [value]="customers"
+  [paginator]="true"
+  [rows]="10"
+  responsiveLayout="scroll">
+
+  <ng-template pTemplate="header">
+
+    <tr>
+
+      <th>ID</th>
+      <th>RUT</th>
+      <th>Nombre</th>
+      <th>Razón Social</th>
+      <th>Comuna</th>
+      <th>Contacto</th>
+      <th>Email</th>
+      <th>Teléfono</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+
+    </tr>
+
+  </ng-template>
+
+  <ng-template
+    pTemplate="body"
+    let-customer>
+
+    <tr>
+
+      <td>
+        {{ customer.id }}
+      </td>
+
+      <td>
+        <strong>
+          {{ customer.rut }}
+        </strong>
+      </td>
+
+      <td>
+        {{ customer.nombre }}
+      </td>
+
+      <td>
+        {{ customer.razonSocial || '-' }}
+      </td>
+
+      <td>
+        {{ customer.comuna || '-' }}
+      </td>
+
+      <td>
+        {{ customer.contacto || '-' }}
+      </td>
+
+      <td>
+        {{ customer.email || '-' }}
+      </td>
+
+      <td>
+        {{ customer.telefono || '-' }}
+      </td>
+
+      <td>
+
+        <p-tag
+          [value]="customer.activo
+            ? 'Activo'
+            : 'Inactivo'"
+          [severity]="customer.activo
+            ? 'success'
+            : 'danger'">
+        </p-tag>
+
+      </td>
+
+      <td>
+
+        <div class="actions">
+
+          <button
+            pButton
+            type="button"
+            icon="pi pi-eye"
+            severity="info"
+            rounded
+            (click)="view.emit(customer.id)">
+          </button>
+
+          <button
+            pButton
+            type="button"
+            icon="pi pi-pencil"
+            severity="warn"
+            rounded
+            (click)="edit.emit(customer.id)">
+          </button>
+
+          <button
+            pButton
+            type="button"
+            icon="pi pi-trash"
+            severity="danger"
+            rounded
+            (click)="delete.emit(customer.id)">
+          </button>
+
+        </div>
+
+      </td>
+
+    </tr>
+
+  </ng-template>
+
+</p-table>

@@ -1,6 +1,6 @@
-import { OrderItem } from './order-item';
+import { CreateOrderItemRequest } from './create-order-item-request';
 
-export interface UpdateOrderRequest {
+export interface CreateOrderRequest {
 
     customerName: string;
 
@@ -12,10 +12,9 @@ export interface UpdateOrderRequest {
 
     paymentMethod: string;
 
-    status: string;
-
     notes: string;
 
 
+    items: CreateOrderItemRequest[];
 
 }

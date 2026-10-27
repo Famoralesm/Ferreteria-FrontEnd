@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { ProductTable } from '../../components/product-table/product-table';
 
 import { ProductService } from '../../../../core/services/product.service';
-import { Product } from '../../../../core/models/product';
+import { Product } from '../../../../core/models/product/product';
 
 @Component({
   selector: 'app-product-list',

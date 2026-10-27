@@ -151,3 +151,12 @@ form {
   height: 100%;
   z-index: 1;
 }
+:host {
+  display: block;
+  width: 100%;
+}
+
+.order-form-card {
+  max-width: 1100px;
+  margin: 0 auto;
+}

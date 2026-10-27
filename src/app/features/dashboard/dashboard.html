@@ -1,82 +1,174 @@
-<app-page-title
-    title="Dashboard"
-    subtitle="Resumen general de la ferretería">
-</app-page-title>
+<div class="page-shell">
 
-@let orders = (orders$ | async);
+  <div class="page-header">
 
-@if (orders) {
+    <div class="page-header-content">
 
-    Cantidad {{ orders.length }}
+      <span class="page-kicker">
+        FERRETERÍA FC
+      </span>
 
-    <p-table [value]="orders">
-    <ng-template pTemplate="header">
+      <h1>
+        Dashboard
+      </h1>
 
-        <tr>
+      <p>
+        Resumen general de la ferretería
+      </p>
 
-            <th>#</th>
+    </div>
 
-            <th>Cliente</th>
+  </div>
 
-            <th>Fecha</th>
 
-            <th>Total</th>
 
-            <th>Estado</th>
 
-        </tr>
+  <!-- ========================= -->
+  <!-- ÚLTIMOS PEDIDOS -->
+  <!-- ========================= -->
 
-    </ng-template>
+  @let orders = (orders$ | async);
 
-    <ng-template pTemplate="body" let-order>
+  @if (orders) {
 
-        <tr>
+    <div class="dashboard-section">
 
-            <td>{{order.id}}</td>
+      <div class="section-heading">
 
-            <td>{{order.cliente}}</td>
+        <div>
 
-            <td>{{ order.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+          <span class="section-kicker">
+            ACTIVIDAD
+          </span>
 
-            <td>{{ order.total | currency:'CLP':'symbol':'1.0-0' }}</td>
+          <h2>
+            Últimos pedidos
+          </h2>
 
-            <td>
-                <p-tag [severity]="getSeverity(order.estado)"
-                       [value]="getStatusLabel(order.estado)" >
+          <p>
+            Pedidos registrados recientemente
+          </p>
+
+        </div>
+
+        <div class="order-count">
+
+          <i class="pi pi-shopping-cart"></i>
+
+          <span>
+            {{ orders.length }} pedidos
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="page-card dashboard-orders">
+
+        <p-table
+          [value]="orders"
+          [paginator]="true"
+          [rows]="5"
+          responsiveLayout="scroll">
+
+          <ng-template pTemplate="header">
+
+            <tr>
+
+              <th>#</th>
+
+              <th>Cliente</th>
+
+              <th>Fecha</th>
+
+              <th>Total</th>
+
+              <th>Estado</th>
+
+            </tr>
+
+          </ng-template>
+
+
+          <ng-template
+            pTemplate="body"
+            let-order>
+
+            <tr>
+
+              <td>
+                <strong>
+                  {{ order.id }}
+                </strong>
+              </td>
+
+              <td>
+                {{ order.cliente }}
+              </td>
+
+              <td>
+                {{ order.fecha | date:'dd/MM/yyyy HH:mm' }}
+              </td>
+
+              <td>
+                <strong>
+                  {{ order.total | currency:'CLP':'symbol':'1.0-0':'es-CL' }}
+                </strong>
+              </td>
+
+              <td>
+
+                <p-tag
+                  [severity]="getSeverity(order.estado)"
+                  [value]="getStatusLabel(order.estado)">
                 </p-tag>
-            </td>
 
-        </tr>
+              </td>
 
-    </ng-template>
+            </tr>
 
-</p-table>
-}
+          </ng-template>
 
-<div class="stats">
+        </p-table>
+
+      </div>
+
+    </div>
+
+  }
+
+<br>
+  <!-- ========================= -->
+  <!-- ESTADÍSTICAS -->
+  <!-- ========================= -->
+
+  <div class="stats">
 
     <app-stat-card
-        title="Productos"
-        value="156"
-        icon="pi pi-box">
+      title="Productos"
+      value="156"
+      icon="pi pi-box">
     </app-stat-card>
 
     <app-stat-card
-        title="Pedidos"
-        value="42"
-        icon="pi pi-shopping-cart">
+      title="Pedidos"
+      value="42"
+      icon="pi pi-shopping-cart">
     </app-stat-card>
 
     <app-stat-card
-        title="Clientes"
-        value="387"
-        icon="pi pi-users">
+      title="Clientes"
+      value="387"
+      icon="pi pi-users">
     </app-stat-card>
 
     <app-stat-card
-        title="Ventas Hoy"
-        value="$870.000"
-        icon="pi pi-dollar">
+      title="Ventas Hoy"
+      value="$870.000"
+      icon="pi pi-dollar">
     </app-stat-card>
+
+  </div>
 
 </div>

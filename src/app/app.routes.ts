@@ -11,6 +11,8 @@ import { OrderDetail } from './features/orders/pages/order-detail/order-detail';
 import { OrderForm } from './features/orders/pages/order-form/order-form'; 
 import { ProductList } from './features/products/pages/product-list/product-list';
 import { ProductForm } from './features/products/pages/product-form/product-form';
+import { CustomerList } from './features/customers/pages/customer-list/customer-list';
+import { CustomerForm } from './features/customers/pages/customer-form/customer-form';
 
 export const routes: Routes = [
 
@@ -75,6 +77,27 @@ export const routes: Routes = [
             {
             path: 'products/edit/:id',
             component: ProductForm
+            }
+            //Clientes 
+            ,
+            {
+            path: 'customers',
+            component: CustomerList
+            },
+
+            {
+            path: 'customers/new',
+            component: CustomerForm
+            },
+
+            {
+            path: 'customers/:id',
+            component: CustomerForm
+            },
+
+            {
+            path: 'customers/edit/:id',
+            component: CustomerForm
             }
 
         ]

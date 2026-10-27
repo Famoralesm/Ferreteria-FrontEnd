@@ -1,0 +1,315 @@
+<div class="customer-form">
+
+  <div class="customer-form-header">
+
+    <div>
+
+      <h2>Nuevo Cliente</h2>
+
+      <p>
+        Registra un nuevo cliente
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <form
+    [formGroup]="customerForm"
+    (ngSubmit)="save()">
+
+
+    <!-- ========================= -->
+    <!-- DATOS PRINCIPALES -->
+    <!-- ========================= -->
+
+    <div class="form-section">
+
+      <h3>
+        Datos principales
+      </h3>
+
+
+      <div class="form-grid">
+
+
+        <div class="field">
+
+          <label for="rut">
+            RUT *
+          </label>
+
+          <input
+            id="rut"
+            type="text"
+            pInputText
+            formControlName="rut"
+            placeholder="12.345.678-9"
+          />
+
+          @if (rut?.invalid && rut?.touched) {
+
+            <small class="error">
+              El RUT es obligatorio
+            </small>
+
+          }
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="nombre">
+            Nombre *
+          </label>
+
+          <input
+            id="nombre"
+            type="text"
+            pInputText
+            formControlName="nombre"
+            placeholder="Nombre del cliente"
+          />
+
+          @if (nombre?.invalid && nombre?.touched) {
+
+            <small class="error">
+              El nombre es obligatorio
+            </small>
+
+          }
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="razonSocial">
+            Razón Social
+          </label>
+
+          <input
+            id="razonSocial"
+            type="text"
+            pInputText
+            formControlName="razonSocial"
+            placeholder="Razón social"
+          />
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="giro">
+            Giro
+          </label>
+
+          <input
+            id="giro"
+            type="text"
+            pInputText
+            formControlName="giro"
+            placeholder="Giro comercial"
+          />
+
+        </div>
+
+
+
+
+      </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- CONTACTO -->
+    <!-- ========================= -->
+
+    <div class="form-section">
+
+      <h3>
+        Información de contacto
+      </h3>
+
+
+      <div class="form-grid">
+
+
+
+
+
+        <div class="field">
+
+          <label for="email">
+            Email
+          </label>
+
+          <input
+            id="email"
+            type="email"
+            pInputText
+            formControlName="email"
+            placeholder="correo@empresa.cl"
+          />
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="telefono">
+            Teléfono
+          </label>
+
+          <input
+            id="telefono"
+            type="text"
+            pInputText
+            formControlName="telefono"
+            placeholder="+56 9..."
+          />
+
+        </div>
+
+
+      
+
+      </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- DIRECCIÓN -->
+    <!-- ========================= -->
+
+    <div class="form-section">
+
+      <h3>
+        Dirección
+      </h3>
+
+
+      <div class="form-grid">
+
+
+        <div class="field field-full">
+
+          <label for="direccion">
+            Dirección
+          </label>
+
+          <input
+            id="direccion"
+            type="text"
+            pInputText
+            formControlName="direccion"
+            placeholder="Dirección"
+          />
+
+        </div>
+
+
+      <div class="field">
+
+        <label for="ciudad">
+          Ciudad
+        </label>
+
+        <p-select
+          id="ciudad"
+          [options]="ciudades"
+          optionLabel="nombre"
+          optionValue="id"
+          formControlName="ciudad"
+          placeholder="Seleccione ciudad"
+          [showClear]="true"
+          class="w-full">
+        </p-select>
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="comuna">
+          Comuna
+        </label>
+
+        <p-select
+          id="comuna"
+          [options]="comunasFiltradas"
+          optionLabel="nombre"
+          optionValue="id"
+          formControlName="comuna"
+          placeholder="Seleccione comuna"
+          [showClear]="true"
+          [disabled]="!customerForm.get('ciudad')?.value"
+          class="w-full">
+        </p-select>
+
+      </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- ESTADO -->
+    <!-- ========================= -->
+
+    <div class="form-section">
+
+      <h3>
+        Estado
+      </h3>
+
+      <label class="checkbox-field">
+
+        <input
+          type="checkbox"
+          formControlName="activo"
+        />
+
+        Cliente activo
+
+      </label>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- BOTONES -->
+    <!-- ========================= -->
+
+    <div class="form-actions">
+
+      <button
+        pButton
+        type="button"
+        label="Cancelar"
+        severity="secondary"
+        (click)="cancel()">
+      </button>
+
+
+      <button
+        pButton
+        type="submit"
+        label="Guardar Cliente"
+        icon="pi pi-save"
+        severity="success"
+        [disabled]="saving">
+      </button>
+
+    </div>
+
+
+  </form>
+
+</div>

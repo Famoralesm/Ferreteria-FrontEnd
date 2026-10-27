@@ -103,3 +103,277 @@
 .fc-menu .p-panelmenu-content ul.p-submenu-list li.p-menuitem > .p-menuitem-content > .p-menuitem-link:hover .p-menuitem-text {
     color: #6c757d !important;
 }
+/* =========================================================
+   PAGE LAYOUT
+   ========================================================= */
+
+.page-shell {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 32px 40px;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 24px;
+
+  padding: 22px 26px;
+
+  background: #123b63;
+
+  border-radius: 12px;
+
+  color: white;
+
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+.page-header-content {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.page-kicker {
+  margin-bottom: 5px;
+
+  color: #f2b705;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+
+.page-header h1,
+.page-header h2 {
+  margin: 0;
+
+  font-size: 25px;
+  font-weight: 700;
+}
+
+
+.page-header p {
+  margin: 6px 0 0;
+
+  color: #dbe7f2;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   PAGE ACTIONS
+   ========================================================= */
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+/* =========================================================
+   PAGE CARD
+   ========================================================= */
+
+.page-card {
+  background: #ffffff;
+
+  border-radius: 12px;
+
+  padding: 20px;
+
+  box-shadow:
+    0 5px 18px rgba(0, 0, 0, 0.06);
+
+  overflow-x: auto;
+}
+
+
+/* =========================================================
+   PAGE INFO
+   ========================================================= */
+
+.page-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 15px;
+
+  color: #6c757d;
+
+  font-size: 13px;
+}
+
+
+.page-info strong {
+  color: #123b63;
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.page-card .p-datatable {
+  width: 100%;
+}
+
+
+.page-card .p-datatable-thead > tr > th {
+  background: #f5f7fa;
+
+  color: #34495e;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  border-bottom: 1px solid #e5e9ee;
+}
+
+
+.page-card .p-datatable-tbody > tr > td {
+  font-size: 13px;
+
+  padding: 13px 12px;
+}
+
+
+.page-card .p-datatable-tbody > tr:hover {
+  background: #f8fafc;
+}
+
+
+/* =========================================================
+   ACTION BUTTONS
+   ========================================================= */
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  .page-shell {
+    padding: 20px 15px 30px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .page-actions {
+    width: 100%;
+  }
+
+}
+
+/* ==========================================
+   FERRETERÍA FC - MENÚ LATERAL
+   Texto blanco por defecto.
+   Texto gris sobre fondo blanco al pasar
+   el mouse.
+   ========================================== */
+
+/* Fondos transparentes para mantener el azul */
+.sidebar .fc-menu,
+.sidebar .fc-menu .p-panelmenu-panel,
+.sidebar .fc-menu .p-panelmenu-header,
+.sidebar .fc-menu .p-panelmenu-header-content,
+.sidebar .fc-menu .p-panelmenu-content,
+.sidebar .fc-menu .p-panelmenu-content-container,
+.sidebar .fc-menu .p-panelmenu-root-list,
+.sidebar .fc-menu .p-panelmenu-item,
+.sidebar .fc-menu .p-panelmenu-item-content,
+.sidebar .fc-menu .p-menuitem-content {
+  background: transparent !important;
+}
+
+/* Enlaces: blanco por defecto */
+.sidebar .fc-menu .p-panelmenu-header-link,
+.sidebar .fc-menu .p-panelmenu-item-link,
+.sidebar .fc-menu .p-menuitem-link {
+  color: #ffffff !important;
+  background: transparent !important;
+  border-radius: 6px;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+/* Textos e iconos: blanco por defecto */
+.sidebar .fc-menu .p-panelmenu-header-label,
+.sidebar .fc-menu .p-panelmenu-item-label,
+.sidebar .fc-menu .p-menuitem-text,
+.sidebar .fc-menu .p-panelmenu-header-icon,
+.sidebar .fc-menu .p-panelmenu-item-icon,
+.sidebar .fc-menu .p-menuitem-icon,
+.sidebar .fc-menu .p-panelmenu-submenu-icon {
+  color: #ffffff !important;
+  transition: color 0.2s ease;
+}
+
+/* Fondo blanco al poner el mouse sobre un enlace */
+.sidebar .fc-menu .p-panelmenu-header-link:hover,
+.sidebar .fc-menu .p-panelmenu-item-link:hover,
+.sidebar .fc-menu .p-menuitem-link:hover,
+.sidebar .fc-menu .p-panelmenu-header-content:hover,
+.sidebar .fc-menu .p-panelmenu-item-content:hover,
+.sidebar .fc-menu .p-menuitem-content:hover {
+  background: #ffffff !important;
+}
+
+/* Texto gris sobre el fondo blanco */
+.sidebar .fc-menu .p-panelmenu-header-link:hover,
+.sidebar .fc-menu .p-panelmenu-item-link:hover,
+.sidebar .fc-menu .p-menuitem-link:hover {
+  color: #6c757d !important;
+}
+
+/* Textos e iconos grises durante el hover */
+.sidebar .fc-menu .p-panelmenu-header-link:hover *,
+.sidebar .fc-menu .p-panelmenu-item-link:hover *,
+.sidebar .fc-menu .p-menuitem-link:hover *,
+.sidebar .fc-menu .p-panelmenu-header-content:hover *,
+.sidebar .fc-menu .p-panelmenu-item-content:hover *,
+.sidebar .fc-menu .p-menuitem-content:hover * {
+  color: #6c757d !important;
+}
+
+/* Área de los submenús */
+.sidebar .fc-menu .p-panelmenu-content,
+.sidebar .fc-menu .p-panelmenu-content-container {
+  color: #ffffff !important;
+}
+
+/* Separación visual entre opciones */
+.sidebar .fc-menu .p-panelmenu-header-link,
+.sidebar .fc-menu .p-panelmenu-item-link,
+.sidebar .fc-menu .p-menuitem-link {
+  margin: 2px 5px;
+}

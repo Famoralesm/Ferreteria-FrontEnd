@@ -35,7 +35,7 @@ export class Sidebar {
         {
             label:'Listado',
             icon:'pi pi-list',
-            routerLink:'/products'
+            routerLink: ['/products']
         },
 
         {
@@ -50,7 +50,7 @@ export class Sidebar {
     {
       label:'Clientes',
       icon:'pi pi-users',
-      routerLink:['/clientes']
+      routerLink:['/customers']
     },
 
     {

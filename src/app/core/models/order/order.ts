@@ -1,5 +1,5 @@
 import { OrderItem } from './order-item';
-import { UserSummary } from './user-summary';
+import { UserSummary } from '../user/user-summary';
 
 export interface Order {
 
