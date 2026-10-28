@@ -32,6 +32,23 @@
     </div>
 
   </div>
+  <!-- Notificación reutilizable -->
+  <div
+    *ngIf="notificationMessage"
+    class="app-notification"
+    [ngClass]="'app-notification--' + notificationType"
+    role="status"
+    aria-live="polite"
+  >
+    <i
+      class="pi"
+      [ngClass]="notificationType === 'success'
+        ? 'pi-check-circle'
+        : 'pi-trash'"
+    ></i>
+
+    <span>{{ notificationMessage }}</span>
+  </div>
 
 
   <div class="page-info">

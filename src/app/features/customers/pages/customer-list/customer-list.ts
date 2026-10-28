@@ -1,6 +1,6 @@
 import {
   Component,
-  OnInit
+  OnInit, ChangeDetectorRef
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -20,7 +20,8 @@ import { Customer } from '../../../../core/models/customer/customer';
   imports: [
     CommonModule,
     ButtonModule,
-    CustomerTable
+    CustomerTable,
+
   ],
 
   templateUrl: './customer-list.html',
@@ -29,43 +30,67 @@ import { Customer } from '../../../../core/models/customer/customer';
 export class CustomerList implements OnInit {
 
   customers: Customer[] = [];
+  notificationMessage = '';
+  notificationType: 'success' | 'error' | '' = '';
+
+  private notificationTimer?: ReturnType<typeof setTimeout>;
 
   constructor(
     private customerService: CustomerService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {
-    this.loadCustomers();
+ngOnInit(): void {
+
+  const notification = history.state?.notification;
+
+  if (
+    notification?.message &&
+    (notification.type === 'success' ||
+     notification.type === 'error')
+  ) {
+    this.showNotification(
+      notification.message,
+      notification.type
+    );
   }
 
-  loadCustomers(): void {
+  this.loadCustomers();
+}
 
-    this.customerService
-      .findAll()
-      .subscribe({
+loadCustomers(): void {
 
-        next: data => {
+  this.customerService
+    .findAll()
+    .subscribe({
 
-          console.log(
-            'CLIENTES RECIBIDOS:',
-            data
-          );
+      next: data => {
 
-          this.customers = data;
-        },
+        console.log(
+          'CLIENTES RECIBIDOS:',
+          data
+        );
 
-        error: err => {
+        this.customers = data;
 
-          console.error(
-            'Error cargando clientes:',
-            err
-          );
+        // Actualiza la vista después de recibir los datos.
+        this.cdr.detectChanges();
 
-        }
+      },
 
-      });
-  }
+      error: err => {
+
+        console.error(
+          'Error cargando clientes:',
+          err
+        );
+
+      }
+
+    });
+
+}
 
   newCustomer(): void {
 
@@ -93,31 +118,67 @@ export class CustomerList implements OnInit {
 
   }
 
-  delete(id: number): void {
+delete(id: number): void {
 
-    if (!confirm('¿Eliminar cliente?')) {
-      return;
+  const customer = this.customers.find(
+    item => item.id === id
+  );
+
+  if (!customer) {
+    return;
+  }
+
+  if (!confirm(`¿Eliminar al cliente "${customer.nombre}"?`)) {
+    return;
+  }
+
+  this.customerService.delete(id).subscribe({
+
+    next: () => {
+
+      this.customers = this.customers.filter(
+        item => item.id !== id
+      );
+
+      this.showNotification(
+        `Se ha eliminado el cliente "${customer.nombre}" con éxito.`,
+        'error'
+      );
+
+      this.cdr.detectChanges();
+    },
+
+    error: err => {
+      console.error('Error eliminando cliente:', err);
+
+      this.showNotification(
+        'No se pudo eliminar el cliente. Inténtalo nuevamente.',
+        'error'
+      );
     }
 
-    this.customerService
-      .delete(id)
-      .subscribe({
+  });
+}
 
-        next: () => {
-          this.loadCustomers();
-        },
+  showNotification(
+  message: string,
+  type: 'success' | 'error'
+  ): void {
 
-        error: err => {
+    if (this.notificationTimer) {
+      clearTimeout(this.notificationTimer);
+    }
 
-          console.error(
-            'Error eliminando cliente:',
-            err
-          );
+    this.notificationMessage = message;
+    this.notificationType = type;
 
-        }
+    this.notificationTimer = setTimeout(() => {
+      this.notificationMessage = '';
+      this.notificationType = '';
+      this.notificationTimer = undefined;
 
-      });
-
+      this.cdr.detectChanges();
+    }, 2000);
   }
 
 }

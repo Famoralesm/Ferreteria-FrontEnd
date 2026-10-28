@@ -48,4 +48,17 @@ export class CustomerService {
       `${this.apiUrl}/${id}`
     );
   }
+
+  update(
+  id: number,
+  request: CreateCustomerRequest
+): Observable<Customer> {
+
+  return this.http.put<Customer>(
+    `${this.apiUrl}/${id}`,
+    request
+  );
+
+}
+
 }

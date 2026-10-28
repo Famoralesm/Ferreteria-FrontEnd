@@ -13,7 +13,7 @@
       <th>Nombre</th>
       <th>Razón Social</th>
       <th>Comuna</th>
-      <th>Contacto</th>
+      <th>Ciudad</th>
       <th>Email</th>
       <th>Teléfono</th>
       <th>Estado</th>
@@ -48,11 +48,10 @@
       </td>
 
       <td>
-        {{ customer.comuna || '-' }}
+          {{ customer.comuna?.nombre || '-' }}
       </td>
-
       <td>
-        {{ customer.contacto || '-' }}
+          {{ customer.ciudad?.nombre || '-' }}
       </td>
 
       <td>

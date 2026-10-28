@@ -1,21 +1,18 @@
-export interface CreateCustomerRequest {
+export interface CustomerReference {
+  id: number;
+}
 
+export interface CreateCustomerRequest {
   rut: string;
   nombre: string;
+  razonSocial?: string;
+  giro?: string;
+  direccion?: string;
 
-  razonSocial: string;
-  giro: string;
-  tipoCompra: string;
+  ciudad: CustomerReference;
+  comuna: CustomerReference;
 
-  direccion: string;
-  comuna: string;
-  ciudad: string;
-
-  contacto?: string;
-  email: string;
-  telefono: string;
-
-  rutSolicita?: string;
-
+  email?: string;
+  telefono?: string;
   activo: boolean;
 }

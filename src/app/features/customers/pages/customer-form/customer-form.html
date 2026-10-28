@@ -1,18 +1,28 @@
 <div class="customer-form">
 
-  <div class="customer-form-header">
+<div class="customer-form-header">
+  <div>
+    <h2>
+      {{
+        readonlyMode
+          ? 'Ver cliente'
+          : id
+            ? 'Editar cliente'
+            : 'Nuevo cliente'
+      }}
+    </h2>
 
-    <div>
-
-      <h2>Nuevo Cliente</h2>
-
-      <p>
-        Registra un nuevo cliente
-      </p>
-
-    </div>
-
+    <p>
+      {{
+        readonlyMode
+          ? 'Consulta la información del cliente.'
+          : id
+            ? 'Actualiza la información del cliente.'
+            : 'Registra un nuevo cliente.'
+      }}
+    </p>
   </div>
+</div>
 
 
   <form
@@ -48,13 +58,13 @@
             placeholder="12.345.678-9"
           />
 
-          @if (rut?.invalid && rut?.touched) {
+        @if (rut?.hasError('required') && rut?.touched) {
+          <small class="error">El RUT es obligatorio.</small>
+        }
 
-            <small class="error">
-              El RUT es obligatorio
-            </small>
-
-          }
+        @if (rut?.hasError('rutInvalido') && rut?.touched) {
+          <small class="error">El RUT no es válido. Revisa el dígito verificador.</small>
+        }
 
         </div>
 
@@ -155,6 +165,9 @@
             formControlName="email"
             placeholder="correo@empresa.cl"
           />
+          @if (email?.hasError('email') && email?.touched) {
+            <small class="error">Ingresa un correo electrónico válido.</small>
+          }
 
         </div>
 
@@ -172,6 +185,11 @@
             formControlName="telefono"
             placeholder="+56 9..."
           />
+          @if (telefono?.hasError('telefonoChilenoInvalido') && telefono?.touched) {
+          <small class="error">
+            Ingresa un teléfono chileno válido, por ejemplo +56912345678.
+          </small>
+        }
 
         </div>
 
@@ -240,17 +258,16 @@
           Comuna
         </label>
 
-        <p-select
-          id="comuna"
-          [options]="comunasFiltradas"
-          optionLabel="nombre"
-          optionValue="id"
-          formControlName="comuna"
-          placeholder="Seleccione comuna"
-          [showClear]="true"
-          [disabled]="!customerForm.get('ciudad')?.value"
-          class="w-full">
-        </p-select>
+      <p-select
+        id="comuna"
+        [options]="comunasFiltradas"
+        optionLabel="nombre"
+        optionValue="id"
+        formControlName="comuna"
+        placeholder="Seleccione comuna"
+        [showClear]="true"
+        class="w-full">
+      </p-select>
 
       </div>
 
@@ -298,14 +315,15 @@
       </button>
 
 
-      <button
-        pButton
-        type="submit"
-        label="Guardar Cliente"
-        icon="pi pi-save"
-        severity="success"
-        [disabled]="saving">
-      </button>
+  @if (!readonlyMode) {
+    <button
+      pButton
+      type="submit"
+      label="Guardar cliente"
+      icon="pi pi-check"
+      [disabled]="saving">
+    </button>
+  }
 
     </div>
 
