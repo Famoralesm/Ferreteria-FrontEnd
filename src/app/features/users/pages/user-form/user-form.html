@@ -1,0 +1,107 @@
+<div class="page-shell">
+
+  <div class="page-header">
+
+    <div class="page-header-content">
+
+      <h1>{{ id ? 'Editar Usuario' : 'Nuevo Usuario' }}</h1>
+
+      <p>Datos de acceso y perfil del usuario</p>
+
+    </div>
+
+  </div>
+
+  <div class="page-card">
+
+    <form [formGroup]="userForm" (ngSubmit)="save()">
+
+      <div class="form-field">
+
+        <label>Nombre</label>
+
+        <input
+          pInputText
+          formControlName="name"
+          placeholder="Nombre completo" />
+
+      </div>
+
+      <div class="form-field">
+
+        <label>Correo electrónico</label>
+
+        <input
+          pInputText
+          type="email"
+          formControlName="email"
+          placeholder="correo@empresa.cl" />
+
+      </div>
+
+      <div class="form-field">
+
+        <label>
+          Contraseña
+          <small *ngIf="id">(Dejar vacía para conservar la actual)</small>
+        </label>
+
+        <input
+          pInputText
+          type="password"
+          formControlName="password"
+          placeholder="Contraseña" />
+
+      </div>
+
+      <div class="form-field">
+
+        <label>Perfil</label>
+
+        <p-select
+          [options]="roles"
+          optionLabel="label"
+          optionValue="value"
+          formControlName="role"
+          placeholder="Seleccionar perfil">
+        </p-select>
+
+      </div>
+
+      <div class="form-field">
+
+        <p-checkbox
+          formControlName="active"
+          [binary]="true"
+          inputId="active">
+        </p-checkbox>
+
+        <label for="active">Usuario activo</label>
+
+      </div>
+
+      <div class="form-actions">
+
+        <button
+          pButton
+          type="button"
+          label="Volver"
+          severity="secondary"
+          (click)="cancel()">
+        </button>
+
+        <button
+          pButton
+          type="submit"
+          label="Guardar"
+          icon="pi pi-save"
+          [disabled]="saving">
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>

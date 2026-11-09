@@ -8,10 +8,7 @@
         PEDIDOS
       </span>
 
-      <h1>
-        Pedidos
-      </h1>
-
+  
       <p>
         Administración y seguimiento de pedidos
       </p>
@@ -20,29 +17,36 @@
 
   </div>
 
-
   <div class="order-tools">
 
     <app-order-toolbar></app-order-toolbar>
 
-    <app-order-filter></app-order-filter>
 
   </div>
-
 
   <div class="page-card">
 
     <app-order-table
-
       [orders]="orders"
-
       (edit)="edit($event)"
       (view)="view($event)"
       (delete)="delete($event)"
       (duplicate)="duplicate($event)"
       (print)="print($event)">
-
     </app-order-table>
+
+  </div>
+
+  <!-- Acción debajo de la tabla -->
+  <div class="page-footer-actions">
+
+    <button
+      pButton
+      type="button"
+      icon="pi pi-plus"
+      label="Nuevo Pedido"
+      (click)="newOrder()">
+    </button>
 
   </div>
 

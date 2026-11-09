@@ -132,7 +132,7 @@
 
   border-radius: 12px;
 
-  color: white;
+
 
   box-shadow:
     0 6px 20px rgba(0, 0, 0, 0.08);
@@ -150,7 +150,7 @@
 
   color: #f2b705;
 
-  font-size: 11px;
+  font-size: 26px;
   font-weight: 700;
 
   letter-spacing: 1.5px;
@@ -185,7 +185,14 @@
   align-items: center;
   gap: 10px;
 }
+/* =========================================================
+   ACCIONES DEBAJO DE LAS TABLAS
+   ========================================================= */
 
+.page-actions--bottom {
+  justify-content: flex-end;
+  margin-top: 16px;
+}
 
 /* =========================================================
    PAGE CARD

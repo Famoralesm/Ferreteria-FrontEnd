@@ -8,31 +8,13 @@
         PRODUCTOS
       </span>
 
-      <h1>
-        Productos
-      </h1>
-
       <p>
         Administración del catálogo e inventario
       </p>
 
     </div>
 
-    <div class="page-actions">
-
-      <button
-        pButton
-        type="button"
-        label="Nuevo Producto"
-        icon="pi pi-plus"
-        severity="success"
-        (click)="newProduct()">
-      </button>
-
-    </div>
-
   </div>
-
 
   <div class="page-info">
 
@@ -45,7 +27,6 @@
 
   </div>
 
-
   <div class="page-card">
 
     <app-product-table
@@ -54,6 +35,20 @@
       (view)="view($event)"
       (delete)="delete($event)">
     </app-product-table>
+
+  </div>
+
+  <!-- ACCIONES DE PRODUCTOS -->
+  <div class="page-actions page-actions--bottom">
+
+    <button
+      pButton
+      type="button"
+      label="Nuevo Producto"
+      icon="pi pi-plus"
+      severity="success"
+      (click)="newProduct()">
+    </button>
 
   </div>
 

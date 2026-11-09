@@ -21,3 +21,19 @@
   }
 
 }
+.page-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .page-footer-actions {
+    justify-content: stretch;
+
+    button {
+      width: 100%;
+    }
+  }
+}

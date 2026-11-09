@@ -1,0 +1,92 @@
+<div class="page-shell">
+
+  <div class="page-header">
+
+    <div class="page-header-content">
+
+      <h1>Usuarios</h1>
+
+      <p>
+        Administración de usuarios y perfiles del sistema
+      </p>
+
+    </div>
+
+  </div>
+
+  <div class="page-card">
+
+    <p-table
+      [value]="users"
+      [loading]="loading"
+      [paginator]="true"
+      [rows]="7"
+      responsiveLayout="scroll">
+
+      <ng-template pTemplate="header">
+
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Perfil</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+
+      </ng-template>
+
+      <ng-template pTemplate="body" let-user>
+
+        <tr>
+
+          <td>{{ user.name }}</td>
+
+          <td>{{ user.email }}</td>
+
+          <td>{{ user.role }}</td>
+
+          <td>
+            {{ user.active ? 'Activo' : 'Inactivo' }}
+          </td>
+
+          <td>
+
+            <button
+              pButton
+              type="button"
+              icon="pi pi-pencil"
+              severity="secondary"
+              (click)="edit(user.id)">
+            </button>
+
+            <button
+              pButton
+              type="button"
+              icon="pi pi-trash"
+              severity="danger"
+              (click)="delete(user)">
+            </button>
+
+          </td>
+
+        </tr>
+
+      </ng-template>
+
+    </p-table>
+
+  </div>
+
+  <div class="page-footer-actions">
+
+    <button
+      pButton
+      type="button"
+      icon="pi pi-plus"
+      label="Nuevo Usuario"
+      (click)="newUser()">
+    </button>
+
+  </div>
+
+</div>

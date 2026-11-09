@@ -1,7 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { MenuItem } from 'primeng/api';
 import { RouterModule } from '@angular/router';
+import { Subscription } from 'rxjs';
+
+import { CurrentUserService } from '../../../core/services/current-user.service';
+import { Role } from '../../../core/enums/role';
 
 @Component({
   selector: 'app-sidebar',
@@ -10,67 +14,76 @@ import { RouterModule } from '@angular/router';
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss'
 })
-export class Sidebar {
+export class Sidebar implements OnInit, OnDestroy {
 
-  items: MenuItem[] = [
+  items: MenuItem[] = [];
 
-    {
-      label: 'Dashboard',
-      icon: 'pi pi-home',
-      routerLink: ['/dashboard']
-    },
+  private subscription?: Subscription;
 
-    
-    {
-      label: 'Pedidos',
-      icon: 'pi pi-shopping-cart',
-      routerLink: ['/orders']
-    },
+  constructor(
+    private currentUserService: CurrentUserService
+  ) {}
 
-    {
-      label: 'Productos',
-      icon: 'pi pi-box',
-      items: [
+  ngOnInit(): void {
 
-        {
-            label:'Listado',
-            icon:'pi pi-list',
-            routerLink: ['/products']
+    this.subscription = this.currentUserService
+      .getCurrentUser()
+      .subscribe({
+
+        next: user => {
+
+          this.items = [
+
+            {
+              label: 'Dashboard',
+              icon: 'pi pi-home',
+              routerLink: ['/dashboard']
+            },
+
+            {
+              label: 'Pedidos',
+              icon: 'pi pi-shopping-cart',
+              routerLink: ['/orders']
+            },
+
+            {
+              label: 'Productos',
+              icon: 'pi pi-box',
+              routerLink: ['/products']
+            },
+
+            {
+              label: 'Clientes',
+              icon: 'pi pi-users',
+              routerLink: ['/customers']
+            }
+
+          ];
+
+          if (user.role === Role.ADMIN) {
+
+            this.items.push({
+
+              label: 'Usuarios',
+              icon: 'pi pi-user',
+              routerLink: ['/users']
+
+            });
+
+          }
+
         },
 
-        {
-            label:'Nuevo',
-            icon:'pi pi-plus',
-            routerLink:'/products/new'
+        error: err => {
+          console.error('Error obteniendo usuario actual:', err);
         }
 
-      ]
-    },
+      });
 
-    {
-      label:'Clientes',
-      icon:'pi pi-users',
-      routerLink:['/customers']
-    },
+  }
 
-    {
-      label: 'Usuarios',
-      icon: 'pi pi-truck',
-      routerLink:['/usuarios']
-    },
-
-    {
-      label: 'Reportes',
-      icon: 'pi pi-chart-line',
-      routerLink:['/reportes']
-    },
-
-    {
-      label: 'Configuración',
-      icon: 'pi pi-cog',
-      routerLink:['/configuracion']
-    }
-
-  ];
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
 
 }

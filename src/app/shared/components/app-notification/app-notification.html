@@ -1,0 +1,30 @@
+<div
+  *ngIf="notification as item"
+  class="app-notification"
+  [ngClass]="'app-notification--' + item.type"
+  role="status"
+  aria-live="polite">
+
+  <i
+    class="pi"
+    [ngClass]="{
+      'pi-check-circle': item.type === 'success',
+      'pi-times-circle': item.type === 'error',
+      'pi-info-circle': item.type === 'info',
+      'pi-exclamation-triangle': item.type === 'warning'
+    }">
+  </i>
+
+  <span>{{ item.message }}</span>
+
+  <button
+    type="button"
+    class="notification-close"
+    aria-label="Cerrar notificación"
+    (click)="close()">
+
+    <i class="pi pi-times"></i>
+
+  </button>
+
+</div>

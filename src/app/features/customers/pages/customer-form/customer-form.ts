@@ -13,15 +13,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
-
+import { forkJoin } from 'rxjs';
 import { Ciudad } from '../../../../core/models/lists/ciudad';
 import { Comuna } from '../../../../core/models/lists/comuna';
 import { Customer } from '../../../../core/models/customer/customer';
 import { CreateCustomerRequest } from '../../../../core/models/customer/create-customer-request';
+import { rutValidator, normalizeRut } from '../../../../core/utils/rut.util';
+import { chileanPhoneValidator } from '../../../../core/utils/phone.util';
 
 import { CustomerService } from '../../../../core/services/customer.service';
 import { ComunaService } from '../../../../core/services/comuna.service';
 import { CiudadService } from '../../../../core/services/ciudad.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-customer-form',
@@ -30,7 +33,7 @@ import { CiudadService } from '../../../../core/services/ciudad.service';
     CommonModule,
     ReactiveFormsModule,
     ButtonModule,
-    InputTextModule,
+    InputTextModule,  
     SelectModule
   ],
   templateUrl: './customer-form.html',
@@ -55,7 +58,8 @@ export class CustomerForm implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private ciudadService: CiudadService,
-    private comunaService: ComunaService
+    private comunaService: ComunaService,
+  private notificationService: NotificationService
   ) {
 
     this.customerForm = this.fb.group({
@@ -64,7 +68,7 @@ export class CustomerForm implements OnInit {
         '',
         [
           Validators.required,
-          CustomerForm.validateRut
+          rutValidator
         ]
       ],
 
@@ -103,7 +107,7 @@ export class CustomerForm implements OnInit {
 
       telefono: [
         '',
-        [CustomerForm.validateChileanPhone]
+        [chileanPhoneValidator]
       ],
 
       rutSolicita: [''],
@@ -113,112 +117,78 @@ export class CustomerForm implements OnInit {
 
   }
 
-  ngOnInit(): void {
+ngOnInit(): void {
 
-    this.loadCiudades();
-    this.loadComunas();
+  const idParam = this.route.snapshot.paramMap.get('id');
 
-    this.customerForm.get('ciudad')
-      ?.valueChanges
-      .subscribe(ciudadId => {
+  this.id = idParam ? Number(idParam) : undefined;
 
-        this.updateComunas(ciudadId);
+  this.readonlyMode =
+    this.route.snapshot.routeConfig?.path === 'customers/:id';
 
-        this.customerForm.get('comuna')
-          ?.setValue(null);
+  // Escuchamos cambios manuales de ciudad.
+  // emitEvent: false al cargar el cliente evita borrar su comuna.
+  this.customerForm.get('ciudad')
+    ?.valueChanges
+    .subscribe(ciudadId => {
 
-      });
+      this.updateComunas(ciudadId);
 
-    const idParam =
-      this.route.snapshot.paramMap.get('id');
+      this.customerForm.get('comuna')
+        ?.setValue(null);
 
-    if (idParam) {
+    });
 
-      this.id = Number(idParam);
+  this.loadInitialData();
+}
 
-      this.readonlyMode =
-      this.route.snapshot.routeConfig?.path === 'customers/:id';
+private loadInitialData(): void {
 
+  this.loading = true;
+
+  forkJoin({
+
+    ciudades: this.ciudadService.findAll(),
+
+    comunas: this.comunaService.findAll()
+
+  }).subscribe({
+
+    next: ({ ciudades, comunas }) => {
+
+      this.ciudades = ciudades;
+      this.comunas = comunas;
+
+      // Si estamos creando, dejamos el formulario listo.
+      if (!this.id) {
+
+        this.comunasFiltradas = [];
+        this.loading = false;
+
+        return;
+      }
+
+      // Si estamos editando, ahora cargamos el cliente.
       this.loadCustomer(this.id);
-    }
 
-  }
+    },
 
-  /**
-   * Valida el RUT chileno mediante módulo 11.
-   * Acepta puntos opcionales y K mayúscula/minúscula.
-   */
-  static validateRut(
-    control: AbstractControl
-  ): ValidationErrors | null {
+    error: err => {
 
-    const value = String(control.value ?? '')
-      .trim()
-      .replace(/\./g, '')
-      .replace(/-/g, '')
-      .toUpperCase();
+      console.error(
+        'Error cargando ciudades y comunas:',
+        err
+      );
 
-    if (!value) {
-      return null;
-    }
-
-    if (!/^\d{7,8}[0-9K]$/.test(value)) {
-      return { rutInvalido: true };
-    }
-
-    const cuerpo = value.slice(0, -1);
-    const dvIngresado = value.slice(-1);
-
-    let suma = 0;
-    let multiplicador = 2;
-
-    for (let i = cuerpo.length - 1; i >= 0; i--) {
-
-      suma += Number(cuerpo[i]) * multiplicador;
-
-      multiplicador =
-        multiplicador === 7 ? 2 : multiplicador + 1;
+      this.loading = false;
 
     }
 
-    const resto = 11 - (suma % 11);
+  });
 
-    const dvCalculado =
-      resto === 11
-        ? '0'
-        : resto === 10
-          ? 'K'
-          : String(resto);
+}
 
-    return dvIngresado === dvCalculado
-      ? null
-      : { rutInvalido: true };
-  }
 
-  /**
-   * Acepta teléfonos móviles y fijos chilenos
-   * de 9 dígitos, con prefijo +56 opcional.
-   */
-  static validateChileanPhone(
-    control: AbstractControl
-  ): ValidationErrors | null {
-
-    const raw = String(control.value ?? '').trim();
-
-    // El teléfono es opcional.
-    if (!raw) {
-      return null;
-    }
-
-    const normalized = raw.replace(/[\s().-]/g, '');
-
-    const valid =
-      /^(?:\+?56)?[2-9]\d{8}$/.test(normalized);
-
-    return valid
-      ? null
-      : { telefonoChilenoInvalido: true };
-  }
 
   loadCiudades(): void {
 
@@ -246,6 +216,7 @@ export class CustomerForm implements OnInit {
 
         const ciudadId =
           this.customerForm.get('ciudad')?.value;
+          
 
         if (ciudadId) {
           this.updateComunas(Number(ciudadId));
@@ -285,50 +256,70 @@ export class CustomerForm implements OnInit {
 
   loadCustomer(id: number): void {
 
-    this.loading = true;
+  this.customerService.findById(id).subscribe({
 
-    this.customerService.findById(id).subscribe({
+    next: (customer: Customer) => {
 
-      next: (customer: Customer) => {
+      const ciudadId = customer.ciudad?.id ?? null;
+      const comunaId = customer.comuna?.id ?? null;
 
-        const ciudadId = customer.ciudad?.id ?? null;
-        const comunaId = customer.comuna?.id ?? null;
+      // Primero filtramos las comunas correspondientes.
+      this.updateComunas(ciudadId);
 
-        this.customerForm.patchValue({
+      // Comprobamos que la comuna corresponda a la ciudad.
+      const comunaValida = this.comunasFiltradas.some(
+        comuna => Number(comuna.id) === Number(comunaId)
+      );
 
-          rut: customer.rut ?? '',
-          nombre: customer.nombre ?? '',
-          razonSocial: customer.razonSocial ?? '',
-          giro: customer.giro ?? '',
-          direccion: customer.direccion ?? '',
-          email: customer.email ?? '',
-          telefono: customer.telefono ?? '',
-          activo: customer.activo ?? true,
-          ciudad: ciudadId,
-          comuna: comunaId
+      this.customerForm.patchValue({
 
-        }, { emitEvent: false });
+        rut: customer.rut ?? '',
+        nombre: customer.nombre ?? '',
+        razonSocial: customer.razonSocial ?? '',
+        giro: customer.giro ?? '',
+        direccion: customer.direccion ?? '',
+        email: customer.email ?? '',
+        telefono: customer.telefono ?? '',
+        activo: customer.activo ?? true,
 
-        this.updateComunas(ciudadId);
+        ciudad: ciudadId,
 
-        if (this.readonlyMode) {
-          this.customerForm.disable({ emitEvent: false });
-        }
+        comuna: comunaValida ? comunaId : null
 
-        this.loading = false;
+      }, { emitEvent: false });
 
-      },
+      if (ciudadId && !comunaValida) {
 
-      error: err => {
-
-        console.error('Error cargando cliente:', err);
-        this.loading = false;
+        console.warn(
+          'La comuna guardada no pertenece a la ciudad del cliente.',
+          {
+            clienteId: id,
+            ciudadId,
+            comunaId
+          }
+        );
 
       }
 
-    });
+      if (this.readonlyMode) {
+        this.customerForm.disable({ emitEvent: false });
+      }
 
-  }
+      this.loading = false;
+
+    },
+
+    error: err => {
+
+      console.error('Error cargando cliente:', err);
+
+      this.loading = false;
+
+    }
+
+  });
+
+}
 
   save(): void {
 
@@ -366,11 +357,7 @@ export class CustomerForm implements OnInit {
 
     const request: CreateCustomerRequest = {
 
-      rut: String(value.rut)
-        .trim()
-        .replace(/\./g, '')
-        .replace(/-/g, '')
-        .toUpperCase(),
+      rut: normalizeRut(value.rut),
 
       nombre: String(value.nombre).trim(),
 
@@ -400,14 +387,11 @@ export class CustomerForm implements OnInit {
       next: () => {
         const nombreCliente = String(value.nombre).trim();
 
-        this.router.navigate(['/customers'], {
-            state: {
-              notification: {
-                type: 'success',
-                message: `Has guardado el cliente "${nombreCliente}" exitosamente.`
-              }
-            }
-          });
+      this.notificationService.success(
+        `Has guardado el cliente "${nombreCliente}" exitosamente.`
+      );
+
+      this.router.navigate(['/customers']);
       },
 
       error: err => {

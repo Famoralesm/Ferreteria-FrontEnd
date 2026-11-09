@@ -17,6 +17,7 @@ import { CommonModule } from '@angular/common';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ORDER_STATUSES,OrderStatus } from '../../../../core/models/order/order-status';
 import { OrderSummary } from '../../../../core/models/order/order-summary';
+import { NotificationService } from '../../../../core/services/notification.service';   
 
 @Component({
   selector: 'app-order-form',
@@ -143,7 +144,9 @@ export class OrderForm implements OnInit , OnDestroy {
 
 
 
-  constructor() {
+  constructor(
+    private notificationService: NotificationService
+  ) {
 
     this.form = this.fb.group({
 
@@ -658,7 +661,9 @@ saveOrder(): void {
 
         next: order => {
 
-          console.log('Pedido creado:', order);
+              this.notificationService.success(
+      'El pedido fue creado correctamente.'
+    );
 
           this.router.navigate(['/orders']);
 

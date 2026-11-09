@@ -2,9 +2,11 @@ import { Routes } from '@angular/router';
 
 import { LoginComponent } from './features/auth/login/login';
 import { Dashboard } from './features/dashboard/dashboard';
-
 import { MainLayout } from './layout/main-layout/main-layout';
-
+import { roleGuard } from './core/guards/role-guard';
+import { Role } from './core/enums/role';
+import { UserList } from './features/users/pages/user-lIst/user-list';
+import { UserForm } from   './features/users/pages/user-form/user-form';
 import { authGuard } from './core/guards/auth-guard';
 import { OrderList } from './features/orders/pages/order-list/order-list';
 import { OrderDetail } from './features/orders/pages/order-detail/order-detail';
@@ -98,6 +100,23 @@ export const routes: Routes = [
             {
             path: 'customers/edit/:id',
             component: CustomerForm
+            }
+            //Usuarios
+            ,
+            {
+            path: 'users',
+            component: UserList,
+            canActivate: [roleGuard([Role.ADMIN])]
+            },
+            {
+            path: 'users/new',
+            component: UserForm,
+            canActivate: [roleGuard([Role.ADMIN])]
+            },
+            {
+            path: 'users/edit/:id',
+            component: UserForm,
+            canActivate: [roleGuard([Role.ADMIN])]
             }
 
         ]

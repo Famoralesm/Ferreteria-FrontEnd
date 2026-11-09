@@ -5,12 +5,8 @@
     <div class="page-header-content">
 
       <span class="page-kicker">
-        PEDIDOS
+         {{ id ? 'Editar pedido' : 'Nuevo pedido' }}
       </span>
-
-      <h1>
-        {{ id ? 'Editar pedido' : 'Nuevo pedido' }}
-      </h1>
 
       <p>
         {{ id
@@ -97,7 +93,7 @@
 
 
 
-  <div class="map-actions">
+ <!--  <div class="map-actions">
 
     <a
       [href]="wazeLink"
@@ -119,9 +115,9 @@
 
       Abrir en Google Maps
 
-    </a>
+    </a> 
 
-  </div>
+  </div>-->
 </div>
 
 

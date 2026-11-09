@@ -6,7 +6,7 @@ import {
 
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-
+import { ButtonModule } from 'primeng/button';
 import { ProductTable } from '../../components/product-table/product-table';
 
 import { ProductService } from '../../../../core/services/product.service';
@@ -18,6 +18,7 @@ import { Product } from '../../../../core/models/product/product';
 
   imports: [
     CommonModule,
+    ButtonModule,
     ProductTable
   ],
 

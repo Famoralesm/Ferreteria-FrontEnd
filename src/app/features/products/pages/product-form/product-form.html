@@ -7,14 +7,10 @@
     <div class="form-header">
 
       <div>
-        <span class="form-kicker">
-          PRODUCTOS
+        <span class="page-kicker">
+         {{ id ? 'Editar producto' : 'Nuevo producto' }}
         </span>
-
-        <h2>
-          {{ id ? 'Editar producto' : 'Nuevo producto' }}
-        </h2>
-
+        
         <p>
           {{ id
             ? 'Actualiza la información del producto.'
@@ -23,9 +19,7 @@
         </p>
       </div>
 
-      <div class="header-icon">
-        <i class="pi pi-box"></i>
-      </div>
+
 
     </div>
 

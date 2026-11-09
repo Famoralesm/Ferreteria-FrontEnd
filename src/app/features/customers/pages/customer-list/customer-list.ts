@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 
 import { CustomerTable } from '../../components/customer-table/customer-table';
-
+import { NotificationService } from '../../../../core/services/notification.service';
 import { CustomerService } from '../../../../core/services/customer.service';
 import { Customer } from '../../../../core/models/customer/customer';
 
@@ -30,31 +30,16 @@ import { Customer } from '../../../../core/models/customer/customer';
 export class CustomerList implements OnInit {
 
   customers: Customer[] = [];
-  notificationMessage = '';
-  notificationType: 'success' | 'error' | '' = '';
-
-  private notificationTimer?: ReturnType<typeof setTimeout>;
+  
 
   constructor(
+    private notificationService: NotificationService,
     private customerService: CustomerService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
 ngOnInit(): void {
-
-  const notification = history.state?.notification;
-
-  if (
-    notification?.message &&
-    (notification.type === 'success' ||
-     notification.type === 'error')
-  ) {
-    this.showNotification(
-      notification.message,
-      notification.type
-    );
-  }
 
   this.loadCustomers();
 }
@@ -140,45 +125,24 @@ delete(id: number): void {
         item => item.id !== id
       );
 
-      this.showNotification(
-        `Se ha eliminado el cliente "${customer.nombre}" con éxito.`,
-        'error'
-      );
+    this.notificationService.success(
+      `Se ha eliminado el cliente "${customer.nombre}" con éxito.`
+    );
 
       this.cdr.detectChanges();
     },
 
     error: err => {
       console.error('Error eliminando cliente:', err);
-
-      this.showNotification(
-        'No se pudo eliminar el cliente. Inténtalo nuevamente.',
-        'error'
+      
+      this.notificationService.error(
+        'No se pudo eliminar el cliente. Inténtalo nuevamente.'
       );
     }
 
   });
 }
 
-  showNotification(
-  message: string,
-  type: 'success' | 'error'
-  ): void {
 
-    if (this.notificationTimer) {
-      clearTimeout(this.notificationTimer);
-    }
-
-    this.notificationMessage = message;
-    this.notificationType = type;
-
-    this.notificationTimer = setTimeout(() => {
-      this.notificationMessage = '';
-      this.notificationType = '';
-      this.notificationTimer = undefined;
-
-      this.cdr.detectChanges();
-    }, 2000);
-  }
 
 }

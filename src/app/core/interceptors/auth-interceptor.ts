@@ -7,7 +7,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const router = inject(Router);
 
-  const token = localStorage.getItem('access_token');
+  const isLoginRequest = req.url.includes('/api/auth/login');
+
+  const token = isLoginRequest
+    ? null
+    : localStorage.getItem('access_token');
 
   const authReq = token
     ? req.clone({
@@ -21,13 +25,19 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
     catchError(error => {
 
-      if (error.status === 401|| error.status === 403 && router.url !== '/login') {
+      if (error.status === 401 && !isLoginRequest) {
 
-        console.warn('Token expirado o inválido');
+        console.warn('Sesión no válida o expirada');
 
         localStorage.removeItem('access_token');
 
         router.navigate(['/login']);
+
+      } else if (error.status === 403) {
+
+        console.warn(
+          'Acceso denegado: el usuario no tiene permisos.'
+        );
 
       }
 

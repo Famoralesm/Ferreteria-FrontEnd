@@ -26,6 +26,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { CreateProductRequest } from '../../../../core/models/product/create-product-request';
 import { UpdateProductRequest } from '../../../../core/models/product/update-product-request';
 import {  ProductService} from '../../../../core/services/product.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 
 @Component({
@@ -126,7 +127,10 @@ export class ProductForm implements OnInit {
   ];
 
 
-  constructor() {
+  constructor(
+
+    private notificationService: NotificationService
+  ) {
 
     this.form = this.fb.group({
 
@@ -219,9 +223,8 @@ export class ProductForm implements OnInit {
 
         next: product => {
 
-          console.log(
-            'PRODUCTO:',
-            product
+       this.notificationService.success(
+            'Producto cargado correctamente.'
           );
 
           this.form.patchValue({
@@ -257,9 +260,8 @@ export class ProductForm implements OnInit {
 
         error: err => {
 
-          console.error(
-            'Error cargando producto:',
-            err
+       this.notificationService.error(
+            'Error cargando producto.'
           );
 
         }
@@ -319,6 +321,10 @@ export class ProductForm implements OnInit {
 
           next: () => {
 
+            this.notificationService.success(
+            'Producto guardado correctamente.'
+          );
+
             this.router.navigate([
               '/products'
             ]);
@@ -327,10 +333,9 @@ export class ProductForm implements OnInit {
 
           error: err => {
 
-            console.error(
-              'Error actualizando producto:',
-              err
-            );
+          this.notificationService.error(
+            'Error guardando producto.'
+          );
 
           }
 
@@ -371,6 +376,10 @@ export class ProductForm implements OnInit {
 
         next: () => {
 
+          this.notificationService.success(
+            'Producto creado correctamente.'
+          );
+
           this.router.navigate([
             '/products'
           ]);
@@ -379,9 +388,8 @@ export class ProductForm implements OnInit {
 
         error: err => {
 
-          console.error(
-            'Error creando producto:',
-            err
+          this.notificationService.error(
+            'Error creando  Producto.'
           );
 
         }
