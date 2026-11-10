@@ -1,0 +1,200 @@
+<div class="page-shell">
+
+  <div class="page-header">
+
+    <div class="page-header-content">
+
+      <span class="page-kicker">
+        MI PERFIL
+      </span>
+
+      <p>
+        Administra tu información personal y fotografía.
+      </p>
+
+    </div>
+
+  </div>
+
+  <div class="page-card profile-card" *ngIf="currentUser as user">
+
+    <div class="profile-photo-section">
+
+      <div class="profile-avatar">
+
+        <img
+          *ngIf="avatarSrc; else avatarFallback"
+          [src]="avatarSrc"
+          alt="Fotografía de perfil">
+
+        <ng-template #avatarFallback>
+
+          <span>
+            {{ initials || 'U' }}
+          </span>
+
+        </ng-template>
+
+      </div>
+
+      <div class="profile-photo-actions">
+
+        <strong>Fotografía de perfil</strong>
+
+        <small>
+          JPG, PNG o WebP. Máximo 2 MB.
+        </small>
+
+        <input
+          #avatarInput
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          hidden
+          (change)="onAvatarSelected($event)">
+
+        <div class="photo-buttons">
+
+          <button
+            pButton
+            type="button"
+            label="Seleccionar fotografía"
+            icon="pi pi-image"
+            severity="secondary"
+            (click)="avatarInput.click()">
+          </button>
+
+          <button
+            *ngIf="selectedAvatar"
+            pButton
+            type="button"
+            label="Guardar fotografía"
+            icon="pi pi-upload"
+            [loading]="uploadingAvatar"
+            [disabled]="uploadingAvatar"
+            (click)="uploadAvatar()">
+          </button>
+
+          <button
+            *ngIf="user.avatarUrl"
+            pButton
+            type="button"
+            label="Eliminar fotografía"
+            icon="pi pi-trash"
+            severity="danger"
+            [loading]="deletingAvatar"
+            [disabled]="deletingAvatar"
+            (click)="deleteAvatar()">
+          </button>
+
+        </div>
+
+        <small *ngIf="selectedAvatar" class="selected-file">
+          Imagen seleccionada: {{ selectedAvatar.name }}
+        </small>
+
+      </div>
+
+    </div>
+
+    <div class="profile-divider"></div>
+
+    <form
+      [formGroup]="profileForm"
+      (ngSubmit)="saveProfile()">
+
+      <div class="profile-fields">
+
+        <div class="form-field">
+
+          <label for="name">
+            Nombre
+          </label>
+
+          <input
+            id="name"
+            pInputText
+            type="text"
+            formControlName="name"
+            maxlength="150">
+
+          <small
+            class="field-error"
+            *ngIf="
+              profileForm.get('name')?.invalid &&
+              profileForm.get('name')?.touched
+            ">
+            Ingresa un nombre válido.
+          </small>
+
+        </div>
+
+        <div class="form-field">
+
+          <label for="role">
+            Cargo
+          </label>
+
+          <input
+            id="role"
+            pInputText
+            type="text"
+            [value]="roleLabel"
+            readonly>
+
+          <small class="field-hint">
+            Tu perfil de acceso es administrado por un administrador.
+          </small>
+
+        </div>
+
+        <div class="form-field full-width">
+
+          <label for="email">
+            Correo electrónico
+          </label>
+
+          <input
+            id="email"
+            pInputText
+            type="email"
+            [value]="user.email"
+            readonly>
+
+          <small class="field-hint">
+            El correo utilizado para iniciar sesión no se puede cambiar desde aquí.
+          </small>
+
+        </div>
+
+      </div>
+
+      <div class="profile-actions">
+
+        <button
+          pButton
+          type="button"
+          label="Cancelar"
+          severity="secondary"
+          (click)="cancel()">
+        </button>
+
+        <button
+          pButton
+          type="submit"
+          label="Guardar cambios"
+          icon="pi pi-save"
+          [loading]="saving"
+          [disabled]="saving || loading || profileForm.invalid">
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+  <div class="page-card" *ngIf="loading">
+    Cargando perfil...
+  </div>
+
+</div>

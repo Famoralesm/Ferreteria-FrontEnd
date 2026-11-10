@@ -15,6 +15,7 @@ import { ProductList } from './features/products/pages/product-list/product-list
 import { ProductForm } from './features/products/pages/product-form/product-form';
 import { CustomerList } from './features/customers/pages/customer-list/customer-list';
 import { CustomerForm } from './features/customers/pages/customer-form/customer-form';
+import { Profile } from './features/profile/profile';
 
 export const routes: Routes = [
 
@@ -117,6 +118,10 @@ export const routes: Routes = [
             path: 'users/edit/:id',
             component: UserForm,
             canActivate: [roleGuard([Role.ADMIN])]
+            },
+            {
+                path: 'profile',
+                component: Profile
             }
 
         ]

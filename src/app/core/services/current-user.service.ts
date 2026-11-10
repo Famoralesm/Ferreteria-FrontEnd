@@ -40,4 +40,12 @@ export class CurrentUserService {
 
   }
 
+  refresh(): Observable<User> {
+
+  this.currentUser$ = undefined;
+
+  return this.getCurrentUser();
+
+}
+
 }

@@ -1,92 +1,163 @@
-<div class="page-shell">
+<ng-container *ngIf="users$ | async as users">
 
-  <div class="page-header">
+  <div class="page-shell">
 
-    <div class="page-header-content">
+    <p-confirmDialog key="user-delete"></p-confirmDialog>
 
-      <h1>Usuarios</h1>
+    <div class="page-header">
 
-      <p>
-        Administración de usuarios y perfiles del sistema
-      </p>
+      <div class="page-header-content">
+
+        <span class="page-kicker">
+          USUARIOS
+        </span>
+
+        <p>
+          Administración de usuarios y perfiles del sistema
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="page-info">
+
+      <i class="pi pi-users"></i>
+
+      <span>
+        Total de usuarios:
+        <strong>{{ users.length }}</strong>
+      </span>
+
+    </div>
+    <div class="user-list-toolbar">
+
+      <i class="pi pi-search"></i>
+
+      <input
+        pInputText
+        type="search"
+        placeholder="Buscar por nombre, correo o perfil..."
+        (input)="filterUsers($event)" />
+
+    </div>
+
+    <div class="page-card">
+
+      <p-table
+        #dt
+        [value]="users"
+        [loading]="loading"
+        [paginator]="true"
+        [rows]="7"
+        [rowsPerPageOptions]="[7, 10, 20]"
+        [globalFilterFields]="['name', 'email', 'role']"
+        dataKey="id"
+        responsiveLayout="scroll">
+
+
+        <ng-template pTemplate="header">
+
+          <tr>
+            <th>Nombre</th>
+            <th>Correo electrónico</th>
+            <th>Perfil</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+
+        </ng-template>
+
+        <ng-template pTemplate="body" let-user>
+
+          <tr>
+
+            <td>
+              <strong>{{ user.name }}</strong>
+
+              <small
+                *ngIf="user.id === currentUserId"
+                class="current-user-label">
+                (Tú)
+              </small>
+            </td>
+
+            <td>{{ user.email }}</td>
+
+            <td>
+              <p-tag
+                [value]="roleLabel(user.role)"
+                [severity]="roleSeverity(user.role)">
+              </p-tag>
+            </td>
+
+            <td>
+              <p-tag
+                [value]="user.active ? 'Activo' : 'Inactivo'"
+                [severity]="user.active ? 'success' : 'secondary'">
+              </p-tag>
+            </td>
+
+            <td>
+
+              <div class="user-actions">
+
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-pencil"
+                  severity="secondary"
+                  title="Editar usuario"
+                  (click)="edit(user.id)">
+                </button>
+
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-trash"
+                  severity="danger"
+                  title="Eliminar usuario"
+                  [disabled]="
+                    user.id === currentUserId ||
+                    deletingUserId === user.id
+                  "
+                  (click)="confirmDelete(user)">
+                </button>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+
+          <tr>
+            <td colspan="5" class="empty-message">
+              No hay usuarios registrados.
+            </td>
+          </tr>
+
+        </ng-template>
+
+      </p-table>
+
+    </div>
+
+    <div class="page-footer-actions">
+
+      <button
+        pButton
+        type="button"
+        icon="pi pi-plus"
+        label="Nuevo Usuario"
+        (click)="newUser()">
+      </button>
 
     </div>
 
   </div>
 
-  <div class="page-card">
-
-    <p-table
-      [value]="users"
-      [loading]="loading"
-      [paginator]="true"
-      [rows]="7"
-      responsiveLayout="scroll">
-
-      <ng-template pTemplate="header">
-
-        <tr>
-          <th>Nombre</th>
-          <th>Correo</th>
-          <th>Perfil</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-
-      </ng-template>
-
-      <ng-template pTemplate="body" let-user>
-
-        <tr>
-
-          <td>{{ user.name }}</td>
-
-          <td>{{ user.email }}</td>
-
-          <td>{{ user.role }}</td>
-
-          <td>
-            {{ user.active ? 'Activo' : 'Inactivo' }}
-          </td>
-
-          <td>
-
-            <button
-              pButton
-              type="button"
-              icon="pi pi-pencil"
-              severity="secondary"
-              (click)="edit(user.id)">
-            </button>
-
-            <button
-              pButton
-              type="button"
-              icon="pi pi-trash"
-              severity="danger"
-              (click)="delete(user)">
-            </button>
-
-          </td>
-
-        </tr>
-
-      </ng-template>
-
-    </p-table>
-
-  </div>
-
-  <div class="page-footer-actions">
-
-    <button
-      pButton
-      type="button"
-      icon="pi pi-plus"
-      label="Nuevo Usuario"
-      (click)="newUser()">
-    </button>
-
-  </div>
-
-</div>
+</ng-container>

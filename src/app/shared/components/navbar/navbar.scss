@@ -62,16 +62,40 @@
 
 }
 
-.user{
+.user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-    display:flex;
+.user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  text-align: left;
+  padding: 5px;
+}
 
-    align-items:center;
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 
-    gap:10px;
+.user-details strong {
+  font-size: 13px;
+  font-weight: 600;
+}
 
-    cursor:pointer;
+.user-details small {
+  font-size: 10px;
+  opacity: 0.8;
+}
 
-    font-weight:600;
-
+.user-trigger:hover {
+  opacity: 0.85;
 }

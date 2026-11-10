@@ -1,39 +1,67 @@
 <header class="navbar">
 
-    <div class="left">
+  <div class="left">
 
-        <i class="pi pi-search"></i>
+    <i class="pi pi-search"></i>
 
-        <input
-            pInputText
-            placeholder="Buscar productos, pedidos..."
-        />
+    <input
+      pInputText
+      placeholder="Buscar productos, pedidos..." />
 
-    </div>
+  </div>
 
-    <div class="right">
+  <div class="right">
 
-        <div class="notification">
+    <div class="notification">
 
-            <i class="pi pi-bell"></i>
+      <i class="pi pi-bell"></i>
 
-            <p-badge value="3"></p-badge>
-
-        </div>
-
-        <div class="user">
-
-            <p-avatar
-                icon="pi pi-user"
-                shape="circle">
-            </p-avatar>
-
-            <span>Felipe</span>
-
-            <i class="pi pi-angle-down"></i>
-
-        </div>
+      <p-badge value="3"></p-badge>
 
     </div>
+
+    <ng-container *ngIf="currentUser$ | async as user">
+
+      <div class="user">
+
+        <button
+          type="button"
+          class="user-trigger"
+          aria-label="Abrir opciones de usuario"
+          (click)="profileMenu.toggle($event)">
+
+          <p-avatar
+            [image]="user.avatarUrl || undefined"
+            [label]="user.avatarUrl ? undefined : initials(user.name)"
+            [icon]="user.avatarUrl ? undefined : 'pi pi-user'"
+            shape="circle">
+          </p-avatar>
+
+          <span class="user-details">
+
+            <strong>{{ user.name }}</strong>
+
+            <small>{{ roleLabel(user.role) }}</small>
+
+            <small>{{ user.email }}</small>
+
+          </span>
+
+          <i class="pi pi-angle-down"></i>
+
+        </button>
+
+        <p-menu
+          #profileMenu
+          [model]="profileItems"
+          [popup]="true"
+          appendTo="body">
+        </p-menu>
+
+      </div>
+
+    </ng-container>
+
+  </div>
 
 </header>

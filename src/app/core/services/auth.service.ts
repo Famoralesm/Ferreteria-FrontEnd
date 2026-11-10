@@ -1,49 +1,49 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
-import { LoginRequest } from './../models/login/login-request';
-import { LoginResponse } from './../models/login/login-response';
-import { environment } from '../../../environments/environment.development';
+import { LoginRequest } from '../models/login/login-request';
+import { LoginResponse } from '../models/login/login-response';
+
+import { environment } from '../../../environments/environment';
+
+import { TokenService } from './token.services';
+import { CurrentUserService } from './current-user.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-private readonly API =  `${environment.apiUrl}/auth`;
-  constructor(private http: HttpClient) {}
+  private readonly API = `${environment.apiUrl}/auth`;
 
-    login(request: LoginRequest): Observable<LoginResponse> {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private tokenService: TokenService,
+    private currentUserService: CurrentUserService
+  ) {}
 
-        return this.http.post<LoginResponse>(
-        `${this.API}/login`,
-        request
-        );
+  login(request: LoginRequest): Observable<LoginResponse> {
 
-    }
-  /*   saveToken(token: string): void {
+    return this.http.post<LoginResponse>(
+      `${this.API}/login`,
+      request
+    );
 
-        localStorage.setItem("token", token);
+  }
 
-    }
+  logout(): void {
 
-    getToken(): string |null {
+    this.tokenService.removeToken();
 
-        return localStorage.getItem("token");
+    this.currentUserService.clear();
 
-    }
+    this.router.navigate(['/login'], {
+      replaceUrl: true
+    });
 
-    logout(): void {
-
-        localStorage.removeItem("token");
-
-    }
- 
-    isAuthenticated(): boolean {
-
-        return this.getToken() != null;
-
-    } */
+  }
 
 }

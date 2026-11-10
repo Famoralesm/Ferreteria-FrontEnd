@@ -4,9 +4,16 @@
 
     <div class="page-header-content">
 
-      <h1>{{ id ? 'Editar Usuario' : 'Nuevo Usuario' }}</h1>
+      <span class="page-kicker">
+        {{ id ? 'EDITAR USUARIO' : 'NUEVO USUARIO' }}
+      </span>
 
-      <p>Datos de acceso y perfil del usuario</p>
+      <p>
+        {{ id
+          ? 'Actualiza los datos y el perfil del usuario.'
+          : 'Registra un nuevo usuario en el sistema.'
+        }}
+      </p>
 
     </div>
 
@@ -14,89 +21,199 @@
 
   <div class="page-card">
 
-    <form [formGroup]="userForm" (ngSubmit)="save()">
+    <form
+      [formGroup]="userForm"
+      (ngSubmit)="save()">
 
-      <div class="form-field">
+      <div class="user-form-grid">
 
-        <label>Nombre</label>
+        <!-- NOMBRE -->
+        <div class="form-field">
 
-        <input
-          pInputText
-          formControlName="name"
-          placeholder="Nombre completo" />
+          <label for="name">
+            Nombre completo *
+          </label>
 
-      </div>
+          <input
+            id="name"
+            pInputText
+            type="text"
+            formControlName="name"
+            placeholder="Nombre completo"
+            autocomplete="name" />
 
-      <div class="form-field">
+          <small
+            class="field-error"
+            *ngIf="nameControl?.hasError('required') && nameControl?.touched">
+            El nombre es obligatorio.
+          </small>
 
-        <label>Correo electrónico</label>
+          <small
+            class="field-error"
+            *ngIf="nameControl?.hasError('maxlength')">
+            El nombre no puede superar los 150 caracteres.
+          </small>
 
-        <input
-          pInputText
-          type="email"
-          formControlName="email"
-          placeholder="correo@empresa.cl" />
+        </div>
 
-      </div>
+        <!-- CORREO -->
+        <div class="form-field">
 
-      <div class="form-field">
+          <label for="email">
+            Correo electrónico *
+          </label>
 
-        <label>
-          Contraseña
-          <small *ngIf="id">(Dejar vacía para conservar la actual)</small>
-        </label>
+          <input
+            id="email"
+            pInputText
+            type="email"
+            formControlName="email"
+            placeholder="correo@empresa.cl"
+            autocomplete="email" />
 
-        <input
-          pInputText
-          type="password"
-          formControlName="password"
-          placeholder="Contraseña" />
+          <small
+            class="field-error"
+            *ngIf="emailControl?.hasError('required') && emailControl?.touched">
+            El correo es obligatorio.
+          </small>
 
-      </div>
+          <small
+            class="field-error"
+            *ngIf="emailControl?.hasError('email') && emailControl?.touched">
+            Ingresa un correo válido.
+          </small>
 
-      <div class="form-field">
+        </div>
 
-        <label>Perfil</label>
+        <!-- CONTRASEÑA -->
+        <div class="form-field">
 
-        <p-select
-          [options]="roles"
-          optionLabel="label"
-          optionValue="value"
-          formControlName="role"
-          placeholder="Seleccionar perfil">
-        </p-select>
+          <label for="password">
+            Contraseña {{ id ? '(Opcional)' : '*' }}
+          </label>
 
-      </div>
+          <input
+            id="password"
+            pInputText
+            type="password"
+            formControlName="password"
+            autocomplete="new-password"
+            [placeholder]="id
+              ? 'Dejar vacío para conservar la actual'
+              : 'Mínimo 8 caracteres'" />
 
-      <div class="form-field">
+          <small
+            class="field-hint"
+            *ngIf="id">
+            Deja vacío este campo si no deseas cambiar la contraseña.
+          </small>
 
-        <p-checkbox
-          formControlName="active"
-          [binary]="true"
-          inputId="active">
-        </p-checkbox>
+          <small
+            class="field-error"
+            *ngIf="passwordControl?.hasError('required') && passwordControl?.touched">
+            La contraseña es obligatoria.
+          </small>
 
-        <label for="active">Usuario activo</label>
+          <small
+            class="field-error"
+            *ngIf="passwordControl?.hasError('minlength') && passwordControl?.touched">
+            La contraseña debe tener al menos 8 caracteres.
+          </small>
 
-      </div>
+        </div>
 
-      <div class="form-actions">
+        <!-- CONFIRMAR CONTRASEÑA -->
+        <div class="form-field">
 
-        <button
-          pButton
-          type="button"
-          label="Volver"
-          severity="secondary"
-          (click)="cancel()">
-        </button>
+          <label for="confirmPassword">
+            Confirmar contraseña {{ id ? '(Opcional)' : '*' }}
+          </label>
 
-        <button
-          pButton
-          type="submit"
-          label="Guardar"
-          icon="pi pi-save"
-          [disabled]="saving">
-        </button>
+          <input
+            id="confirmPassword"
+            pInputText
+            type="password"
+            formControlName="confirmPassword"
+            autocomplete="new-password"
+            placeholder="Escribe nuevamente la contraseña"
+            (paste)="preventConfirmationPaste($event)"
+            (drop)="preventConfirmationDrop($event)" />
+
+          <small
+            class="field-hint"
+            *ngIf="id">
+            Solo debes completar este campo cuando cambies la contraseña.
+          </small>
+
+          <small
+            class="field-error"
+            *ngIf="userForm.hasError('confirmationRequired') && confirmPasswordControl?.touched">
+            Debes confirmar la contraseña.
+          </small>
+
+          <small
+            class="field-error"
+            *ngIf="userForm.hasError('passwordMismatch') && confirmPasswordControl?.touched">
+            Las contraseñas no coinciden.
+          </small>
+
+        </div>
+
+        <!-- PERFIL -->
+        <div class="form-field">
+
+          <label for="role">
+            Perfil *
+          </label>
+
+          <p-select
+            inputId="role"
+            [options]="roles"
+            optionLabel="label"
+            optionValue="value"
+            formControlName="role"
+            placeholder="Seleccionar perfil">
+          </p-select>
+
+        </div>
+
+        <!-- ESTADO -->
+        <div class="form-field user-status-field">
+
+          <p-checkbox
+            inputId="active"
+            formControlName="active"
+            [binary]="true">
+          </p-checkbox>
+
+          <label for="active">
+            Usuario activo
+          </label>
+
+        </div>
+
+        <!-- BOTONES -->
+        <div class="form-actions">
+
+          <button
+            pButton
+            type="button"
+            label="Cancelar"
+            severity="secondary"
+            [disabled]="saving"
+            (click)="cancel()">
+          </button>
+
+          <button
+            pButton
+            type="submit"
+            icon="pi pi-save"
+            [label]="id ? 'Guardar cambios' : 'Crear usuario'"
+            [loading]="saving"
+            [disabled]="saving || loadingUser">
+          </button>
+
+        </div>
 
       </div>
 

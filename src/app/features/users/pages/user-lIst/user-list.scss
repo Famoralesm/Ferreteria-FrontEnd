@@ -3,8 +3,83 @@
   width: 100%;
 }
 
+.user-list-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.user-list-toolbar input {
+  width: min(100%, 360px);
+}
+
+.actions-column {
+  width: 120px;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.current-user-label {
+  display: block;
+  color: #64748b;
+  font-size: 11px;
+  margin-top: 3px;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 30px !important;
+  color: #64748b;
+}
+
 .page-footer-actions {
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
+  width: 100%;
+}
+.user-list-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.user-list-toolbar input {
+  width: min(100%, 360px);
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.current-user-label {
+  display: block;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 30px !important;
+  color: #64748b;
+}
+
+.user-list-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin: 0 0 16px;
+  width: 100%;
+  color: #64748b;
+}
+
+.user-list-toolbar input {
+  width: min(360px, 100%);
 }
