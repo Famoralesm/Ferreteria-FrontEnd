@@ -1,38 +1,42 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { MenuItem } from 'primeng/api';
 import { RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
+
+import { Observable, catchError, map, of } from 'rxjs';
 
 import { CurrentUserService } from '../../../core/services/current-user.service';
 import { Role } from '../../../core/enums/role';
 
+
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [PanelMenuModule, RouterModule],
+  imports: [
+    AsyncPipe,
+    PanelMenuModule,
+    RouterModule
+  ],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss'
 })
-export class Sidebar implements OnInit, OnDestroy {
+export class Sidebar {
 
-  items: MenuItem[] = [];
-
-  private subscription?: Subscription;
+  readonly items$: Observable<MenuItem[]>;
 
   constructor(
-    private currentUserService: CurrentUserService
-  ) {}
+    currentUserService: CurrentUserService
+  ) {
 
-  ngOnInit(): void {
-
-    this.subscription = this.currentUserService
+    this.items$ = currentUserService
       .getCurrentUser()
-      .subscribe({
+      .pipe(
 
-        next: user => {
+        map(user => {
 
-          this.items = [
+          const items: MenuItem[] = [
 
             {
               label: 'Dashboard',
@@ -62,7 +66,7 @@ export class Sidebar implements OnInit, OnDestroy {
 
           if (user.role === Role.ADMIN) {
 
-            this.items.push({
+            items.push({
 
               label: 'Usuarios',
               icon: 'pi pi-user',
@@ -72,18 +76,23 @@ export class Sidebar implements OnInit, OnDestroy {
 
           }
 
-        },
+          return items;
 
-        error: err => {
-          console.error('Error obteniendo usuario actual:', err);
-        }
+        }),
 
-      });
+        catchError(err => {
 
-  }
+          console.error(
+            'Error obteniendo usuario actual:',
+            err
+          );
 
-  ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+          return of([] as MenuItem[]);
+
+        })
+
+      );
+
   }
 
 }

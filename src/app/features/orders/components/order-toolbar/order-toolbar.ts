@@ -1,28 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
-import { Router } from '@angular/router';
-import { OrderService } from '../../../../core/services/order.service';
 
 @Component({
   selector: 'app-order-toolbar',
   standalone: true,
-  imports: [InputTextModule,
-ButtonModule,
-],
+  imports: [
+    InputTextModule
+  ],
   templateUrl: './order-toolbar.html',
   styleUrl: './order-toolbar.scss',
 })
 export class OrderToolbar {
 
-      constructor(
+  @Output()
+  searchChange = new EventEmitter<string>();
 
-        private router: Router
-    ){
+  onSearch(event: Event): void {
 
-    }
+    const input = event.target as HTMLInputElement;
 
+    this.searchChange.emit(input.value);
 
-
+  }
 
 }

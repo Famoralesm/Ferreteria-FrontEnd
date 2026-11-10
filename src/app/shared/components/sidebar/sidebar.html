@@ -8,9 +8,9 @@
 
     </div>
 
-    <p-panelmenu
-        [model]="items"
-        styleClass="fc-menu">
-    </p-panelmenu>
+<p-panelmenu
+    [model]="(items$ | async) ?? []"
+    styleClass="fc-menu">
+</p-panelmenu>
 
 </div>

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy,  ChangeDetectorRef } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { InputTextModule } from 'primeng/inputtext';
@@ -31,6 +31,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
     FormsModule,
     CommonModule,
     InputNumberModule
+
     
   ],
   templateUrl: './order-form.html',
@@ -145,7 +146,8 @@ export class OrderForm implements OnInit , OnDestroy {
 
 
   constructor(
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
   ) {
 
     this.form = this.fb.group({
@@ -323,6 +325,7 @@ private loadProducts(): void {
           'Pedido actualizado:',
           order
         );
+        this.cdr.detectChanges();
 
         this.router.navigate(['/orders']);
 
@@ -637,9 +640,11 @@ saveOrder(): void {
 
         next: order => {
 
-          console.log('Pedido actualizado:', order);
-
-          this.router.navigate(['/orders']);
+          console.log('Pedido creado:', order);
+          this.cdr.detectChanges();
+          this.router.navigate(['/orders', order.id]);
+          
+         
 
         },
 
@@ -664,8 +669,9 @@ saveOrder(): void {
               this.notificationService.success(
       'El pedido fue creado correctamente.'
     );
-
-          this.router.navigate(['/orders']);
+          this.cdr.detectChanges();
+          this.router.navigate(['/orders', order.id]);
+          
 
         },
 

@@ -6,7 +6,10 @@
 
     <input
       pInputText
-      placeholder="Buscar pedido..." />
+      type="search"
+      placeholder="Buscar por cliente, número o fecha..."
+      aria-label="Buscar pedidos"
+      (input)="onSearch($event)" />
 
   </span>
 

@@ -1,4 +1,4 @@
-import { Component, OnDestroy,OnInit ,  ChangeDetectorRef} from '@angular/core';
+import { Component, OnDestroy,OnInit } from '@angular/core';
 import { Input, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { OrderSummary } from '../../../../core/models/order/order-summary';
@@ -34,7 +34,7 @@ interface StatusThreshold {
 export class OrderTable implements OnInit, OnDestroy{
   
     private timerSubscription?: Subscription;
-
+    currentTime = Date.now();
 
 
   private readonly statusThresholds: Record<string, StatusThreshold> = {
@@ -60,20 +60,20 @@ export class OrderTable implements OnInit, OnDestroy{
   };
   constructor(
     
-    private cdr: ChangeDetectorRef,
 
   ) {}
-    ngOnInit(): void {
- 
-  
-      this.timerSubscription =
-        interval(1000).subscribe(() => {
-  
-          this.cdr.detectChanges();
-  
-        });
-  
-    }
+
+
+ngOnInit(): void {
+
+  this.timerSubscription = interval(1000)
+    .subscribe(() => {
+
+      this.currentTime = Date.now();
+
+    });
+
+}
   
   
     ngOnDestroy(): void {
@@ -127,7 +127,7 @@ export class OrderTable implements OnInit, OnDestroy{
     }
 
     const elapsed =
-      Date.now() -
+      this.currentTime -
       new Date(order.statusChangedAt).getTime();
 
     const threshold =
@@ -182,7 +182,7 @@ export class OrderTable implements OnInit, OnDestroy{
     const elapsed =
       Math.max(
         0,
-        Date.now() -
+        this.currentTime -
         new Date(order.statusChangedAt).getTime()
       );
 

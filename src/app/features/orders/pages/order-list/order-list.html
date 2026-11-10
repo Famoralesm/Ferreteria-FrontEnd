@@ -8,7 +8,6 @@
         PEDIDOS
       </span>
 
-  
       <p>
         Administración y seguimiento de pedidos
       </p>
@@ -17,17 +16,20 @@
 
   </div>
 
+  <!-- BUSCADOR -->
   <div class="order-tools">
 
-    <app-order-toolbar></app-order-toolbar>
-
+    <app-order-toolbar
+      (searchChange)="onSearchChange($event)">
+    </app-order-toolbar>
 
   </div>
 
+  <!-- TABLA -->
   <div class="page-card">
 
     <app-order-table
-      [orders]="orders"
+      [orders]="(filteredOrders$ | async) ?? []"
       (edit)="edit($event)"
       (view)="view($event)"
       (delete)="delete($event)"
@@ -37,7 +39,7 @@
 
   </div>
 
-  <!-- Acción debajo de la tabla -->
+  <!-- BOTÓN DEBAJO DE LA TABLA -->
   <div class="page-footer-actions">
 
     <button
