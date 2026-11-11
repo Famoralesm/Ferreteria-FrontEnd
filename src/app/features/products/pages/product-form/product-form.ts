@@ -22,12 +22,12 @@ import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { CheckboxModule } from 'primeng/checkbox';
-
+import { Product } from '../../../../core/models/product/product';
 import { CreateProductRequest } from '../../../../core/models/product/create-product-request';
 import { UpdateProductRequest } from '../../../../core/models/product/update-product-request';
 import {  ProductService} from '../../../../core/services/product.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-product-form',
@@ -65,6 +65,19 @@ export class ProductForm implements OnInit {
   private router = inject(
     Router
   );
+
+  selectedImage?: File;
+  imagePreview?: string;
+  currentImageUrl?: string | null;
+  uploadingImage = false;
+
+  private readonly maxImageSize = 5 * 1024 * 1024;
+
+  private readonly allowedImageTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/webp'
+  ];
 
 
   categories = [
@@ -223,7 +236,8 @@ export class ProductForm implements OnInit {
 
         next: product => {
 
-       this.notificationService.success(
+          this.currentImageUrl = product.imageUrl ?? null;
+          this.notificationService.success(
             'Producto cargado correctamente.'
           );
 
@@ -272,131 +286,68 @@ export class ProductForm implements OnInit {
 
 
   save(): void {
-
-    if (this.form.invalid) {
-
-      this.form.markAllAsTouched();
-
-      return;
-
-    }
-
-    const value =
-      this.form.getRawValue();
-
-
-    if (this.id) {
-
-      const request:
-        UpdateProductRequest = {
-
-          sku: value.sku,
-
-          name: value.name,
-
-          description:
-            value.description,
-
-          price: value.price,
-
-          stock: value.stock,
-
-          active: value.active,
-
-          category: value.category,
-
-          brand: value.brand,
-
-          unit: value.unit
-
-        };
-
-
-      this.productService
-        .update(
-          this.id,
-          request
-        )
-        .subscribe({
-
-          next: () => {
-
-            this.notificationService.success(
-            'Producto guardado correctamente.'
-          );
-
-            this.router.navigate([
-              '/products'
-            ]);
-
-          },
-
-          error: err => {
-
-          this.notificationService.error(
-            'Error guardando producto.'
-          );
-
-          }
-
-        });
-
-      return;
-    }
-
-
-    const request:
-      CreateProductRequest = {
-
-        sku: value.sku,
-
-        name: value.name,
-
-        description:
-          value.description,
-
-        price: value.price,
-
-        stock: value.stock,
-
-        active: value.active,
-
-        category: value.category,
-
-        brand: value.brand,
-
-        unit: value.unit
-
-      };
-
-
-    this.productService
-      .create(request)
-      .subscribe({
-
-        next: () => {
-
-          this.notificationService.success(
-            'Producto creado correctamente.'
-          );
-
-          this.router.navigate([
-            '/products'
-          ]);
-
-        },
-
-        error: err => {
-
-          this.notificationService.error(
-            'Error creando  Producto.'
-          );
-
-        }
-
-      });
-
+  if (this.form.invalid || this.uploadingImage) {
+    this.form.markAllAsTouched();
+    return;
   }
+
+  const value = this.form.getRawValue();
+
+  const request: CreateProductRequest = {
+    sku: value.sku,
+    name: value.name,
+    description: value.description,
+    price: value.price,
+    stock: value.stock,
+    active: value.active,
+    category: value.category,
+    brand: value.brand,
+    unit: value.unit
+  };
+
+  const updateRequest: UpdateProductRequest = {
+    ...request
+  };
+
+  const finish = () => {
+    this.notificationService.success(
+      'Producto guardado correctamente.'
+    );
+
+    this.router.navigate(['/products']);
+  };
+
+  if (this.id) {
+    this.productService.update(
+      this.id,
+      updateRequest
+    ).subscribe({
+      next: product => {
+        this.uploadSelectedImage(product.id, finish);
+      },
+      error: err => {
+        console.error('Error actualizando producto:', err);
+        this.notificationService.error(
+          'Error guardando producto.'
+        );
+      }
+    });
+
+    return;
+  }
+
+  this.productService.create(request).subscribe({
+    next: product => {
+      this.uploadSelectedImage(product.id, finish);
+    },
+    error: err => {
+      console.error('Error creando producto:', err);
+      this.notificationService.error(
+        'Error creando producto.'
+      );
+    }
+  });
+}
 
 
   cancel(): void {
@@ -406,5 +357,90 @@ export class ProductForm implements OnInit {
     ]);
 
   }
+
+  onImageSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+
+  if (!file) return;
+
+  if (!this.allowedImageTypes.includes(file.type)) {
+    this.notificationService.warning(
+      'Selecciona una imagen JPG, PNG o WebP.'
+    );
+    input.value = '';
+    return;
+  }
+
+  if (file.size > this.maxImageSize) {
+    this.notificationService.warning(
+      'La imagen no puede superar los 5 MB.'
+    );
+    input.value = '';
+    return;
+  }
+
+  if (this.imagePreview) {
+    URL.revokeObjectURL(this.imagePreview);
+  }
+
+  this.selectedImage = file;
+  this.imagePreview = URL.createObjectURL(file);
+}
+
+private uploadSelectedImage(
+  productId: number,
+  onSuccess: () => void
+): void {
+  if (!this.selectedImage) {
+    onSuccess();
+    return;
+  }
+
+  this.uploadingImage = true;
+
+  this.productService.uploadImage(
+    productId,
+    this.selectedImage
+  ).subscribe({
+    next: product => {
+      this.currentImageUrl = product.imageUrl ?? null;
+      this.selectedImage = undefined;
+
+      if (this.imagePreview) {
+        URL.revokeObjectURL(this.imagePreview);
+        this.imagePreview = undefined;
+      }
+
+      this.uploadingImage = false;
+      onSuccess();
+    },
+    error: err => {
+      console.error('Error subiendo imagen del producto:', err);
+      this.uploadingImage = false;
+
+      this.notificationService.error(
+        'El producto se guardó, pero no fue posible subir su imagen.'
+      );
+    }
+  });
+}
+
+get productImageSrc(): string | null {
+  if (!this.currentImageUrl) return null;
+
+  if (/^https?:\/\//i.test(this.currentImageUrl)) {
+    return this.currentImageUrl;
+  }
+
+  const backendOrigin = environment.apiUrl
+    .replace(/\/api\/?$/, '');
+
+  return `${backendOrigin}${
+    this.currentImageUrl.startsWith('/')
+      ? this.currentImageUrl
+      : `/${this.currentImageUrl}`
+  }`;
+}
 
 }

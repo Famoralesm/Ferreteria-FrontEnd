@@ -16,16 +16,22 @@
 
   </div>
 
-  <div class="page-card profile-card" *ngIf="currentUser as user">
+  @if (currentUser; as user) {
+
+  <div class="page-card profile-card" >
 
     <div class="profile-photo-section">
 
       <div class="profile-avatar">
-
-        <img
-          *ngIf="avatarSrc; else avatarFallback"
+        @if (avatarSrc; ) {
+        <img          
           [src]="avatarSrc"
           alt="Fotografía de perfil">
+        }@else {
+          <img          
+          [src]="avatarSrc"
+          alt="Fotografía de perfil">
+        }
 
         <ng-template #avatarFallback>
 
@@ -191,10 +197,12 @@
 
     </form>
 
-  </div>
-
-  <div class="page-card" *ngIf="loading">
-    Cargando perfil...
-  </div>
+    </div>
+  }
+  @if (loading) {
+    <div class="page-card">
+      Cargando perfil...
+    </div>
+  }
 
 </div>

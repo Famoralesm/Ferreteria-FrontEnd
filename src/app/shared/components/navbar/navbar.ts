@@ -13,7 +13,7 @@ import { Role } from '../../../core/enums/role';
 
 import { CurrentUserService } from '../../../core/services/current-user.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-navbar',

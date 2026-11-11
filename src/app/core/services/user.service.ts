@@ -54,7 +54,21 @@ export class UserService {
     );
 
   }
+  uploadAvatar(id: number, file: File): Observable<User> {
+    const formData = new FormData();
+    formData.append('file', file);
 
+    return this.http.put<User>(
+      `${this.apiUrl}/${id}/avatar`,
+      formData
+    );
+  }
+
+  deleteAvatar(id: number): Observable<User> {
+    return this.http.delete<User>(
+      `${this.apiUrl}/${id}/avatar`
+    );
+  }
 
 
 }

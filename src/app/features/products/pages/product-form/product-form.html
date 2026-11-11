@@ -256,6 +256,64 @@
 
       </section>
 
+  <section class="form-section">
+
+    <div class="section-title">
+      <div class="section-icon">
+        <i class="pi pi-image"></i>
+      </div>
+
+      <div>
+        <h3>Imagen del producto</h3>
+        <p>Selecciona una fotografía para el catálogo.</p>
+      </div>
+    </div>
+
+    <div class="product-image-editor">
+
+      @if (imagePreview || currentImageUrl) {
+        <img
+          class="product-image-preview"
+          [src]="imagePreview || productImageSrc"
+          alt="Imagen del producto">
+      } @else {
+        <div class="product-image-placeholder">
+          <i class="pi pi-image"></i>
+          <span>Sin imagen</span>
+        </div>
+      }
+
+      <div class="product-image-actions">
+
+        <input
+          #imageInput
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          hidden
+          (change)="onImageSelected($event)">
+
+        <button
+          pButton
+          type="button"
+          label="Seleccionar imagen"
+          icon="pi pi-upload"
+          severity="secondary"
+          [disabled]="uploadingImage"
+          (click)="imageInput.click()">
+        </button>
+
+        @if (selectedImage) {
+          <small>{{ selectedImage.name }}</small>
+        }
+
+        <small>JPG, PNG o WebP. Máximo 5 MB.</small>
+
+      </div>
+
+    </div>
+
+</section>
+
 
       <!-- AUDITORÍA -->
 

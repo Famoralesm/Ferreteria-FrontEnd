@@ -23,4 +23,6 @@ export interface Product {
   createdAt: string;
 
   updatedAt: string;
+
+  imageUrl?: string | null;
 }

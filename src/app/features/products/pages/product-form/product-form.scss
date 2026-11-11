@@ -379,5 +379,49 @@
   .form-actions button {
     width: 100%;
   }
+  .product-image-editor {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.product-image-preview,
+.product-image-placeholder {
+  width: 180px;
+  height: 180px;
+  border-radius: 12px;
+  border: 1px solid #e1e7ed;
+}
+
+.product-image-preview {
+  object-fit: contain;
+  background: #fff;
+}
+
+.product-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #f5f7fa;
+  color: #7b8794;
+}
+
+.product-image-placeholder i {
+  font-size: 38px;
+}
+
+.product-image-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.product-image-actions small {
+  color: #7b8794;
+}
 
 }

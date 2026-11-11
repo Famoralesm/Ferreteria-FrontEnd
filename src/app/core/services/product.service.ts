@@ -95,5 +95,20 @@ export class ProductService {
   );
 
 }
+  uploadImage(id: number, file: File): Observable<Product> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.put<Product>(
+      `${this.API}/${id}/image`,
+      formData
+    );
+  }
+
+  deleteImage(id: number): Observable<Product> {
+    return this.http.delete<Product>(
+      `${this.API}/${id}/image`
+    );
+  }
 
 }

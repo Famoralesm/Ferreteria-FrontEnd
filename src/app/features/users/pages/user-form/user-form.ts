@@ -20,7 +20,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 
 import { Role } from '../../../../core/enums/role';
 import { UserRequest } from '../../../../core/models/user/user-request';
-
+import { environment } from '../../../../../environments/environment';
 import { UserService } from '../../../../core/services/user.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 
@@ -80,6 +80,18 @@ export class UserForm implements OnInit {
   ];
 
   userForm: FormGroup;
+  selectedAvatar?: File;
+  avatarPreview?: string;
+  currentAvatarUrl?: string | null;
+  uploadingAvatar = false;
+
+  private readonly maxAvatarSize = 2 * 1024 * 1024;
+
+  private readonly allowedAvatarTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/webp'
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -169,6 +181,8 @@ export class UserForm implements OnInit {
     this.userService.findById(this.id).subscribe({
 
       next: user => {
+
+        this.currentAvatarUrl = user.avatarUrl ?? null;
 
         this.userForm.patchValue({
 
@@ -280,34 +294,58 @@ export class UserForm implements OnInit {
 
     operation.subscribe({
 
-      next: () => {
+next: user => {
 
-        this.saving = false;
+  if (!this.selectedAvatar) {
+    this.saving = false;
 
-        this.notificationService.success(
-          this.id
-            ? 'Usuario actualizado correctamente.'
-            : 'Usuario creado correctamente.'
-        );
+    this.notificationService.success(
+      this.id
+        ? 'Usuario actualizado correctamente.'
+        : 'Usuario creado correctamente.'
+    );
 
-        this.router.navigate(['/users']);
+    this.router.navigate(['/users']);
+    return;
+  }
 
-      },
+  this.uploadingAvatar = true;
 
-      error: err => {
+  this.userService.uploadAvatar(
+    user.id,
+    this.selectedAvatar
+  ).subscribe({
 
-        console.error('Error guardando usuario:', err);
+    next: updatedUser => {
+      this.currentAvatarUrl = updatedUser.avatarUrl ?? null;
+      this.uploadingAvatar = false;
+      this.saving = false;
 
-        this.saving = false;
-
-        this.notificationService.error(
-          this.getErrorMessage(
-            err,
-            'No fue posible guardar el usuario.'
-          )
-        );
-
+      if (this.avatarPreview) {
+        URL.revokeObjectURL(this.avatarPreview);
       }
+
+      this.notificationService.success(
+        'Usuario e imagen actualizados correctamente.'
+      );
+
+      this.router.navigate(['/users']);
+    },
+
+    error: err => {
+      console.error('Error subiendo avatar del usuario:', err);
+
+      this.uploadingAvatar = false;
+      this.saving = false;
+
+      this.notificationService.error(
+        'El usuario se guardó, pero no fue posible subir su fotografía.'
+      );
+    }
+
+  });
+
+}
 
     });
 
@@ -386,5 +424,52 @@ export class UserForm implements OnInit {
     this.router.navigate(['/users']);
 
   }
+
+  onAvatarSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+
+  if (!file) return;
+
+  if (!this.allowedAvatarTypes.includes(file.type)) {
+    this.notificationService.warning(
+      'Selecciona una imagen JPG, PNG o WebP.'
+    );
+    input.value = '';
+    return;
+  }
+
+  if (file.size > this.maxAvatarSize) {
+    this.notificationService.warning(
+      'La fotografía no puede superar los 2 MB.'
+    );
+    input.value = '';
+    return;
+  }
+
+  if (this.avatarPreview) {
+    URL.revokeObjectURL(this.avatarPreview);
+  }
+
+  this.selectedAvatar = file;
+  this.avatarPreview = URL.createObjectURL(file);
+}
+
+get avatarImageUrl(): string | null {
+  if (!this.currentAvatarUrl) return null;
+
+  if (/^https?:\/\//i.test(this.currentAvatarUrl)) {
+    return this.currentAvatarUrl;
+  }
+
+  const backendOrigin = environment.apiUrl
+    .replace(/\/api\/?$/, '');
+
+  return `${backendOrigin}${
+    this.currentAvatarUrl.startsWith('/')
+      ? this.currentAvatarUrl
+      : `/${this.currentAvatarUrl}`
+  }`;
+}
 
 }

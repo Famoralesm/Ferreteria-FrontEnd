@@ -192,6 +192,55 @@
 
         </div>
 
+        <!-- FOTOGRAFÍA DEL USUARIO -->
+<div class="form-field full-width">
+
+  <label>Fotografía del usuario</label>
+
+  <div class="user-avatar-editor">
+
+    @if (avatarPreview || currentAvatarUrl) {
+      <img
+        class="user-avatar-preview"
+        [src]="avatarPreview || avatarImageUrl"
+        alt="Fotografía del usuario">
+    } @else {
+      <div class="user-avatar-placeholder">
+        <i class="pi pi-user"></i>
+      </div>
+    }
+
+    <div class="user-avatar-actions">
+
+      <input
+        #avatarInput
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        hidden
+        (change)="onAvatarSelected($event)">
+
+      <button
+        pButton
+        type="button"
+        label="Seleccionar fotografía"
+        icon="pi pi-image"
+        severity="secondary"
+        [disabled]="uploadingAvatar"
+        (click)="avatarInput.click()">
+      </button>
+
+      @if (selectedAvatar) {
+        <small>{{ selectedAvatar.name }}</small>
+      }
+
+      <small>JPG, PNG o WebP. Máximo 2 MB.</small>
+
+    </div>
+
+  </div>
+
+</div>
+
         <!-- BOTONES -->
         <div class="form-actions">
 
