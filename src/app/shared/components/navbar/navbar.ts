@@ -2,8 +2,6 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { Observable, catchError, of } from 'rxjs';
-
-import { InputTextModule } from 'primeng/inputtext';
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
 import { MenuModule } from 'primeng/menu';
@@ -15,13 +13,13 @@ import { Role } from '../../../core/enums/role';
 
 import { CurrentUserService } from '../../../core/services/current-user.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { environment } from '../../../../environments/environment.development';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
   imports: [
     CommonModule,
-    InputTextModule,
     AvatarModule,
     BadgeModule,
     MenuModule
@@ -40,17 +38,22 @@ export class Navbar {
     private authService: AuthService
   ) {
 
-    this.currentUser$ = currentUserService
-      .getCurrentUser()
+    this.currentUser$ = currentUserService.user$;
+
+    currentUserService.getCurrentUser()
       .pipe(
         catchError(err => {
 
-          console.error('Error obteniendo usuario para navbar:', err);
+          console.error(
+            'Error obteniendo usuario para navbar:',
+            err
+          );
 
           return of(null);
 
         })
-      );
+      )
+      .subscribe();
 
     this.profileItems = [
 
@@ -96,6 +99,24 @@ export class Navbar {
     };
 
     return labels[role] ?? role;
+
+  }
+
+
+avatarImage(url?: string | null): string | undefined {
+
+    if (!url) {
+      return undefined;
+    }
+
+    if (/^https?:\/\//i.test(url)) {
+      return url;
+    }
+
+    const backendOrigin = environment.apiUrl
+      .replace(/\/api\/?$/, '');
+
+    return `${backendOrigin}${url.startsWith('/') ? url : `/${url}`}`;
 
   }
 

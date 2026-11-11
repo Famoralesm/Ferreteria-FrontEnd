@@ -8,29 +8,13 @@
 
     display:flex;
 
-    justify-content:space-between;
+    justify-content: flex-end;
 
     align-items:center;
 
     padding:0 30px;
 
     border-bottom:1px solid #ececec;
-
-}
-
-.left{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:12px;
-
-}
-
-.left input{
-
-    width:340px;
 
 }
 

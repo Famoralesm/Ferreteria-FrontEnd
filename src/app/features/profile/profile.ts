@@ -26,6 +26,7 @@ import { Role } from '../../core/enums/role';
 import { CurrentUserService } from '../../core/services/current-user.service';
 import { ProfileService } from '../../core/services/profile.services';
 import { NotificationService } from '../../core/services/notification.service';
+import { environment } from '../../../environments/environment.development';
 
 
 @Component({
@@ -97,13 +98,28 @@ export class Profile implements OnInit, OnDestroy {
 
   }
 
-  get avatarSrc(): string | null {
+get avatarSrc(): string | null {
 
-    return this.avatarPreview
-      ?? this.currentUser?.avatarUrl
-      ?? null;
-
+  if (this.avatarPreview) {
+    return this.avatarPreview;
   }
+
+  const url = this.currentUser?.avatarUrl;
+
+  if (!url) {
+    return null;
+  }
+
+  if (/^https?:\/\//i.test(url)) {
+    return url;
+  }
+
+  const backendOrigin = environment.apiUrl
+    .replace(/\/api\/?$/, '');
+
+  return `${backendOrigin}${url.startsWith('/') ? url : `/${url}`}`;
+
+}
 
   get initials(): string {
 

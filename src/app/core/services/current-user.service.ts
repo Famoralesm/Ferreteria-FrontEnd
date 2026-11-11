@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, shareReplay } from 'rxjs';
+
+import {
+  BehaviorSubject,
+  Observable,
+  shareReplay,
+  tap
+} from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { User } from '../models/user/user';
@@ -12,7 +18,12 @@ export class CurrentUserService {
 
   private readonly apiUrl = `${environment.apiUrl}/auth/me`;
 
-  private currentUser$?: Observable<User>;
+  private currentUserRequest$?: Observable<User>;
+
+  private readonly currentUserSubject =
+    new BehaviorSubject<User | null>(null);
+
+  readonly user$ = this.currentUserSubject.asObservable();
 
   constructor(
     private http: HttpClient
@@ -20,32 +31,40 @@ export class CurrentUserService {
 
   getCurrentUser(): Observable<User> {
 
-    if (!this.currentUser$) {
+    if (!this.currentUserRequest$) {
 
-      this.currentUser$ = this.http.get<User>(
-        this.apiUrl
-      ).pipe(
-        shareReplay(1)
-      );
+      this.currentUserRequest$ = this.http
+        .get<User>(this.apiUrl)
+        .pipe(
+
+          tap(user => {
+            this.currentUserSubject.next(user);
+          }),
+
+          shareReplay(1)
+
+        );
 
     }
 
-    return this.currentUser$;
-
-  }
-
-  clear(): void {
-
-    this.currentUser$ = undefined;
+    return this.currentUserRequest$;
 
   }
 
   refresh(): Observable<User> {
 
-  this.currentUser$ = undefined;
+    this.currentUserRequest$ = undefined;
 
-  return this.getCurrentUser();
+    return this.getCurrentUser();
 
-}
+  }
+
+  clear(): void {
+
+    this.currentUserRequest$ = undefined;
+
+    this.currentUserSubject.next(null);
+
+  }
 
 }

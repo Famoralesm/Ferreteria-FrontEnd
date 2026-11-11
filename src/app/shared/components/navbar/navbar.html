@@ -1,14 +1,6 @@
 <header class="navbar">
 
-  <div class="left">
 
-    <i class="pi pi-search"></i>
-
-    <input
-      pInputText
-      placeholder="Buscar productos, pedidos..." />
-
-  </div>
 
   <div class="right">
 
@@ -31,7 +23,7 @@
           (click)="profileMenu.toggle($event)">
 
           <p-avatar
-            [image]="user.avatarUrl || undefined"
+            [image]="avatarImage(user.avatarUrl)"
             [label]="user.avatarUrl ? undefined : initials(user.name)"
             [icon]="user.avatarUrl ? undefined : 'pi pi-user'"
             shape="circle">
