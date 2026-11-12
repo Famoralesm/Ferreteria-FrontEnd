@@ -40,7 +40,7 @@ export class NotificationService {
   show(
     message: string,
     type: NotificationType,
-    duration = 3000
+    duration = 2000
   ): void {
 
     this.clearTimer();

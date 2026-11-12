@@ -17,7 +17,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
-
+import { CurrentUserService } from '../../../../core/services/current-user.service';
 import { Role } from '../../../../core/enums/role';
 import { UserRequest } from '../../../../core/models/user/user-request';
 import { environment } from '../../../../../environments/environment';
@@ -92,12 +92,14 @@ export class UserForm implements OnInit {
     'image/png',
     'image/webp'
   ];
+  
 
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
     private route: ActivatedRoute,
     private router: Router,
+    private currentUserService: CurrentUserService,
     private notificationService: NotificationService
   ) {
 

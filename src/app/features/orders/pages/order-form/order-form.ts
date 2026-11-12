@@ -640,11 +640,15 @@ saveOrder(): void {
 
         next: order => {
 
-          console.log('Pedido creado:', order);
+          console.log('Pedido actualizado:', order);
+
           this.cdr.detectChanges();
-          this.router.navigate(['/orders', order.id]);
-          
-         
+
+          this.notificationService.success(
+            'El pedido fue actualizado correctamente.'
+          );
+
+          this.router.navigate(['/orders']);
 
         },
 
@@ -657,7 +661,7 @@ saveOrder(): void {
 
         }
 
-      });
+    });
 
   } else {
 

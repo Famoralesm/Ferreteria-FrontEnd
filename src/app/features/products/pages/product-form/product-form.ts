@@ -237,10 +237,7 @@ export class ProductForm implements OnInit {
         next: product => {
 
           this.currentImageUrl = product.imageUrl ?? null;
-          this.notificationService.success(
-            'Producto cargado correctamente.'
-          );
-
+          
           this.form.patchValue({
 
             sku: product.sku,

@@ -31,96 +31,111 @@
 
       <!-- INFORMACIÓN BÁSICA -->
 
-      <section class="form-section">
+      
+<!-- INFORMACIÓN BÁSICA + FOTOGRAFÍA -->
+<section class="form-section">
 
-        <div class="section-title">
+  <div class="product-main-grid">
 
-          <div class="section-icon">
-            <i class="pi pi-tag"></i>
+    <!-- COLUMNA IZQUIERDA -->
+    <div class="product-main-fields">
+
+      <div class="form-field">
+        <label for="sku">
+          SKU <span>*</span>
+        </label>
+        <input
+          id="sku"
+          pInputText
+          formControlName="sku"
+          placeholder="Ej: TAL-001">
+      </div>
+
+      <div class="form-field">
+        <label for="name">
+          Nombre <span>*</span>
+        </label>
+        <input
+          id="name"
+          pInputText
+          formControlName="name"
+          placeholder="Nombre del producto">
+      </div>
+
+      <div class="form-field">
+        <label for="description">Descripción</label>
+        <textarea
+          id="description"
+          pTextarea
+          formControlName="description"
+          rows="4"
+          placeholder="Descripción del producto">
+        </textarea>
+      </div>
+
+    </div>
+
+    <!-- COLUMNA DERECHA -->
+    <div class="product-image-column">
+
+      <h3>Fotografía</h3>
+
+      <div class="product-image-editor">
+
+        @if (imagePreview || currentImageUrl) {
+          <img
+            class="product-image-preview"
+            [src]="imagePreview || productImageSrc"
+            alt="Imagen del producto">
+        } @else {
+          <div class="product-image-placeholder">
+            <i class="pi pi-image"></i>
+            <span>Sin imagen</span>
           </div>
+        }
 
-          <div>
-            <h3>Información del producto</h3>
-            <p>Identificación básica del producto.</p>
-          </div>
+        <div class="product-image-actions">
+
+          <input
+            #imageInput
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            hidden
+            (change)="onImageSelected($event)">
+
+          <button
+            pButton
+            type="button"
+            label="Seleccionar imagen"
+            icon="pi pi-upload"
+            severity="secondary"
+            [disabled]="uploadingImage"
+            (click)="imageInput.click()">
+          </button>
+
+          @if (selectedImage) {
+            <small>{{ selectedImage.name }}</small>
+          }
+
+          <small>JPG, PNG o WebP. Máximo 5 MB.</small>
 
         </div>
 
+      </div>
 
-        <div class="form-grid">
+    </div>
 
-          <div class="form-field">
+  </div>
 
-            <label for="sku">
-              SKU
-              <span>*</span>
-            </label>
+</section>
 
-            <input
-              id="sku"
-              pInputText
-              formControlName="sku"
-              placeholder="Ej: TAL-001">
-
-          </div>
-
-
-          <div class="form-field">
-
-            <label for="name">
-              Nombre
-              <span>*</span>
-            </label>
-
-            <input
-              id="name"
-              pInputText
-              formControlName="name"
-              placeholder="Nombre del producto">
-
-          </div>
-
-
-          <div class="form-field full">
-
-            <label for="description">
-              Descripción
-            </label>
-
-            <textarea
-              id="description"
-              pTextarea
-              formControlName="description"
-              rows="4"
-              placeholder="Descripción del producto">
-            </textarea>
-
-          </div>
-
-        </div>
-
-      </section>
 
 
       <!-- CLASIFICACIÓN -->
 
       <section class="form-section">
 
-        <div class="section-title">
-
-          <div class="section-icon">
-            <i class="pi pi-sitemap"></i>
-          </div>
-
-          <div>
-            <h3>Clasificación</h3>
-            <p>Organiza el producto dentro del catálogo.</p>
-          </div>
-
-        </div>
-
-
-        <div class="form-grid">
+       <div class="form-grid">
 
           <div class="form-field">
 
@@ -183,20 +198,6 @@
 
       <section class="form-section">
 
-        <div class="section-title">
-
-          <div class="section-icon">
-            <i class="pi pi-chart-bar"></i>
-          </div>
-
-          <div>
-            <h3>Inventario y precio</h3>
-            <p>Control de stock y valor del producto.</p>
-          </div>
-
-        </div>
-
-
         <div class="form-grid">
 
           <div class="form-field">
@@ -256,63 +257,7 @@
 
       </section>
 
-  <section class="form-section">
-
-    <div class="section-title">
-      <div class="section-icon">
-        <i class="pi pi-image"></i>
-      </div>
-
-      <div>
-        <h3>Imagen del producto</h3>
-        <p>Selecciona una fotografía para el catálogo.</p>
-      </div>
-    </div>
-
-    <div class="product-image-editor">
-
-      @if (imagePreview || currentImageUrl) {
-        <img
-          class="product-image-preview"
-          [src]="imagePreview || productImageSrc"
-          alt="Imagen del producto">
-      } @else {
-        <div class="product-image-placeholder">
-          <i class="pi pi-image"></i>
-          <span>Sin imagen</span>
-        </div>
-      }
-
-      <div class="product-image-actions">
-
-        <input
-          #imageInput
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          hidden
-          (change)="onImageSelected($event)">
-
-        <button
-          pButton
-          type="button"
-          label="Seleccionar imagen"
-          icon="pi pi-upload"
-          severity="secondary"
-          [disabled]="uploadingImage"
-          (click)="imageInput.click()">
-        </button>
-
-        @if (selectedImage) {
-          <small>{{ selectedImage.name }}</small>
-        }
-
-        <small>JPG, PNG o WebP. Máximo 5 MB.</small>
-
-      </div>
-
-    </div>
-
-</section>
+  
 
 
       <!-- AUDITORÍA -->

@@ -31,7 +31,7 @@ export class Navbar {
 
   readonly currentUser$: Observable<User | null>;
 
-  readonly profileItems: MenuItem[];
+  profileItems: MenuItem[] = [];
 
   constructor(
     currentUserService: CurrentUserService,
@@ -55,25 +55,58 @@ export class Navbar {
       )
       .subscribe();
 
-    this.profileItems = [
+this.profileItems = [
+  {
+    label: 'Mi perfil',
+    icon: 'pi pi-user-edit',
+    routerLink: ['/profile']
+  },
+  {
+    separator: true
+  },
+  {
+    label: 'Cerrar sesión',
+    icon: 'pi pi-sign-out',
+    command: () => this.authService.logout()
+  }
+];
 
+currentUserService.getCurrentUser()
+  .pipe(
+    catchError(err => {
+      console.error('Error obteniendo usuario para navbar:', err);
+      return of(null);
+    })
+  )
+  .subscribe(user => {
+
+    if (!user) return;
+
+    this.profileItems = [
+      {
+        label: `Cargo: ${this.roleLabel(user.role)}`,
+        icon: 'pi pi-id-card',
+        disabled: true
+      },
+      {
+        separator: true
+      },
       {
         label: 'Mi perfil',
         icon: 'pi pi-user-edit',
         routerLink: ['/profile']
       },
-
       {
         separator: true
       },
-
       {
         label: 'Cerrar sesión',
         icon: 'pi pi-sign-out',
         command: () => this.authService.logout()
       }
-
     ];
+
+  });
 
   }
 

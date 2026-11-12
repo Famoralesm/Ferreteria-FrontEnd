@@ -18,7 +18,9 @@
 
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 
-  animation: notification-enter 0.25s ease-out;
+  animation:
+  notification-enter 0.25s ease-out,
+  notification-exit 0.35s ease-in 1.65s forwards;
 
   i {
     font-size: 22px;
@@ -97,4 +99,15 @@
     transform: translateY(0);
   }
 
+}
+@keyframes notification-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
 }
