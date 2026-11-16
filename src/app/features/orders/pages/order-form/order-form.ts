@@ -165,7 +165,7 @@ export class OrderForm implements OnInit , OnDestroy {
     this.form = this.fb.group({
 
       customerName: ['',Validators.required],
-      phone: ['',Validators.required],
+      phone: [''],
       address: ['',Validators.required],
       latitude: [null],
       longitude: [null],
@@ -268,6 +268,7 @@ private loadProducts(): void {
 
 
           });
+          this.syncSelectedCustomer();
           this.items = order.items.map(item => ({
                 productId: item.productId,
                 productName: item.productName,
@@ -687,14 +688,22 @@ saveOrder(): void {
         },
 
         error: err => {
-
           console.error('Error actualizando pedido:', err);
+          console.error('HTTP STATUS:', err.status);
+          console.error('RESPUESTA BACKEND:', err.error);
+
+          const detail =
+            typeof err.error === 'string'
+              ? err.error
+              : JSON.stringify(err.error, null, 2);
 
           this.notificationService.warning(
-            'No fue posible actualizar el pedido.'
+            `No fue posible actualizar el pedido: ${detail || 'Error sin detalle del servidor'}`
           );
 
+          this.cdr.detectChanges();
         }
+
 
       });
 
@@ -714,15 +723,24 @@ saveOrder(): void {
 
         },
 
+       
         error: err => {
+          console.error('Error actualizando pedido:', err);
+          console.error('HTTP STATUS:', err.status);
+          console.error('RESPUESTA BACKEND:', err.error);
 
-          console.error('Error creando pedido:', err);
+          const detail =
+            typeof err.error === 'string'
+              ? err.error
+              : JSON.stringify(err.error, null, 2);
 
           this.notificationService.warning(
-            'No fue posible crear el pedido. Revisa los datos ingresados.'
+            `No fue posible actualizar el pedido: ${detail || 'Error sin detalle del servidor'}`
           );
 
+          this.cdr.detectChanges();
         }
+
 
       });
 
@@ -762,6 +780,7 @@ saveOrder(): void {
         ...this.customers,
         unknownOption
       ];
+      this.syncSelectedCustomer();
 
     },
 
@@ -809,5 +828,23 @@ onCustomerSelected(option: CustomerOption | null): void {
   this.updateMapLinks();
 
 }
+
+private syncSelectedCustomer(): void {
+  const customerName = String(
+    this.form.get('customerName')?.value ?? ''
+  ).trim().toLowerCase();
+
+  if (!customerName) {
+    this.selectedCustomerOption = null;
+    return;
+  }
+
+  const customer = this.customers.find(
+    c => c.nombre.trim().toLowerCase() === customerName
+  );
+
+  this.selectedCustomerOption = customer ?? null;
+}
+
   
 }

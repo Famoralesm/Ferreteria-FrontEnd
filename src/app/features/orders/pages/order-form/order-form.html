@@ -40,8 +40,38 @@
     
 
 
-        <div class="form-field">
+        
+        <div class="form-field customer-search-field">
+          <label for="customerSearch">
+            Buscar cliente registrado
+          </label>
 
+          <p-select
+            inputId="customerSearch"
+            [options]="customerOptions"
+            optionLabel="nombre"
+            [(ngModel)]="selectedCustomerOption"
+            [ngModelOptions]="{ standalone: true }"
+            [filter]="true"
+            filterBy="nombre,rut"
+            [showClear]="true"
+            placeholder="Escribe un nombre o RUT para buscar"
+            class="w-full"
+            (onChange)="onCustomerSelected($event.value)">
+
+            <ng-template #item let-customer>
+              <div class="customer-option">
+                <strong>{{ customer.nombre }}</strong>
+                @if (customer.rut) {
+                  <small>{{ customer.rut }}</small>
+                }
+              </div>
+            </ng-template>
+
+          </p-select>
+        </div>
+
+        <div class="form-field">
           <label for="customerName">
             Nombre del cliente *
           </label>
@@ -49,9 +79,10 @@
           <input
             id="customerName"
             pInputText
-            formControlName="customerName">
-
+            formControlName="customerName"
+            placeholder="Nombre del cliente">
         </div>
+
 
         <div class="form-field">
 

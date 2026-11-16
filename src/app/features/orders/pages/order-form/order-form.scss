@@ -35,14 +35,15 @@ form {
   flex: 1;
 }
 
-
-
-
 .status-info {
   padding: 14px;
   border-radius: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 0;
   background: #f5f5f5;
+}
+
+.order-items-section {
+  margin-top: -8px;
 }
 
 .status-label {
@@ -171,5 +172,24 @@ form {
     font-size: 0.8rem;
   }
 
+  .items-table {
+  width: 100%;
+  overflow-x: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    text-align: left;
+    padding: 10px 12px;
+  }
+
+  tbody td {
+    text-align: left;
+    padding: 10px 12px;
+  }
+}
 
 }
