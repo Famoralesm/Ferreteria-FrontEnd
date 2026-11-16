@@ -41,9 +41,10 @@
 
 
         
+        
         <div class="form-field customer-search-field">
           <label for="customerSearch">
-            Buscar cliente registrado
+            Nombre del cliente *
           </label>
 
           <p-select
@@ -55,13 +56,14 @@
             [filter]="true"
             filterBy="nombre,rut"
             [showClear]="true"
-            placeholder="Escribe un nombre o RUT para buscar"
+            placeholder="Buscar cliente por nombre o RUT"
             class="w-full"
             (onChange)="onCustomerSelected($event.value)">
 
             <ng-template #item let-customer>
               <div class="customer-option">
                 <strong>{{ customer.nombre }}</strong>
+
                 @if (customer.rut) {
                   <small>{{ customer.rut }}</small>
                 }
@@ -71,17 +73,6 @@
           </p-select>
         </div>
 
-        <div class="form-field">
-          <label for="customerName">
-            Nombre del cliente *
-          </label>
-
-          <input
-            id="customerName"
-            pInputText
-            formControlName="customerName"
-            placeholder="Nombre del cliente">
-        </div>
 
 
         <div class="form-field">
@@ -178,13 +169,10 @@
               {{ getStatusLabel(form.get('status')?.value) }}
             </div>
 
-              <div class="status-time">
-                <i class="pi pi-clock"></i>
-
-                      <td>
-                          <div class="status-timer" > {{ elapsedTime }}</div>
-                      </td>
-          </div>
+            <div class="status-time">
+              <i class="pi pi-clock"></i>
+              <div class="status-timer">{{ elapsedTime }}</div>
+            </div>
         
       </div>
 

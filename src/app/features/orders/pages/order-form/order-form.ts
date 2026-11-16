@@ -829,6 +829,7 @@ onCustomerSelected(option: CustomerOption | null): void {
 
 }
 
+
 private syncSelectedCustomer(): void {
   const customerName = String(
     this.form.get('customerName')?.value ?? ''
@@ -839,12 +840,13 @@ private syncSelectedCustomer(): void {
     return;
   }
 
-  const customer = this.customers.find(
-    c => c.nombre.trim().toLowerCase() === customerName
-  );
-
-  this.selectedCustomerOption = customer ?? null;
+  this.selectedCustomerOption =
+    this.customerOptions.find(
+      customer =>
+        customer.nombre.trim().toLowerCase() === customerName
+    ) ?? null;
 }
+
 
   
 }
