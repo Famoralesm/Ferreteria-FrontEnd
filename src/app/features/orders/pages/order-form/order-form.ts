@@ -719,7 +719,7 @@ saveOrder(): void {
           );
 
           this.cdr.detectChanges();
-          this.router.navigate(['/orders', order.id]);
+          this.router.navigate(['/orders']);
 
         },
 
@@ -830,22 +830,31 @@ onCustomerSelected(option: CustomerOption | null): void {
 }
 
 
+
 private syncSelectedCustomer(): void {
   const customerName = String(
     this.form.get('customerName')?.value ?? ''
-  ).trim().toLowerCase();
+  ).trim();
 
   if (!customerName) {
     this.selectedCustomerOption = null;
     return;
   }
 
-  this.selectedCustomerOption =
-    this.customerOptions.find(
-      customer =>
-        customer.nombre.trim().toLowerCase() === customerName
-    ) ?? null;
+  const customer = this.customerOptions.find(
+    option =>
+      option.nombre.trim().toLowerCase() ===
+      customerName.toLowerCase()
+  );
+
+  this.selectedCustomerOption = customer ?? {
+    id: null,
+    nombre: customerName,
+    rut: '',
+    desconocido: true
+  };
 }
+
 
 
   

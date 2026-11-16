@@ -56,6 +56,7 @@
             [filter]="true"
             filterBy="nombre,rut"
             [showClear]="true"
+            [disabled]="!!id"
             placeholder="Buscar cliente por nombre o RUT"
             class="w-full"
             (onChange)="onCustomerSelected($event.value)">
@@ -85,7 +86,9 @@
             id="phone"
             pInputText
             formControlName="phone"
-            placeholder="Teléfono de contacto">
+            [readonly]="!!id"            
+            placeholder="Teléfono de contacto"
+            >
 
         </div>
         
@@ -105,10 +108,12 @@
             <input
               id="address"
               pInputText
-              formControlName="address"
+              formControlName="address"              
               placeholder="Pegue una ubicación de Google Maps o escriba una dirección"
+              [readonly]="!!id"
               (paste)="onAddressPaste($event)"
-              (input)="onAddressChange()">
+              (input)="onAddressChange()"
+              >
 
           </div>
 
@@ -267,7 +272,7 @@
 
                 <th>Producto</th>
 
-                <th>Cantidad</th>
+                <th>Cant</th>
 
                 <th>Precio</th>
 

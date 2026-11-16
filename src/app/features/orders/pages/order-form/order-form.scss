@@ -183,6 +183,7 @@ form {
 
 
 
+
 .customer-option {
   display: flex;
   flex-direction: column;
@@ -192,25 +193,70 @@ form {
     color: #777;
     font-size: 0.8rem;
   }
+}
 
-  .items-table {
+
+/* =========================================
+   TABLA DE PRODUCTOS
+   ========================================= */
+
+.items-table {
   width: 100%;
   overflow-x: auto;
 
   table {
-    width: 100%;
+    width: 90%;
     border-collapse: collapse;
+    table-layout: fixed;
   }
 
-  thead th {
+  th,
+  td {
     text-align: left;
-    padding: 10px 12px;
+    padding: 2px 3px;
+    vertical-align: middle;
   }
 
-  tbody td {
-    text-align: left;
-    padding: 10px 12px;
+  th {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 25%;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 8%;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 10%;
+  }
+
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 10%;
+  }
+
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 1%;
   }
 }
 
+/* Espacio interior de los campos y el borde */
+.page-card.order-form-card {
+  padding: 50px;
+  box-sizing: border-box;
 }
+
+/* Separación entre los campos vertical y horizontal */
+.form-grid {
+  column-gap: 90px;
+  row-gap: 9px;
+}
+
