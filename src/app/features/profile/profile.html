@@ -69,16 +69,7 @@
             (click)="avatarInput.click()">
           </button>
 
-          <button
-            *ngIf="selectedAvatar"
-            pButton
-            type="button"
-            label="Guardar fotografía"
-            icon="pi pi-upload"
-            [loading]="uploadingAvatar"
-            [disabled]="uploadingAvatar"
-            (click)="uploadAvatar()">
-          </button>
+
 
           <button
             *ngIf="user.avatarUrl"

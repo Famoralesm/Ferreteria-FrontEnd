@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, OnDestroy,  ChangeDetectorRef } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
@@ -152,13 +152,13 @@ export class OrderForm implements OnInit , OnDestroy {
 
     this.form = this.fb.group({
 
-      customerName: [''],
-      phone: [''],
-      address: [''],
+      customerName: ['',Validators.required],
+      phone: ['',Validators.required],
+      address: ['',Validators.required],
       latitude: [null],
       longitude: [null],
       deliveryDate: [''],
-      paymentMethod: [''],
+      paymentMethod: ['',Validators.required],
       notes: [''],
 
       // Solo lectura
@@ -403,12 +403,15 @@ private loadProducts(): void {
 
   console.log('Items:', this.items);
 }
-removeProduct(productId: number): void {
+removeProduct(index: number): void {
 
-  this.items =
-    this.items.filter(
-      item => item.productId !== productId
-    );
+  if (index < 0 || index >= this.items.length) {
+    return;
+  }
+
+  this.items.splice(index, 1);
+
+  this.items = [...this.items];
 
   this.updateTotal();
 

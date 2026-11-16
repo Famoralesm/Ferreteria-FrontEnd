@@ -92,7 +92,7 @@
 
 
 
-
+<!--se deja la opcion de pegar la direccion desde maps para ser mas especifico tambien estan las comunas y ciudades  -->
  <!--  <div class="map-actions">
 
     <a
@@ -365,7 +365,7 @@
 
         <tbody>
 
-          @for (item of items; track item.productId) {
+          @for (item of items; track $index) {
 
             <tr>
 
@@ -398,7 +398,7 @@
                   severity="danger"
                   rounded
                   text
-                  (click)="removeProduct(item.productId)">
+                  (click)="removeProduct($index)">
                 </button>
 
               </td>

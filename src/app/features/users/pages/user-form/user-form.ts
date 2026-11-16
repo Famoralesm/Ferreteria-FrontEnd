@@ -23,7 +23,7 @@ import { UserRequest } from '../../../../core/models/user/user-request';
 import { environment } from '../../../../../environments/environment';
 import { UserService } from '../../../../core/services/user.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-
+import { take } from 'rxjs';
 
 const passwordConfirmationValidator: ValidatorFn = (
   control: AbstractControl
@@ -318,32 +318,50 @@ next: user => {
     this.selectedAvatar
   ).subscribe({
 
-    next: updatedUser => {
-      this.currentAvatarUrl = updatedUser.avatarUrl ?? null;
-      this.uploadingAvatar = false;
-      this.saving = false;
+next: updatedUser => {
 
-      if (this.avatarPreview) {
-        URL.revokeObjectURL(this.avatarPreview);
+  this.currentAvatarUrl = updatedUser.avatarUrl ?? null;
+
+  this.uploadingAvatar = false;
+  this.saving = false;
+
+  if (this.avatarPreview) {
+    URL.revokeObjectURL(this.avatarPreview);
+    this.avatarPreview = undefined;
+  }
+
+  this.currentUserService.refresh()
+    .pipe(take(1))
+    .subscribe({
+
+      next: () => {
+
+        this.notificationService.success(
+          'Usuario e imagen actualizados correctamente.'
+        );
+
+        this.router.navigate(['/users']);
+
+      },
+
+      error: err => {
+
+        console.error(
+          'Error refrescando usuario autenticado:',
+          err
+        );
+
+        this.notificationService.warning(
+          'La fotografía se guardó, pero no fue posible actualizar los datos en pantalla.'
+        );
+
+        this.router.navigate(['/users']);
+
       }
 
-      this.notificationService.success(
-        'Usuario e imagen actualizados correctamente.'
-      );
+    });
 
-      this.router.navigate(['/users']);
-    },
-
-    error: err => {
-      console.error('Error subiendo avatar del usuario:', err);
-
-      this.uploadingAvatar = false;
-      this.saving = false;
-
-      this.notificationService.error(
-        'El usuario se guardó, pero no fue posible subir su fotografía.'
-      );
-    }
+},
 
   });
 

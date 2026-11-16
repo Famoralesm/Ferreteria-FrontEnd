@@ -26,7 +26,7 @@ import { Role } from '../../core/enums/role';
 import { CurrentUserService } from '../../core/services/current-user.service';
 import { ProfileService } from '../../core/services/profile.services';
 import { NotificationService } from '../../core/services/notification.service';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 
 
 @Component({
@@ -329,37 +329,71 @@ get avatarSrc(): string | null {
 
   }
 
-  saveProfile(): void {
+  
+saveProfile(): void {
 
-    if (this.saving || this.profileForm.invalid) {
+  if (this.saving || this.profileForm.invalid) {
+    this.profileForm.markAllAsTouched();
+    return;
+  }
 
-      this.profileForm.markAllAsTouched();
+  const nameChanged = this.profileForm.dirty;
+  const avatarChanged = !!this.selectedAvatar;
 
+  if (!nameChanged && !avatarChanged) {
+    this.notificationService.info(
+      'No hay cambios para guardar.'
+    );
+    return;
+  }
+
+  this.saving = true;
+
+  const saveAvatar = (): void => {
+
+    if (!this.selectedAvatar) {
+      finish();
       return;
-
     }
 
-    if (!this.profileForm.dirty) {
+    const file = this.selectedAvatar;
 
-      this.notificationService.info(
-        'No hay cambios para guardar.'
-      );
+    this.profileService.uploadAvatar(file)
+      .pipe(take(1))
+      .subscribe({
 
-      return;
+        next: user => {
 
-    }
+          this.currentUser = user;
+          this.selectedAvatar = undefined;
+          this.revokePreview();
 
-    const request = {
+          finish();
 
-      name: String(
-        this.profileForm.get('name')?.value ?? ''
-      ).trim()
+        },
 
-    };
+        error: err => {
 
-    this.saving = true;
+          console.error('Error subiendo fotografía:', err);
 
-    this.profileService.updateProfile(request)
+          this.saving = false;
+
+          this.notificationService.error(
+            this.getErrorMessage(
+              err,
+              'No fue posible actualizar la fotografía.'
+            )
+          );
+
+        }
+
+      });
+
+  };
+
+  const finish = (): void => {
+
+    this.currentUserService.refresh()
       .pipe(take(1))
       .subscribe({
 
@@ -375,11 +409,44 @@ get avatarSrc(): string | null {
 
           this.saving = false;
 
-          this.refreshProfile();
-
           this.notificationService.success(
-            'Tu perfil fue actualizado correctamente.'
+            'Tus cambios fueron guardados correctamente.'
           );
+
+        },
+
+        error: err => {
+
+          console.error('Error refrescando perfil:', err);
+
+          this.saving = false;
+
+          this.notificationService.warning(
+            'Los cambios se guardaron, pero no fue posible refrescar el perfil.'
+          );
+
+        }
+
+      });
+
+  };
+
+  if (nameChanged) {
+
+    const request = {
+      name: String(
+        this.profileForm.get('name')?.value ?? ''
+      ).trim()
+    };
+
+    this.profileService.updateProfile(request)
+      .pipe(take(1))
+      .subscribe({
+
+        next: user => {
+
+          this.currentUser = user;
+          saveAvatar();
 
         },
 
@@ -400,7 +467,14 @@ get avatarSrc(): string | null {
 
       });
 
+  } else {
+
+    saveAvatar();
+
   }
+
+}
+
 
   private refreshProfile(): void {
 
