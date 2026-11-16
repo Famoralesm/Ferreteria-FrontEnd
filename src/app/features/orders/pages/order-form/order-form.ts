@@ -1,23 +1,29 @@
 import { Component, inject, OnInit, OnDestroy,  ChangeDetectorRef } from '@angular/core';
-import { ReactiveFormsModule, Validators } from '@angular/forms';
-
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { SelectModule } from 'primeng/select';
-
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators , FormsModule} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
 import { OrderService } from '../../../../core/services/order.service';
 import { ProductService } from '../../../../core/services/product.service';
 import { Product } from '../../../../core/models/product/product';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ORDER_STATUSES,OrderStatus } from '../../../../core/models/order/order-status';
 import { OrderSummary } from '../../../../core/models/order/order-summary';
 import { NotificationService } from '../../../../core/services/notification.service';   
+import { CustomerService } from '../../../../core/services/customer.service';
+import { Customer } from '../../../../core/models/customer/customer';
+type UnknownCustomerOption = {
+  id: null;
+  nombre: string;
+  rut: string;
+  desconocido: true;
+};
+
+type CustomerOption = Customer | UnknownCustomerOption;
 
 @Component({
   selector: 'app-order-form',
@@ -54,6 +60,12 @@ export class OrderForm implements OnInit , OnDestroy {
   total: number;
   }[] = [];
   orderStatuses = ORDER_STATUSES;
+
+  customers: Customer[] = [];
+  customerOptions: CustomerOption[] = [];
+  selectedCustomerOption: CustomerOption | null = null;
+
+  private customerService = inject(CustomerService);
 
   private productService = inject(ProductService);
   private fb = inject(FormBuilder);
@@ -157,7 +169,7 @@ export class OrderForm implements OnInit , OnDestroy {
       address: ['',Validators.required],
       latitude: [null],
       longitude: [null],
-      deliveryDate: [''],
+      deliveryDate: ['',Validators.required],
       paymentMethod: ['',Validators.required],
       notes: [''],
 
@@ -177,28 +189,22 @@ export class OrderForm implements OnInit , OnDestroy {
 
   }
 
-  ngOnInit(): void {
+ngOnInit(): void {
 
-  const idParam =
-    this.route.snapshot.paramMap.get('id');
+  const idParam = this.route.snapshot.paramMap.get('id');
 
-  this.id = idParam
-    ? Number(idParam)
-    : undefined;
+  this.id = idParam ? Number(idParam) : undefined;
 
   this.loadProducts();
+  this.loadCustomers();
 
   if (this.id) {
-
     this.loadOrder(this.id);
-
     this.updateElapsedTime();
-
     this.startTimer();
-
   }
 
-  }
+}
   ngOnDestroy(): void {
 
     this.timerSubscription?.unsubscribe();
@@ -608,17 +614,45 @@ onAddressChange(): void {
 
 saveOrder(): void {
 
-  const formValue = this.form.getRawValue();
+  this.form.markAllAsTouched();
+
+  const requiredFields: { control: string; label: string }[] = [
+    { control: 'customerName', label: 'Cliente' },
+    { control: 'address', label: 'Dirección' },
+    { control: 'deliveryDate', label: 'Fecha de entrega' },
+    { control: 'paymentMethod', label: 'Método de pago' }
+  ];
+
+  const missingFields = requiredFields
+    .filter(field => {
+      const control = this.form.get(field.control);
+
+      return !control ||
+        control.invalid ||
+        !String(control.value ?? '').trim();
+    })
+    .map(field => field.label);
 
   if (this.items.length === 0) {
-    console.warn('El pedido debe tener al menos un producto');
+    missingFields.push('Productos del pedido');
+  }
+
+  if (missingFields.length > 0) {
+
+    this.notificationService.warning(
+      `Completa los siguientes campos obligatorios: ${missingFields.join(', ')}.`
+    );
+
+    this.cdr.detectChanges();
     return;
   }
+
+  const formValue = this.form.getRawValue();
 
   const data = {
 
     customerName: formValue.customerName,
-    phone: formValue.phone,
+    phone: formValue.phone || '',
     address: formValue.address,
     deliveryDate: formValue.deliveryDate,
     paymentMethod: formValue.paymentMethod,
@@ -643,28 +677,26 @@ saveOrder(): void {
 
         next: order => {
 
-          console.log('Pedido actualizado:', order);
-
-          this.cdr.detectChanges();
-
           this.notificationService.success(
             'El pedido fue actualizado correctamente.'
           );
 
+          this.cdr.detectChanges();
           this.router.navigate(['/orders']);
 
         },
 
         error: err => {
 
-          console.error(
-            'Error actualizando pedido:',
-            err
+          console.error('Error actualizando pedido:', err);
+
+          this.notificationService.warning(
+            'No fue posible actualizar el pedido.'
           );
 
         }
 
-    });
+      });
 
   } else {
 
@@ -673,20 +705,21 @@ saveOrder(): void {
 
         next: order => {
 
-              this.notificationService.success(
-      'El pedido fue creado correctamente.'
-    );
+          this.notificationService.success(
+            'El pedido fue creado correctamente.'
+          );
+
           this.cdr.detectChanges();
           this.router.navigate(['/orders', order.id]);
-          
 
         },
 
         error: err => {
 
-          console.error(
-            'Error creando pedido:',
-            err
+          console.error('Error creando pedido:', err);
+
+          this.notificationService.warning(
+            'No fue posible crear el pedido. Revisa los datos ingresados.'
           );
 
         }
@@ -710,5 +743,71 @@ saveOrder(): void {
     return found?.label ?? status;
   }
 
+  private loadCustomers(): void {
+
+  this.customerService.findAll().subscribe({
+
+    next: customers => {
+
+      this.customers = customers.filter(customer => customer.activo);
+
+      const unknownOption: UnknownCustomerOption = {
+        id: null,
+        nombre: 'Cliente desconocido',
+        rut: '',
+        desconocido: true
+      };
+
+      this.customerOptions = [
+        ...this.customers,
+        unknownOption
+      ];
+
+    },
+
+    error: err => {
+      console.error('Error cargando clientes:', err);
+      this.notificationService.warning(
+        'No fue posible cargar los clientes registrados.'
+      );
+    }
+
+  });
+
+}
+onCustomerSelected(option: CustomerOption | null): void {
+
+  this.selectedCustomerOption = option;
+
+  if (!option) {
+    this.form.patchValue({
+      customerName: '',
+      phone: '',
+      address: ''
+    });
+    return;
+  }
+
+  if ('desconocido' in option) {
+
+    this.form.patchValue({
+      customerName: 'Cliente desconocido',
+      phone: '',
+      address: ''
+    });
+
+    return;
+  }
+
+  // Cliente existente: datos obtenidos desde la BD.
+  this.form.patchValue({
+    customerName: option.nombre,
+    phone: option.telefono ?? '',
+    address: option.direccion ?? ''
+  });
+
+  this.updateMapLinks();
+
+}
   
 }

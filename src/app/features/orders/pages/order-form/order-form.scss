@@ -160,3 +160,16 @@ form {
   max-width: 1100px;
   margin: 0 auto;
 }
+
+.customer-option {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  small {
+    color: #777;
+    font-size: 0.8rem;
+  }
+
+
+}

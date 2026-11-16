@@ -20,423 +20,394 @@
   </div>
 
 
-  <div class="page-card order-form-card">
+    <div class="page-card order-form-card">
 
-    <form
-      [formGroup]="form"
-      class="form-grid">
+      <form
+        [formGroup]="form"
+        class="form-grid">
 
-    <label for="orderNumber">
-      Número de pedido
-    </label>
+        @if (id) { 
+          <label for="orderNumber">
+            Número de pedido
+          </label>
 
-    <input
-      id="orderNumber"
-      pInputText
-      formControlName="orderNumber"
-      readonly>
+          <input
+            id="orderNumber"
+            pInputText
+            formControlName="orderNumber"
+            readonly>
+        }
+    
+
+
+        <div class="form-field">
+
+          <label for="customerName">
+            Nombre del cliente *
+          </label>
+
+          <input
+            id="customerName"
+            pInputText
+            formControlName="customerName">
+
+        </div>
+
+        <div class="form-field">
+
+          <label for="phone">
+            Teléfono
+          </label>
+
+          <input
+            id="phone"
+            pInputText
+            formControlName="phone"
+            placeholder="Teléfono de contacto">
+
+        </div>
+        
+          <!-- ========================= -->
+          <!-- DIRECCIÓN -->
+          <!-- ========================= -->
+
+        <div class="form-field address-field">
+
+          <label for="address">
+            Dirección
+          </label>
+
+
+          <div class="address-input">
+
+            <input
+              id="address"
+              pInputText
+              formControlName="address"
+              placeholder="Pegue una ubicación de Google Maps o escriba una dirección"
+              (paste)="onAddressPaste($event)"
+              (input)="onAddressChange()">
+
+          </div>
+
+        </div>
+
+
+          <!-- ========================= -->
+          <!-- MÉTODO DE PAGO -->
+          <!-- ========================= -->
+
+        <div class="form-field">
+
+          <label for="paymentMethod">
+            Método de pago *
+          </label>
+
+          <p-select
+            id="paymentMethod"
+            [options]="paymentMethods"
+            optionLabel="label"
+            optionValue="value"
+            formControlName="paymentMethod"
+            placeholder="Seleccione método de pago"
+            class="w-full">
+          </p-select>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- ESTADO -->
+        <!-- ========================= -->
+
+        <div class="form-field">
+
+          <label for="status">
+            Estado
+          </label>
+
+          <p-select
+            id="status"
+            [options]="orderStatuses"
+            optionLabel="label"
+            optionValue="value"
+            formControlName="status"
+            placeholder="Seleccione estado"
+            class="w-full">
+          </p-select>
+
+        </div>
+          <div class="status-info">
+
+            <div class="status-label">
+              Estado actual
+            </div>
+
+            <div class="status-value">
+              {{ getStatusLabel(form.get('status')?.value) }}
+            </div>
+
+              <div class="status-time">
+                <i class="pi pi-clock"></i>
+
+                      <td>
+                          <div class="status-timer" > {{ elapsedTime }}</div>
+                      </td>
+          </div>
+        
+      </div>
+
+    <!-- ========================= -->
+    <!-- PRODUCTOS -->
+    <!-- ========================= -->
+
+  <div class="form-field">
+
+    <section class="order-items-section">
+
+      <div class="section-title">
+
+        <div>
+
+          <h3>
+            Productos del pedido
+            
+          </h3>
+
+        </div>
+
+      </div>
+
+
+      <div class="product-selector">
+
+        <div class="form-field">
+
+          <label for="product">
+            Producto<br>
+          </label>
+          
+          <p-select
+            id="product"
+            [options]="products"
+            optionLabel="name"
+            [(ngModel)]="selectedProduct"
+            [ngModelOptions]="{standalone: true}"
+            placeholder="Seleccione un producto"
+            class="w-full">
+          </p-select>
+
+        </div>
+
+        <br>
+        <div class="form-field quantity-field">
+
+          <label for="quantity">
+            Cantidad <br>
+          </label>
+          <p-inputNumber 
+            [(ngModel)]="quantity" 
+            mode="decimal" 
+            id="quantity"
+            [ngModelOptions]="{standalone: true}"
+            [showButtons]="true" 
+            inputId="minmax-buttons" 
+            [min]="0" 
+            [max]="100" /> 
+
+        </div>
+          <br>
+
+
+        <div class="add-product-button">
+
+          <button
+            pButton
+            type="button"
+            label="Agregar"
+            icon="pi pi-plus"
+            severity="success"
+            (click)="addProduct()">
+          </button>
+
+        </div>  <br>
+
+      </div>
+
+
+
+      @if (items.length > 0) {
+
+        <div class="items-table">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>Producto</th>
+
+                <th>Cantidad</th>
+
+                <th>Precio</th>
+
+                <th>Total</th>
+
+                <th></th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              @for (item of items; track $index) {
+
+                <tr>
+
+                  <td>
+                    <strong>
+                      {{ item.productName }}
+                    </strong>
+                  </td>
+
+                  <td>
+                    {{ item.quantity }}
+                  </td>
+
+                  <td>
+                    {{ item.unitPrice | currency:'CLP':'symbol':'1.0-0':'es-CL' }}
+                  </td>
+
+                  <td>
+                    <strong>
+                      {{ item.total | currency:'CLP':'symbol':'1.0-0':'es-CL' }}
+                    </strong>
+                  </td>
+
+                  <td>
+
+                    <button
+                      pButton
+                      type="button"
+                      icon="pi pi-trash"
+                      severity="danger"
+                      rounded
+                      text
+                      (click)="removeProduct($index)">
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      <!-- ========================= -->
+      <!-- TOTAL -->
+      <!-- ========================= -->
+
+      <div class="form-field">
+
+        <label for="totalAmount">
+          Total
+        </label>
+
+        <input
+          id="totalAmount"
+          pInputText
+          formControlName="totalAmount"
+          readonly>
+
+      </div>
+
+      }
+
+    </section>
+
+  </div>
+
+
+     <!-- ========================= -->
+      <!-- OBSERVACIONES -->
+      <!-- ========================= -->
+
+
+      <div class="form-field">    
+
+        <label for="deliveryDate">
+          Fecha de entrega *
+        </label>
+
+        <input
+          id="deliveryDate"
+          type="date"
+          pInputText
+          formControlName="deliveryDate">
+
+        <label for="notes">
+          Observaciones
+        </label>
+
+        <textarea
+          id="notes"
+          pInputText
+          rows="5"
+          formControlName="notes">
+        </textarea>
+
+      
+       @if (id) {
+
+      <label for="createdBy">
+        Creado por
+      </label>
+
+      <input
+        id="createdBy"
+        pInputText
+        formControlName="createdBy"
+        readonly>
+
+    
+
+      <label for="createdAt">
+        Fecha de creación
+      </label>
+
+      <input
+        id="createdAt"
+        pInputText
+        formControlName="createdAt"
+        readonly>
+
+
+
+      <label for="updated_at">
+        Última actualización
+      </label>
+
+      <input
+        id="updated_at"
+        pInputText
+        formControlName="updated_at"
+        readonly>
+
+    
+
+  }
+  </div>
 
   
 
-
-  <div class="form-field">
-
-    <label for="customerName">
-      Cliente
-    </label>
-
-    <input
-      id="customerName"
-      pInputText
-      formControlName="customerName">
-
-  </div>
-
-
-  <div class="form-field">
-
-    <label for="phone">
-      Teléfono
-    </label>
-
-    <input
-      id="phone"
-      pInputText
-      formControlName="phone">
-
-  </div>
-
-
-  <!-- ========================= -->
-  <!-- DIRECCIÓN -->
-  <!-- ========================= -->
-
-<div class="form-field address-field">
-
-  <label for="address">
-    Dirección
-  </label>
-
-
-  <div class="address-input">
-
-    <input
-      id="address"
-      pInputText
-      formControlName="address"
-      placeholder="Pegue una ubicación de Google Maps o escriba una dirección"
-      (paste)="onAddressPaste($event)"
-      (input)="onAddressChange()">
-
-  </div>
-
-
-
-<!--se deja la opcion de pegar la direccion desde maps para ser mas especifico tambien estan las comunas y ciudades  -->
- <!--  <div class="map-actions">
-
-    <a
-      [href]="wazeLink"
-      target="_blank"
-      class="map-button waze-button">
-
-      <i class="pi pi-map-marker"></i>
-
-      Abrir en Waze
-
-    </a>
-
-    <a
-      [href]="googleMapsLink"
-      target="_blank"
-      class="map-button">
-
-      <i class="pi pi-map"></i>
-
-      Abrir en Google Maps
-
-    </a> 
-
-  </div>-->
-</div>
-
-
-  <!-- ========================= -->
-  <!-- MÉTODO DE PAGO -->
-  <!-- ========================= -->
-
-  <div class="form-field">
-
-    <label for="paymentMethod">
-      Método de pago
-    </label>
-
-    <p-select
-      id="paymentMethod"
-      [options]="paymentMethods"
-      optionLabel="label"
-      optionValue="value"
-      formControlName="paymentMethod"
-      placeholder="Seleccione método de pago"
-      class="w-full">
-    </p-select>
-
-  </div>
-
-
-  <!-- ========================= -->
-  <!-- ESTADO -->
-  <!-- ========================= -->
-
-  <div class="form-field">
-
-    <label for="status">
-      Estado
-    </label>
-
-  <p-select
-    id="status"
-    [options]="orderStatuses"
-    optionLabel="label"
-    optionValue="value"
-    formControlName="status"
-    placeholder="Seleccione estado"
-    class="w-full">
-  </p-select>
-
-  </div>
-  <div class="status-info">
-
-    <div class="status-label">
-      Estado actual
-    </div>
-
-  <div class="status-value">
-    {{ getStatusLabel(form.get('status')?.value) }}
-  </div>
-
-    <div class="status-time">
-      <i class="pi pi-clock"></i>
-
-            <td>
-                <div class="status-timer" >  <i class="pi pi-clock"> </i>{{ elapsedTime }}</div>
-            </td>
-
-    </div>
-  </div>
-
-
-  <!-- ========================= -->
-  <!-- TOTAL -->
-  <!-- ========================= -->
-
-  <div class="form-field">
-
-    <label for="totalAmount">
-      Total
-    </label>
-
-    <input
-      id="totalAmount"
-      pInputText
-      formControlName="totalAmount"
-      readonly>
-
-  </div>
-
-
-  <!-- ========================= -->
-  <!-- CREADO POR -->
-  <!-- ========================= -->
-
-  <div class="form-field">
-
-    <label for="createdBy">
-      Creado por
-    </label>
-
-    <input
-      id="createdBy"
-      pInputText
-      formControlName="createdBy"
-      readonly>
-
-  </div>
-
-
-  <!-- ========================= -->
-  <!-- FECHAS -->
-  <!-- ========================= -->
-
-  <div class="form-field">
-
-    <label for="createdAt">
-      Fecha de creación
-    </label>
-
-    <input
-      id="createdAt"
-      pInputText
-      formControlName="createdAt"
-      readonly>
-
-  </div>
-
-
-  <div class="form-field">
-
-    <label for="updated_at">
-      Última actualización
-    </label>
-
-    <input
-      id="updated_at"
-      pInputText
-      formControlName="updated_at"
-      readonly>
-
-  </div>
-  <!-- ========================= -->
-<!-- PRODUCTOS -->
-<!-- ========================= -->
-
-<section class="order-items-section">
-
-  <div class="section-title">
-
-    <div class="section-icon">
-      <i class="pi pi-shopping-cart"></i>
-    </div>
-
-    <div>
-
-      <h3>
-        Productos del pedido
-      </h3>
-
-      <p>
-        Selecciona los productos y cantidades.
-      </p>
-
-    </div>
-
-  </div>
-
-
-  <div class="product-selector">
-
-    <div class="form-field">
-
-      <label for="product">
-        Producto
-      </label>
-
-      <p-select
-        id="product"
-        [options]="products"
-        optionLabel="name"
-        [(ngModel)]="selectedProduct"
-        [ngModelOptions]="{standalone: true}"
-        placeholder="Seleccione un producto"
-        class="w-full">
-      </p-select>
-
-    </div>
-
-
-    <div class="form-field quantity-field">
-
-      <label for="quantity">
-        Cantidad
-      </label>
-
-    <p-inputNumber 
-      [(ngModel)]="quantity" 
-      mode="decimal" 
-      id="quantity"
-      [ngModelOptions]="{standalone: true}"
-      [showButtons]="true" 
-      inputId="minmax-buttons" 
-      [min]="0" 
-      [max]="100" /> 
-
-    </div>
-
-
-    <div class="add-product-button">
-
-      <button
-        pButton
-        type="button"
-        label="Agregar"
-        icon="pi pi-plus"
-        severity="success"
-        (click)="addProduct()">
-      </button>
-
-    </div>
-
-  </div>
-
-
-  @if (items.length > 0) {
-
-    <div class="items-table">
-
-      <table>
-
-        <thead>
-
-          <tr>
-
-            <th>Producto</th>
-
-            <th>Cantidad</th>
-
-            <th>Precio</th>
-
-            <th>Total</th>
-
-            <th></th>
-
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          @for (item of items; track $index) {
-
-            <tr>
-
-              <td>
-                <strong>
-                  {{ item.productName }}
-                </strong>
-              </td>
-
-              <td>
-                {{ item.quantity }}
-              </td>
-
-              <td>
-                {{ item.unitPrice | currency:'CLP':'symbol':'1.0-0':'es-CL' }}
-              </td>
-
-              <td>
-                <strong>
-                  {{ item.total | currency:'CLP':'symbol':'1.0-0':'es-CL' }}
-                </strong>
-              </td>
-
-              <td>
-
-                <button
-                  pButton
-                  type="button"
-                  icon="pi pi-trash"
-                  severity="danger"
-                  rounded
-                  text
-                  (click)="removeProduct($index)">
-                </button>
-
-              </td>
-
-            </tr>
-
-          }
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-  }
-
-</section>
-
-
-  <!-- ========================= -->
-  <!-- OBSERVACIONES -->
-  <!-- ========================= -->
-
-  <div class="form-field">
-
-    <label for="notes">
-      Observaciones
-    </label>
-
-    <textarea
-      id="notes"
-      pInputText
-      rows="5"
-      formControlName="notes">
-    </textarea>
-
-  </div>
-
+  <div class="form-field"></div>
 
   <!-- ========================= -->
   <!-- ACCIONES -->
