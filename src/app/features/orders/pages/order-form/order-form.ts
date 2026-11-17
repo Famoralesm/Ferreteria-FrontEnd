@@ -831,6 +831,7 @@ onCustomerSelected(option: CustomerOption | null): void {
 
 
 
+
 private syncSelectedCustomer(): void {
   const customerName = String(
     this.form.get('customerName')?.value ?? ''
@@ -841,18 +842,64 @@ private syncSelectedCustomer(): void {
     return;
   }
 
-  const customer = this.customerOptions.find(
+  const normalizedName = customerName.toLowerCase();
+
+  // Buscar primero entre los clientes cargados.
+  const customer = this.customers.find(
     option =>
-      option.nombre.trim().toLowerCase() ===
-      customerName.toLowerCase()
+      option.nombre.trim().toLowerCase() === normalizedName
   );
 
-  this.selectedCustomerOption = customer ?? {
+  if (customer) {
+    this.customerOptions = [
+      ...this.customers,
+      {
+        id: null,
+        nombre: 'Cliente desconocido',
+        rut: '',
+        desconocido: true
+      }
+    ];
+
+    this.selectedCustomerOption = customer;
+    return;
+  }
+
+  // Si el cliente ya no está activo o no aparece en la lista,
+  // creamos una opción para poder mostrar el nombre histórico.
+  const historicalCustomer: UnknownCustomerOption = {
     id: null,
     nombre: customerName,
     rut: '',
     desconocido: true
   };
+
+  this.customerOptions = [
+    ...this.customers,
+    {
+      id: null,
+      nombre: 'Cliente desconocido',
+      rut: '',
+      desconocido: true
+    },
+    ...(normalizedName === 'cliente desconocido'
+      ? []
+      : [historicalCustomer])
+  ];
+
+  this.selectedCustomerOption =
+    normalizedName === 'cliente desconocido'
+      ? this.customerOptions[this.customerOptions.length - 1]
+      : historicalCustomer;
+}
+
+
+get isUnknownCustomerSelected(): boolean {
+  return (
+    !this.id &&
+    this.selectedCustomerOption !== null &&
+    'desconocido' in this.selectedCustomerOption
+  );
 }
 
 

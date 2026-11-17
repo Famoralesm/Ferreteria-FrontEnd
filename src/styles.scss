@@ -106,12 +106,12 @@
 /* =========================================================
    PAGE LAYOUT
    ========================================================= */
-
 .page-shell {
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 26px 0px 0px;
+  max-width: none;
+  margin: 0;
+  padding: 26px 28px 30px;
+  box-sizing: border-box;
 }
 
 

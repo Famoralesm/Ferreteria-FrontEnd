@@ -86,7 +86,7 @@
             id="phone"
             pInputText
             formControlName="phone"
-            [readonly]="!!id"            
+            [readonly]="!!id || !isUnknownCustomerSelected"            
             placeholder="Teléfono de contacto"
             >
 
@@ -110,7 +110,7 @@
               pInputText
               formControlName="address"              
               placeholder="Pegue una ubicación de Google Maps o escriba una dirección"
-              [readonly]="!!id"
+              [readonly]="!!id || !isUnknownCustomerSelected"
               (paste)="onAddressPaste($event)"
               (input)="onAddressChange()"
               >
