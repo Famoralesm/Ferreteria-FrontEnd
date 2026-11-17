@@ -1,111 +1,87 @@
 
 @use "styles/variables";
-
 @use "styles/theme";
 @import "primeicons/primeicons.css";
 
-.fc-menu {
-    border: none !important;
-}
-
-.fc-menu .p-panelmenu-panel {
-    border: none !important;
-    background: transparent !important;
-}
-
-/* Items principales */
-.fc-menu .p-panelmenu-header-link {
-    background: transparent !important;
-    color: #ffffff !important;
-    border: none !important;
-    padding: 15px 20px !important;
-    font-weight: 500;
-}
-
-.fc-menu .p-panelmenu-header-link:hover {
-    background: #ffffff !important;
-    color: #6c757d !important;
-}
-
-/* Texto de los items principales */
-.fc-menu .p-panelmenu-header-link .p-menuitem-text {
-    color: #ffffff !important;
-}
-
-.fc-menu .p-panelmenu-header-link:hover .p-menuitem-text {
-    color: #6c757d !important;
-}
-
-/* Contenedor de submenús */
-.fc-menu .p-panelmenu-content {
-    background: #123B63 !important;
-    border: none !important;
-}
-
-/* SUBITEMS */
-
-
-/* TEXTO DEL SUBITEM */
-.fc-menu .p-menuitem-link .p-menuitem-text {
-    color: #ffffff !important;
-}
-
-/* ICONO DEL SUBITEM */
-.fc-menu .p-menuitem-link .p-menuitem-icon {
-    color: #ffffff !important;
-    margin-right: 10px;
-}
-
-
-
-/* TEXTO AL HACER HOVER */
-.fc-menu .p-menuitem-link:hover .p-menuitem-text {
-    color: #6c757d !important;
-}
-
-/* ICONO AL HACER HOVER */
-.fc-menu .p-menuitem-link:hover .p-menuitem-icon {
-    color: #6c757d !important;
-}
 /* =========================================================
-   FERRETERIA FC - SIDEBAR SUBMENU
+   FERRETERÍA FC - MENÚ LATERAL
+   Texto blanco por defecto.
+   Texto gris sobre fondo blanco al hacer hover.
    ========================================================= */
 
-.fc-menu .p-panelmenu-content .p-menuitem-link,
-.fc-menu .p-panelmenu-content .p-menuitem-link .p-menuitem-text,
-.fc-menu .p-panelmenu-content .p-menuitem-link .p-menuitem-icon {
-    color: #ffffff !important;
+.sidebar .fc-menu {
+  border: none;
 }
 
-
-/* Hover */
-
-.fc-menu .p-panelmenu-content .p-menuitem-link:hover,
-.fc-menu .p-panelmenu-content .p-menuitem-link:hover .p-menuitem-text,
-.fc-menu .p-panelmenu-content .p-menuitem-link:hover .p-menuitem-icon {
-    background: #ffffff !important;
-    color: #6c757d !important;
-}
-.fc-menu .p-panelmenu-content ul.p-submenu-list li.p-menuitem > .p-menuitem-content > .p-menuitem-link {
-    color: #ffffff !important;
-    background: transparent !important;
-}
-
-.fc-menu .p-panelmenu-content ul.p-submenu-list li.p-menuitem > .p-menuitem-content > .p-menuitem-link .p-menuitem-text {
-    color: #ffffff !important;
+.sidebar .fc-menu .p-panelmenu-panel,
+.sidebar .fc-menu .p-panelmenu-header,
+.sidebar .fc-menu .p-panelmenu-header-content,
+.sidebar .fc-menu .p-panelmenu-content,
+.sidebar .fc-menu .p-panelmenu-content-container,
+.sidebar .fc-menu .p-panelmenu-root-list,
+.sidebar .fc-menu .p-panelmenu-item,
+.sidebar .fc-menu .p-panelmenu-item-content,
+.sidebar .fc-menu .p-menuitem-content {
+  background: transparent;
+  border: none;
 }
 
-.fc-menu .p-panelmenu-content ul.p-submenu-list li.p-menuitem > .p-menuitem-content > .p-menuitem-link:hover {
-    color: #6c757d !important;
-    background: #ffffff !important;
+/* Enlaces principales y submenús */
+.sidebar .fc-menu .p-panelmenu-header-link,
+.sidebar .fc-menu .p-panelmenu-item-link,
+.sidebar .fc-menu .p-menuitem-link {
+  color: #ffffff !important;
+  background: transparent !important;
+  border: none;
+  border-radius: 6px;
+  margin: 2px 5px;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.fc-menu .p-panelmenu-content ul.p-submenu-list li.p-menuitem > .p-menuitem-content > .p-menuitem-link:hover .p-menuitem-text {
-    color: #6c757d !important;
+/* Espaciado de las opciones principales */
+.sidebar .fc-menu .p-panelmenu-header-link {
+  padding: 15px 20px;
+  font-weight: 500;
 }
+
+/* Textos e iconos blancos por defecto */
+.sidebar .fc-menu .p-panelmenu-header-label,
+.sidebar .fc-menu .p-panelmenu-item-label,
+.sidebar .fc-menu .p-menuitem-text,
+.sidebar .fc-menu .p-panelmenu-header-icon,
+.sidebar .fc-menu .p-panelmenu-item-icon,
+.sidebar .fc-menu .p-menuitem-icon,
+.sidebar .fc-menu .p-panelmenu-submenu-icon {
+  color: #ffffff !important;
+  transition: color 0.2s ease;
+}
+
+/* Separación entre icono y texto */
+.sidebar .fc-menu .p-menuitem-icon {
+  margin-right: 10px;
+}
+
+/* Hover: fondo blanco */
+.sidebar .fc-menu .p-panelmenu-header-link:hover,
+.sidebar .fc-menu .p-panelmenu-item-link:hover,
+.sidebar .fc-menu .p-menuitem-link:hover {
+  background: #ffffff !important;
+}
+
+/* Hover: texto e iconos grises */
+.sidebar .fc-menu .p-panelmenu-header-link:hover,
+.sidebar .fc-menu .p-panelmenu-item-link:hover,
+.sidebar .fc-menu .p-menuitem-link:hover,
+.sidebar .fc-menu .p-panelmenu-header-link:hover *,
+.sidebar .fc-menu .p-panelmenu-item-link:hover *,
+.sidebar .fc-menu .p-menuitem-link:hover * {
+  color: #6c757d !important;
+}
+
 /* =========================================================
    PAGE LAYOUT
    ========================================================= */
+
 .page-shell {
   width: 100%;
   max-width: none;
@@ -113,7 +89,6 @@
   padding: 26px 28px 30px;
   box-sizing: border-box;
 }
-
 
 /* =========================================================
    PAGE HEADER
@@ -123,58 +98,39 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   margin-bottom: 24px;
-
   padding: 22px 26px;
-
   background: #123b63;
-
   border-radius: 12px;
-
-
-
-  box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
-
 
 .page-header-content {
   display: flex;
   flex-direction: column;
 }
 
-
 .page-kicker {
   margin-bottom: 5px;
-
   color: #f2b705;
-
   font-size: 26px;
   font-weight: 700;
-
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
-
 .page-header h1,
 .page-header h2 {
   margin: 0;
-
   font-size: 25px;
   font-weight: 700;
 }
 
-
 .page-header p {
   margin: 6px 0 0;
-
   color: #dbe7f2;
-
   font-size: 13px;
 }
-
 
 /* =========================================================
    PAGE ACTIONS
@@ -185,6 +141,7 @@
   align-items: center;
   gap: 10px;
 }
+
 /* =========================================================
    ACCIONES DEBAJO DE LAS TABLAS
    ========================================================= */
@@ -200,17 +157,11 @@
 
 .page-card {
   background: #ffffff;
-
   border-radius: 12px;
-
   padding: 20px;
-
-  box-shadow:
-    0 5px 18px rgba(0, 0, 0, 0.06);
-
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.06);
   overflow-x: auto;
 }
-
 
 /* =========================================================
    PAGE INFO
@@ -220,19 +171,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
-
   margin-bottom: 15px;
-
   color: #6c757d;
-
   font-size: 13px;
 }
-
 
 .page-info strong {
   color: #123b63;
 }
-
 
 /* =========================================================
    TABLE
@@ -242,30 +188,22 @@
   width: 100%;
 }
 
-
 .page-card .p-datatable-thead > tr > th {
   background: #f5f7fa;
-
   color: #34495e;
-
   font-size: 13px;
   font-weight: 700;
-
   border-bottom: 1px solid #e5e9ee;
 }
 
-
 .page-card .p-datatable-tbody > tr > td {
   font-size: 13px;
-
   padding: 13px 12px;
 }
-
 
 .page-card .p-datatable-tbody > tr:hover {
   background: #f8fafc;
 }
-
 
 /* =========================================================
    ACTION BUTTONS
@@ -277,13 +215,11 @@
   gap: 6px;
 }
 
-
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
 @media (max-width: 768px) {
-
   .page-shell {
     padding: 20px 15px 30px;
   }
@@ -297,90 +233,4 @@
   .page-actions {
     width: 100%;
   }
-
-}
-
-/* ==========================================
-   FERRETERÍA FC - MENÚ LATERAL
-   Texto blanco por defecto.
-   Texto gris sobre fondo blanco al pasar
-   el mouse.
-   ========================================== */
-
-/* Fondos transparentes para mantener el azul */
-.sidebar .fc-menu,
-.sidebar .fc-menu .p-panelmenu-panel,
-.sidebar .fc-menu .p-panelmenu-header,
-.sidebar .fc-menu .p-panelmenu-header-content,
-.sidebar .fc-menu .p-panelmenu-content,
-.sidebar .fc-menu .p-panelmenu-content-container,
-.sidebar .fc-menu .p-panelmenu-root-list,
-.sidebar .fc-menu .p-panelmenu-item,
-.sidebar .fc-menu .p-panelmenu-item-content,
-.sidebar .fc-menu .p-menuitem-content {
-  background: transparent !important;
-}
-
-/* Enlaces: blanco por defecto */
-.sidebar .fc-menu .p-panelmenu-header-link,
-.sidebar .fc-menu .p-panelmenu-item-link,
-.sidebar .fc-menu .p-menuitem-link {
-  color: #ffffff !important;
-  background: transparent !important;
-  border-radius: 6px;
-  transition:
-    color 0.2s ease,
-    background-color 0.2s ease;
-}
-
-/* Textos e iconos: blanco por defecto */
-.sidebar .fc-menu .p-panelmenu-header-label,
-.sidebar .fc-menu .p-panelmenu-item-label,
-.sidebar .fc-menu .p-menuitem-text,
-.sidebar .fc-menu .p-panelmenu-header-icon,
-.sidebar .fc-menu .p-panelmenu-item-icon,
-.sidebar .fc-menu .p-menuitem-icon,
-.sidebar .fc-menu .p-panelmenu-submenu-icon {
-  color: #ffffff !important;
-  transition: color 0.2s ease;
-}
-
-/* Fondo blanco al poner el mouse sobre un enlace */
-.sidebar .fc-menu .p-panelmenu-header-link:hover,
-.sidebar .fc-menu .p-panelmenu-item-link:hover,
-.sidebar .fc-menu .p-menuitem-link:hover,
-.sidebar .fc-menu .p-panelmenu-header-content:hover,
-.sidebar .fc-menu .p-panelmenu-item-content:hover,
-.sidebar .fc-menu .p-menuitem-content:hover {
-  background: #ffffff !important;
-}
-
-/* Texto gris sobre el fondo blanco */
-.sidebar .fc-menu .p-panelmenu-header-link:hover,
-.sidebar .fc-menu .p-panelmenu-item-link:hover,
-.sidebar .fc-menu .p-menuitem-link:hover {
-  color: #6c757d !important;
-}
-
-/* Textos e iconos grises durante el hover */
-.sidebar .fc-menu .p-panelmenu-header-link:hover *,
-.sidebar .fc-menu .p-panelmenu-item-link:hover *,
-.sidebar .fc-menu .p-menuitem-link:hover *,
-.sidebar .fc-menu .p-panelmenu-header-content:hover *,
-.sidebar .fc-menu .p-panelmenu-item-content:hover *,
-.sidebar .fc-menu .p-menuitem-content:hover * {
-  color: #6c757d !important;
-}
-
-/* Área de los submenús */
-.sidebar .fc-menu .p-panelmenu-content,
-.sidebar .fc-menu .p-panelmenu-content-container {
-  color: #ffffff !important;
-}
-
-/* Separación visual entre opciones */
-.sidebar .fc-menu .p-panelmenu-header-link,
-.sidebar .fc-menu .p-panelmenu-item-link,
-.sidebar .fc-menu .p-menuitem-link {
-  margin: 2px 5px;
 }

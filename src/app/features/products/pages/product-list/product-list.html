@@ -1,5 +1,7 @@
+
 <div class="page-shell">
 
+  <!-- HEADER -->
   <div class="page-header">
 
     <div class="page-header-content">
@@ -16,21 +18,89 @@
 
   </div>
 
-  <div class="page-info">
+  <!-- FILTROS Y TOTAL -->
+  <div class="product-list-toolbar">
 
-    <i class="pi pi-box"></i>
+    <div class="product-filters">
 
-    <span>
-      Total de productos:
-      <strong>{{ products.length }}</strong>
-    </span>
+      <div class="filter-field">
+        <label for="filter-sku">SKU</label>
+        <input
+          id="filter-sku"
+          pInputText
+          type="search"
+          placeholder="Buscar SKU..."
+          [value]="skuSearch"
+          (input)="onFilterInput('sku', $event)">
+      </div>
+
+      <div class="filter-field">
+        <label for="filter-name">Producto</label>
+        <input
+          id="filter-name"
+          pInputText
+          type="search"
+          placeholder="Buscar producto..."
+          [value]="nameSearch"
+          (input)="onFilterInput('name', $event)">
+      </div>
+
+      <div class="filter-field">
+        <label for="filter-category">Categoría</label>
+        <p-select
+          inputId="filter-category"
+          [options]="categories"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Todas"
+          [showClear]="true"
+          [value]="categorySearch"
+          (onChange)="categorySearch = $event.value ?? ''">
+        </p-select>
+      </div>
+
+      <div class="filter-field">
+        <label for="filter-brand">Marca</label>
+        <input
+          id="filter-brand"
+          pInputText
+          type="search"
+          placeholder="Buscar marca..."
+          [value]="brandSearch"
+          (input)="onFilterInput('brand', $event)">
+      </div>
+
+      <button
+        pButton
+        type="button"
+        icon="pi pi-filter-slash"
+        severity="secondary"
+        [outlined]="true"
+        pTooltip="Limpiar filtros"
+        (click)="clearFilters()">
+      </button>
+
+    </div>
+
+    <!-- TOTAL A LA DERECHA -->
+    <div class="page-info product-total">
+
+      <i class="pi pi-box"></i>
+
+      <span>
+        Total de productos:
+        <strong>{{ products.length }}</strong>
+      </span>
+
+    </div>
 
   </div>
 
+  <!-- TABLA -->
   <div class="page-card">
 
     <app-product-table
-      [products]="products"
+      [products]="filteredProducts"
       (edit)="edit($event)"
       (view)="view($event)"
       (delete)="delete($event)">
@@ -38,7 +108,7 @@
 
   </div>
 
-  <!-- ACCIONES DE PRODUCTOS -->
+  <!-- ACCIONES -->
   <div class="page-actions page-actions--bottom">
 
     <button

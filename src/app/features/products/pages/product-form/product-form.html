@@ -1,244 +1,142 @@
-<div class="product-form-page">
 
-  <div class="product-form-card">
+<div class="page-shell">
 
-    <!-- HEADER -->
+  <!-- HEADER: MISMA ESTRUCTURA QUE LAS DEMÁS PÁGINAS -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <span class="page-kicker">
+        {{ id ? 'EDITAR PRODUCTO' : 'NUEVO PRODUCTO' }}
+      </span>
 
-    <div class="form-header">
-
-      <div>
-        <span class="page-kicker">
-         {{ id ? 'Editar producto' : 'Nuevo producto' }}
-        </span>
-        
-        <p>
-          {{ id
-            ? 'Actualiza la información del producto.'
-            : 'Registra un nuevo producto en el inventario.'
-          }}
-        </p>
-      </div>
-
-
-
+      <p>
+        {{ id
+          ? 'Actualiza la información del producto.'
+          : 'Registra un nuevo producto en el inventario.'
+        }}
+      </p>
     </div>
-
-
-    <form
-      [formGroup]="form"
-      class="product-form">
-
-
-      <!-- INFORMACIÓN BÁSICA -->
-
-      
-<!-- INFORMACIÓN BÁSICA + FOTOGRAFÍA -->
-<section class="form-section">
-
-  <div class="product-main-grid">
-
-    <!-- COLUMNA IZQUIERDA -->
-    <div class="product-main-fields">
-
-      <div class="form-field">
-        <label for="sku">
-          SKU <span>*</span>
-        </label>
-        <input
-          id="sku"
-          pInputText
-          formControlName="sku"
-          placeholder="Ej: TAL-001">
-      </div>
-
-      <div class="form-field">
-        <label for="name">
-          Nombre <span>*</span>
-        </label>
-        <input
-          id="name"
-          pInputText
-          formControlName="name"
-          placeholder="Nombre del producto">
-      </div>
-
-      <div class="form-field">
-        <label for="description">Descripción</label>
-        <textarea
-          id="description"
-          pTextarea
-          formControlName="description"
-          rows="4"
-          placeholder="Descripción del producto">
-        </textarea>
-      </div>
-
-    </div>
-
-    <!-- COLUMNA DERECHA -->
-    <div class="product-image-column">
-
-      <h3>Fotografía</h3>
-
-      <div class="product-image-editor">
-
-        @if (imagePreview || currentImageUrl) {
-          <img
-            class="product-image-preview"
-            [src]="imagePreview || productImageSrc"
-            alt="Imagen del producto">
-        } @else {
-          <div class="product-image-placeholder">
-            <i class="pi pi-image"></i>
-            <span>Sin imagen</span>
-          </div>
-        }
-
-        <div class="product-image-actions">
-
-          <input
-            #imageInput
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            hidden
-            (change)="onImageSelected($event)">
-
-          <button
-            pButton
-            type="button"
-            label="Seleccionar imagen"
-            icon="pi pi-upload"
-            severity="secondary"
-            [disabled]="uploadingImage"
-            (click)="imageInput.click()">
-          </button>
-
-          @if (selectedImage) {
-            <small>{{ selectedImage.name }}</small>
-          }
-
-          <small>JPG, PNG o WebP. Máximo 5 MB.</small>
-
-        </div>
-
-      </div>
-
-    </div>
-
   </div>
 
-</section>
+  <!-- BODY -->
+  <div class="page-card">
 
+    <form [formGroup]="form" class="product-form">
 
-
-      <!-- CLASIFICACIÓN -->
-
+      <!-- INFORMACIÓN DEL PRODUCTO -->
       <section class="form-section">
 
-       <div class="form-grid">
+        <div class="product-main-grid">
 
-          <div class="form-field">
+          <!-- COLUMNA 1 -->
+          <div class="product-main-fields">
 
-            <label for="category">
-              Categoría
-            </label>
+            <div class="form-field">
+              <label for="sku">SKU <span>*</span></label>
+              <input
+                id="sku"
+                pInputText
+                formControlName="sku"
+                placeholder="Ej: TAL-001">
+            </div>
 
-            <p-select
-              id="category"
-              [options]="categories"
-              optionLabel="label"
-              optionValue="value"
-              formControlName="category"
-              placeholder="Seleccione categoría"
-              class="w-full">
-            </p-select>
+            <div class="form-field">
+              <label for="name">Nombre <span>*</span></label>
+              <input
+                id="name"
+                pInputText
+                formControlName="name"
+                placeholder="Nombre del producto">
+            </div>
+
+            <div class="form-field">
+              <label for="description">Descripción</label>
+              <textarea
+                id="description"
+                pTextarea
+                formControlName="description"
+                rows="4"
+                placeholder="Descripción del producto">
+              </textarea>
+            </div>
+            
+            <div class="form-field">
+              <label for="price">Precio <span>*</span></label>
+              <p-inputNumber
+                id="price"
+                formControlName="price"
+                mode="currency"
+                currency="CLP"
+                locale="es-CL"
+                [min]="0"
+                class="w-full">
+              </p-inputNumber>
+            </div>
+            @if (id) {
+              <div class="audit-grid">
+
+                <div>
+                  <span>Creado</span>
+                  <strong>{{ form.get('createdAt')?.value || '-' }}</strong>
+                </div>
+
+                <div>
+                  <span>Última actualización</span>
+                  <strong>{{ form.get('updatedAt')?.value || '-' }}</strong>
+                </div>
+
+              </div>
+            }
+
 
           </div>
 
+          <!-- COLUMNA 2 -->
+          <div class="product-classification-fields">
 
-          <div class="form-field">
+            <div class="form-field">
+              <label for="category">Categoría</label>
+              <p-select
+                id="category"
+                [options]="categories"
+                optionLabel="label"
+                optionValue="value"
+                formControlName="category"
+                placeholder="Seleccione categoría"
+                class="w-full">
+              </p-select>
+            </div>
 
-            <label for="brand">
-              Marca
-            </label>
+            <div class="form-field">
+              <label for="brand">Marca</label>
+              <input
+                id="brand"
+                pInputText
+                formControlName="brand"
+                placeholder="Marca">
+            </div>
 
-            <input
-              id="brand"
-              pInputText
-              formControlName="brand"
-              placeholder="Marca">
-
-          </div>
-
-
-          <div class="form-field">
-
-            <label for="unit">
-              Unidad
-            </label>
-
-            <p-select
-              id="unit"
-              [options]="units"
-              optionLabel="label"
-              optionValue="value"
-              formControlName="unit"
-              placeholder="Seleccione unidad"
-              class="w-full">
-            </p-select>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- INVENTARIO -->
-
-      <section class="form-section">
-
-        <div class="form-grid">
-
-          <div class="form-field">
-
-            <label for="price">
-              Precio
-              <span>*</span>
-            </label>
-
-            <p-inputNumber
-              id="price"
-              formControlName="price"
-              mode="currency"
-              currency="CLP"
-              locale="es-CL"
-              [min]="0"
-              class="w-full">
-            </p-inputNumber>
-
-          </div>
-
-
-          <div class="form-field">
-
-            <label for="stock">
-              Stock
-              <span>*</span>
-            </label>
-
-            <p-inputNumber
-              id="stock"
-              formControlName="stock"
-              [min]="0"
-              class="w-full">
-            </p-inputNumber>
-
-          </div>
-
-
-          <div class="active-field">
-
+            <div class="form-field">
+              <label for="unit">Unidad</label>
+              <p-select
+                id="unit"
+                [options]="units"
+                optionLabel="label"
+                optionValue="value"
+                formControlName="unit"
+                placeholder="Seleccione unidad"
+                class="w-full">
+              </p-select>
+            </div>
+            <div class="form-field">
+              <label for="stock">Stock <span>*</span></label>
+              <p-inputNumber
+                id="stock"
+                formControlName="stock"
+                [min]="0"
+                class="w-full">
+              </p-inputNumber>
+            </div>
+                      <div class="active-field">
             <p-checkbox
               formControlName="active"
               [binary]="true">
@@ -246,9 +144,59 @@
 
             <div>
               <strong>Producto activo</strong>
-              <small>
-                Disponible para ventas y pedidos.
-              </small>
+              <small>Disponible para ventas y pedidos.</small>
+            </div>
+          </div>
+
+
+          </div>
+
+          <!-- COLUMNA 3: FOTOGRAFÍA -->
+          <div class="product-image-column">
+
+            <h3>Fotografía</h3>
+
+            <div class="product-image-editor">
+
+              @if (imagePreview || currentImageUrl) {
+                <img
+                  class="product-image-preview"
+                  [src]="imagePreview || productImageSrc"
+                  alt="Imagen del producto">
+              } @else {
+                <div class="product-image-placeholder">
+                  <i class="pi pi-image"></i>
+                  <span>Sin imagen</span>
+                </div>
+              }
+
+              <div class="product-image-actions">
+
+                <input
+                  #imageInput
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  hidden
+                  (change)="onImageSelected($event)">
+
+                <button
+                  pButton
+                  type="button"
+                  label="Seleccionar imagen"
+                  icon="pi pi-upload"
+                  severity="secondary"
+                  [disabled]="uploadingImage"
+                  (click)="imageInput.click()">
+                </button>
+
+                @if (selectedImage) {
+                  <small>{{ selectedImage.name }}</small>
+                }
+
+                <small>JPG, PNG o WebP. Máximo 5 MB.</small>
+
+              </div>
+
             </div>
 
           </div>
@@ -257,50 +205,8 @@
 
       </section>
 
-  
-
-
-      <!-- AUDITORÍA -->
-
-      @if (id) {
-
-        <section class="form-section audit-section">
-
-          <div class="section-title">
-
-            <div class="section-icon">
-              <i class="pi pi-history"></i>
-            </div>
-
-            <div>
-              <h3>Información del registro</h3>
-              <p>Fechas de creación y actualización.</p>
-            </div>
-
-          </div>
-
-
-          <div class="audit-grid">
-
-            <div>
-              <span>Creado</span>
-              <strong>{{ form.get('createdAt')?.value || '-' }}</strong>
-            </div>
-
-            <div>
-              <span>Última actualización</span>
-              <strong>{{ form.get('updatedAt')?.value || '-' }}</strong>
-            </div>
-
-          </div>
-
-        </section>
-
-      }
-
 
       <!-- ACCIONES -->
-
       <div class="form-actions">
 
         <button
@@ -311,7 +217,6 @@
           severity="secondary"
           (click)="cancel()">
         </button>
-
 
         <button
           pButton

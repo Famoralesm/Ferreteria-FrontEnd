@@ -1,5 +1,7 @@
+
 <div class="page-shell">
 
+  <!-- HEADER -->
   <div class="page-header">
 
     <div class="page-header-content">
@@ -16,30 +18,45 @@
 
   </div>
 
-  <!-- BUSCADOR -->
-  <div class="order-tools">
+  <!-- BUSCADOR Y TOTAL -->
+  @if (filteredOrders$ | async; as filteredOrders) {
 
-    <app-order-toolbar
-      (searchChange)="onSearchChange($event)">
-    </app-order-toolbar>
+    <div class="order-tools">
 
-  </div>
+      <app-order-toolbar
+        (searchChange)="onSearchChange($event)">
+      </app-order-toolbar>
 
-  <!-- TABLA -->
-  <div class="page-card">
+      <div class="page-info order-total">
 
-    <app-order-table
-      [orders]="(filteredOrders$ | async) ?? []"
-      (edit)="edit($event)"
-      (view)="view($event)"
-      (delete)="delete($event)"
-      (duplicate)="duplicate($event)"
-      (print)="print($event)">
-    </app-order-table>
+        <i class="pi pi-shopping-cart"></i>
 
-  </div>
+        <span>
+          Total de pedidos:
+          <strong>{{ filteredOrders.length }}</strong>
+        </span>
 
-  <!-- BOTÓN DEBAJO DE LA TABLA -->
+      </div>
+
+    </div>
+
+    <!-- TABLA -->
+    <div class="page-card">
+
+      <app-order-table
+        [orders]="filteredOrders"
+        (edit)="edit($event)"
+        (view)="view($event)"
+        (delete)="delete($event)"
+        (duplicate)="duplicate($event)"
+        (print)="print($event)">
+      </app-order-table>
+
+    </div>
+
+  }
+
+  <!-- ACCIONES -->
   <div class="page-footer-actions">
 
     <button

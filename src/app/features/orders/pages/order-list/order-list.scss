@@ -1,17 +1,40 @@
+
 :host {
   display: block;
   width: 100%;
+  min-width: 0;
 }
 
 .order-tools {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 16px;
-
   margin-bottom: 18px;
+  width: 100%;
 }
+
+.order-tools app-order-toolbar {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-total {
+  justify-content: flex-end;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+/* ACCIONES */
+
+.page-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  width: 100%;
+}
+
+/* RESPONSIVE */
 
 @media (max-width: 900px) {
 
@@ -20,20 +43,20 @@
     align-items: stretch;
   }
 
-}
-.page-footer-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  width: 100%;
+  .order-total {
+    align-self: flex-end;
+  }
+
 }
 
 @media (max-width: 600px) {
+
   .page-footer-actions {
     justify-content: stretch;
-
-    button {
-      width: 100%;
-    }
   }
+
+  .page-footer-actions button {
+    width: 100%;
+  }
+
 }

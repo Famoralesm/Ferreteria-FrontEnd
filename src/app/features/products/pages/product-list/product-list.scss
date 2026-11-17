@@ -1,4 +1,102 @@
+
 :host {
   display: block;
   width: 100%;
+  min-width: 0;
+}
+
+/* =========================================================
+   BARRA DE FILTROS Y TOTAL
+   ========================================================= */
+
+.product-list-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+  width: 100%;
+}
+
+/* Filtros a la izquierda */
+
+.product-filters {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 180px;
+  min-width: 140px;
+}
+
+.filter-field label {
+  color: #34495e;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.filter-field input,
+.filter-field p-select {
+  width: 100%;
+}
+
+.product-filters button {
+  height: 42px;
+}
+
+/* Total a la derecha */
+
+.product-total {
+  justify-content: flex-end;
+  white-space: nowrap;
+  margin-bottom: 10px;
+  margin-left: auto;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+  .product-list-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .product-total {
+    align-self: flex-end;
+    margin: 0;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .product-filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .filter-field {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .product-filters button {
+    width: 100%;
+  }
+
+  .product-total {
+    align-self: flex-start;
+  }
+
 }

@@ -1,51 +1,20 @@
 
-.product-form-page {
-  padding: 30px;
-  min-height: 100%;
-  background: #f5f6fa;
-}
-
-.product-form-card {
-  max-width: 1100px;
-  margin: 0 auto;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-}
-
-.form-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 30px 35px;
-  background: #123b63;
-  color: white;
-}
-
-.form-kicker {
+:host {
   display: block;
-  margin-bottom: 6px;
-  color: #f2b705;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
+  width: 100%;
+  min-width: 0;
 }
 
-.form-header h2 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 700;
-}
-
-.form-header p {
-  margin: 8px 0 0;
-  color: #dbe7f2;
-  font-size: 14px;
-}
+/* =========================================================
+   FORMULARIO
+   Respeta el ancho y estructura global de page-shell
+   y page-card utilizados por las demás páginas.
+   ========================================================= */
 
 .product-form {
-  padding: 30px 35px;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .form-section {
@@ -61,32 +30,46 @@
   border-bottom: none;
 }
 
-/* DISTRIBUCIÓN SKU / NOMBRE / DESCRIPCIÓN + IMAGEN */
+/* =========================================================
+   DISTRIBUCIÓN PRINCIPAL
+   Columna 1: SKU, Nombre, Descripción
+   Columna 2: Categoría, Marca, Unidad
+   Columna 3: Fotografía
+   ========================================================= */
 
 .product-main-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 180px;
-  gap: 32px;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr)
+    300px;
+  gap: 24px;
   align-items: start;
 }
 
-.product-main-fields {
-  display: block;
-  width: 60%;
+.product-main-fields,
+.product-classification-fields {
+  display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
   min-width: 0;
 }
 
+/* =========================================================
+   FOTOGRAFÍA
+   ========================================================= */
+
 .product-image-column {
   display: flex;
-  
   flex-direction: column;
-  align-items: left;
-  gap: 22px;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
 }
 
 .product-image-column h3 {
+  align-self: flex-start;
   margin: 0;
   color: #243447;
   font-size: 15px;
@@ -97,17 +80,17 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  width: 100%;
 }
-
-/* TAMAÑO DE LA IMAGEN: 70 x 70 */
 
 .product-image-preview,
 .product-image-placeholder {
-  width: 300px;
-  height: 300px;
-  flex: 0 0 70px;
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 1 / 1;
   border-radius: 10px;
   border: 1px solid #e1e7ed;
+  box-sizing: border-box;
 }
 
 .product-image-preview {
@@ -143,40 +126,9 @@
   font-size: 11px;
 }
 
-/* TÍTULOS DE SECCIÓN */
-
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 25px;
-}
-
-.section-icon {
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: #eaf2f9;
-  color: #123b63;
-  font-size: 17px;
-}
-
-.section-title h3 {
-  margin: 0;
-  color: #243447;
-  font-size: 17px;
-}
-
-.section-title p {
-  margin: 4px 0 0;
-  color: #7b8794;
-  font-size: 13px;
-}
-
-/* CAMPOS */
+/* =========================================================
+   CAMPOS
+   ========================================================= */
 
 .form-grid {
   display: grid;
@@ -184,15 +136,16 @@
   gap: 22px;
 }
 
+.inventory-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+}
+
 .form-field {
   display: flex;
   flex-direction: column;
   gap: 8px;
   min-width: 0;
-}
-
-.form-field.full {
-  grid-column: 1 / -1;
 }
 
 .form-field label {
@@ -210,11 +163,7 @@
 .form-field p-select,
 .form-field p-inputNumber {
   width: 100%;
-}
-
-.form-field input,
-.form-field textarea {
-  border-radius: 8px;
+  box-sizing: border-box;
 }
 
 .form-field textarea {
@@ -222,7 +171,9 @@
   min-height: 100px;
 }
 
-/* PRODUCTO ACTIVO */
+/* =========================================================
+   PRODUCTO ACTIVO
+   ========================================================= */
 
 .active-field {
   display: flex;
@@ -233,6 +184,7 @@
   border: 1px solid #e1e7ed;
   border-radius: 10px;
   background: #fafbfc;
+  box-sizing: border-box;
 }
 
 .active-field strong {
@@ -248,17 +200,19 @@
   font-size: 12px;
 }
 
-/* AUDITORÍA */
+/* =========================================================
+   AUDITORÍA
+   ========================================================= */
 
 .audit-section {
   background: #fafbfc;
-  margin: 20px -35px 0;
-  padding: 25px 35px;
+  margin: 20px -20px 0;
+  padding: 25px 20px;
 }
 
 .audit-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
 }
 
@@ -268,8 +222,9 @@
   gap: 5px;
   padding: 14px 16px;
   border-radius: 8px;
-  background: white;
+  background: #fff;
   border: 1px solid #e5e9ee;
+  min-width: 0;
 }
 
 .audit-grid span {
@@ -281,9 +236,12 @@
 .audit-grid strong {
   color: #34495e;
   font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
-/* BOTONES */
+/* =========================================================
+   BOTONES
+   ========================================================= */
 
 .form-actions {
   display: flex;
@@ -296,47 +254,54 @@
   min-width: 140px;
 }
 
-/* RESPONSIVE */
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
-@media (max-width: 768px) {
-  .product-form-page {
-    padding: 15px;
-  }
-
-  .form-header {
-    padding: 25px;
-  }
-
-  .product-form {
-    padding: 25px;
-  }
-
+@media (max-width: 1050px) {
   .product-main-grid {
-    grid-template-columns: minmax(0, 1fr) 100px;
-    gap: 15px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .product-image-column {
-    align-items: center;
+    grid-column: 2;
+    grid-row: 1 / span 3;
   }
 
-  .form-grid {
+  .inventory-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .product-form {
+    padding: 5px;
+  }
+
+  .product-main-grid {
     grid-template-columns: 1fr;
   }
 
-  .form-field.full {
+  .product-image-column {
     grid-column: auto;
+    grid-row: auto;
+    align-items: flex-start;
   }
 
+  .product-image-editor {
+    align-items: flex-start;
+  }
+
+  .inventory-grid,
   .audit-grid {
     grid-template-columns: 1fr;
   }
 
   .audit-section {
-    margin-left: -25px;
-    margin-right: -25px;
-    padding-left: 25px;
-    padding-right: 25px;
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
   }
 
   .form-actions {
@@ -345,15 +310,5 @@
 
   .form-actions button {
     width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .product-main-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .product-image-column {
-    align-items: flex-start;
   }
 }
