@@ -1,3 +1,4 @@
+
 import {
   Component,
   EventEmitter,
@@ -16,12 +17,14 @@ import { Product } from '../../../../core/models/product/product';
 @Component({
   selector: 'app-product-table',
   standalone: true,
+
   imports: [
     CommonModule,
     TableModule,
     ButtonModule,
     TagModule
   ],
+
   templateUrl: './product-table.html',
   styleUrl: './product-table.scss'
 })
@@ -32,5 +35,60 @@ export class ProductTable {
   @Output() edit = new EventEmitter<number>();
   @Output() view = new EventEmitter<number>();
   @Output() delete = new EventEmitter<number>();
+
+  // Filtros por columna
+  skuSearch = '';
+  nameSearch = '';
+  categorySearch = '';
+  brandSearch = '';
+
+  categories = [
+    { label: 'Herramientas', value: 'HERRAMIENTAS' },
+    { label: 'Ferretería', value: 'FERRETERIA' },
+    { label: 'Plomería', value: 'PLOMERIA' },
+    { label: 'Electricidad', value: 'ELECTRICIDAD' },
+    { label: 'Pintura', value: 'PINTURA' }
+  ];
+
+  get filteredProducts(): Product[] {
+
+    return this.products.filter(product => {
+
+      const sku = this.normalize(product.sku);
+      const name = this.normalize(product.name);
+      const brand = this.normalize(product.brand);
+
+      return (
+        sku.includes(this.normalize(this.skuSearch)) &&
+        name.includes(this.normalize(this.nameSearch)) &&
+        brand.includes(this.normalize(this.brandSearch)) &&
+        (
+          !this.categorySearch ||
+          product.category === this.categorySearch
+        )
+      );
+
+    });
+
+  }
+
+  private normalize(value: unknown): string {
+
+    return String(value ?? '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+
+  }
+
+  clearFilters(): void {
+
+    this.skuSearch = '';
+    this.nameSearch = '';
+    this.categorySearch = '';
+    this.brandSearch = '';
+
+  }
 
 }

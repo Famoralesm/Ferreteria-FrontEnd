@@ -1,11 +1,15 @@
 
 <p-table
-  [value]="products"
+  [value]="filteredProducts"
   [paginator]="true"
   [rows]="7"
-  responsiveLayout="scroll">
+  responsiveLayout="scroll"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} productos">
 
   <ng-template pTemplate="header">
+
+    <!-- ENCABEZADOS -->
     <tr>
       <th>ID</th>
       <th>SKU</th>
@@ -18,9 +22,79 @@
       <th>Estado</th>
       <th>Acciones</th>
     </tr>
+
+    <!-- FILTROS DENTRO DE CADA COLUMNA -->
+    <tr class="filter-row">
+
+      <th></th>
+
+      <th>
+        <input
+          pInputText
+          type="search"
+          class="column-filter category-filter"
+          placeholder="Buscar SKU..."
+          aria-label="Filtrar por SKU"
+          [value]="skuSearch"
+          (input)="skuSearch = $any($event.target).value">
+      </th>
+
+      <th>
+        <input
+          pInputText
+          type="search"
+          class="column-filter category-filter"
+          placeholder="Buscar producto..."
+          aria-label="Filtrar por producto"
+          [value]="nameSearch"
+          (input)="nameSearch = $any($event.target).value">
+      </th>
+
+      <th>
+        <select
+          class="column-filter category-filter"
+          aria-label="Filtrar por categoría"
+          [value]="categorySearch"
+          (change)="categorySearch = $any($event.target).value">
+
+          <option value="">Todas</option>
+
+          @for (category of categories; track category.value) {
+            <option [value]="category.value">
+              {{ category.label }}
+            </option>
+          }
+
+        </select>
+      </th>
+
+      <th>
+        <input
+          pInputText
+          type="search"
+          class="column-filter category-filter"
+          placeholder="Buscar marca..."
+          aria-label="Filtrar por marca"
+          [value]="brandSearch"
+          (input)="brandSearch = $any($event.target).value">
+      </th>
+
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+
+      <th>
+
+      </th>
+
+    </tr>
+
   </ng-template>
 
+  <!-- PRODUCTOS -->
   <ng-template pTemplate="body" let-product>
+
     <tr>
 
       <td>{{ product.id }}</td>
@@ -54,6 +128,7 @@
       </td>
 
       <td>
+
         <div class="actions">
 
           <button
@@ -84,8 +159,19 @@
           </button>
 
         </div>
+
       </td>
 
+    </tr>
+
+  </ng-template>
+
+  <!-- SIN RESULTADOS -->
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="10" class="empty-message">
+        No se encontraron productos con esos filtros.
+      </td>
     </tr>
   </ng-template>
 
