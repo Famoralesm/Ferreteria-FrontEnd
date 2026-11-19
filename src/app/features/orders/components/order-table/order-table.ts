@@ -164,7 +164,8 @@ ngOnInit(): void {
 
     if (
       order.estado === 'DELIVERED' ||
-      order.estado === 'CANCELED'
+      order.estado === 'CANCELED' ||
+      order.estado === 'REJECTED'
     ) {
 
       return '';
