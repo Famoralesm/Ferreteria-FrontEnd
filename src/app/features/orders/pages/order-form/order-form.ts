@@ -275,7 +275,7 @@ private loadProducts(): void {
                 total: item.totalPrice
               }));
 
-          this.statusChangedAt = order.statusChangedAt;
+          this.statusChangedAt = order.statusChangedAt || order.createdAt;
           this.updateElapsedTime();
           this.startTimer();
           this.updateMapLinks();
