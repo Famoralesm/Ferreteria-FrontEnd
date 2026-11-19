@@ -1,4 +1,4 @@
-import { Component, OnDestroy,OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Input, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { OrderSummary } from '../../../../core/models/order/order-summary';
@@ -58,10 +58,7 @@ export class OrderTable implements OnInit, OnDestroy{
     }
 
   };
-  constructor(
-    
-
-  ) {}
+  constructor(private cdr: ChangeDetectorRef) {}
 
 
 ngOnInit(): void {
@@ -70,6 +67,7 @@ ngOnInit(): void {
     .subscribe(() => {
 
       this.currentTime = Date.now();
+      this.cdr.markForCheck();
 
     });
 
