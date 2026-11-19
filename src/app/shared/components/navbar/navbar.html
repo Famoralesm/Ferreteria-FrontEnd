@@ -1,52 +1,61 @@
+
 <header class="navbar">
 
+    <div class="left">
 
+        <i class="pi pi-search"></i>
 
-  <div class="right">
-
-    <div class="notification">
-
-      <i class="pi pi-bell"></i>
-
-      <p-badge value="3"></p-badge>
+        <input
+            pInputText
+            placeholder="Buscar productos, pedidos..."
+        />
 
     </div>
 
-    <ng-container *ngIf="currentUser$ | async as user">
+    <div class="center">
 
-      <div class="user">
+        <div class="store-selector">
 
-        <button
-          type="button"
-          class="user-trigger"
-          aria-label="Abrir opciones de usuario"
-          (click)="profileMenu.toggle($event)">
+            <i class="pi pi-map-marker"></i>
 
-          <p-avatar
-            [image]="avatarImage(user.avatarUrl)"
-            [label]="user.avatarUrl ? undefined : initials(user.name)"
-            [icon]="user.avatarUrl ? undefined : 'pi pi-user'"
-            shape="circle">
-          </p-avatar>
-          <span class="user-details">
-            <strong>{{ user.name }}</strong>
-          </span>
+            <p-select
+                [options]="stores"
+                [(ngModel)]="selectedStore"
+                optionLabel="nombre"
+                placeholder="Seleccionar sucursal"
+                [loading]="loadingStores"
+                [disabled]="loadingStores || stores.length <= 1"
+                (onChange)="onStoreChange($event.value)"
+                styleClass="store-select">
+            </p-select>
 
-          <i class="pi pi-angle-down"></i>
+        </div>
 
-        </button>
+    </div>
 
-        <p-menu
-          #profileMenu
-          [model]="profileItems"
-          [popup]="true"
-          appendTo="body">
-        </p-menu>
+    <div class="right">
 
-      </div>
+        <div class="notification">
 
-    </ng-container>
+            <i class="pi pi-bell"></i>
 
-  </div>
+            <p-badge value="3"></p-badge>
+
+        </div>
+
+        <div class="user">
+
+            <p-avatar
+                icon="pi pi-user"
+                shape="circle">
+            </p-avatar>
+
+            <span>Felipe</span>
+
+            <i class="pi pi-angle-down"></i>
+
+        </div>
+
+    </div>
 
 </header>
