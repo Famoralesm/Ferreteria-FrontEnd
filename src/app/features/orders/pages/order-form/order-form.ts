@@ -200,8 +200,6 @@ ngOnInit(): void {
 
   if (this.id) {
     this.loadOrder(this.id);
-    this.updateElapsedTime();
-    this.startTimer();
   }
 
 }
@@ -277,8 +275,9 @@ private loadProducts(): void {
                 total: item.totalPrice
               }));
 
-          this.statusChangedAt = order.statusChangedAt
+          this.statusChangedAt = order.statusChangedAt;
           this.updateElapsedTime();
+          this.startTimer();
           this.updateMapLinks();
 
 
@@ -445,6 +444,7 @@ private updateTotal(): void {
     .subscribe(() => {
 
       this.updateElapsedTime();
+      this.cdr.markForCheck();
 
     });
 
