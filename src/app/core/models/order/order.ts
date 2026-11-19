@@ -19,7 +19,7 @@ export interface Order {
 
   status: string;
   
-  statusChangedAt: string;
+  statusChangedAt: string | null;
 
   notes: string;
 
