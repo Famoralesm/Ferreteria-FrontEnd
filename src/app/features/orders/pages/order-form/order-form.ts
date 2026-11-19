@@ -58,6 +58,8 @@ export class OrderForm implements OnInit , OnDestroy {
   quantity: number;
   unitPrice: number;
   total: number;
+  wholesaleApplied: boolean;
+  pricingType: string;
   }[] = [];
   orderStatuses = ORDER_STATUSES;
 
@@ -272,7 +274,9 @@ private loadProducts(): void {
                 productName: item.productName,
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
-                total: item.totalPrice
+                total: item.totalPrice,
+                wholesaleApplied: item.wholesaleApplied === true,
+                pricingType: item.pricingType ?? 'UNIT'
               }));
 
           this.statusChangedAt = order.statusChangedAt || order.createdAt;
@@ -356,59 +360,56 @@ private loadProducts(): void {
 
   }
 
+  private resolveProductPrice(product: Product, quantity: number): { unitPrice: number; wholesaleApplied: boolean } {
+    const applies = product.wholesalePrice != null
+      && product.wholesaleMinQuantity != null
+      && quantity >= product.wholesaleMinQuantity;
+
+    return {
+      unitPrice: applies ? Number(product.wholesalePrice) : product.price,
+      wholesaleApplied: applies
+    };
+  }
+
   addProduct(): void {
+    if (!this.selectedProduct) {
+      this.notificationService.warning('Selecciona un producto.');
+      return;
+    }
 
-  console.log('Producto seleccionado:', this.selectedProduct);
-  console.log('Cantidad:', this.quantity);
+    if (!Number.isInteger(this.quantity) || this.quantity < 1) {
+      this.notificationService.warning('La cantidad debe ser un número mayor que cero.');
+      return;
+    }
 
-  if (!this.selectedProduct) {
-    console.warn('No hay producto seleccionado');
-    return;
+    const product = this.selectedProduct;
+    const existing = this.items.find(item => item.productId === product.id);
+    const finalQuantity = (existing?.quantity ?? 0) + this.quantity;
+    const pricing = this.resolveProductPrice(product, finalQuantity);
+
+    if (existing) {
+      existing.quantity = finalQuantity;
+      existing.unitPrice = pricing.unitPrice;
+      existing.total = existing.quantity * existing.unitPrice;
+      existing.wholesaleApplied = pricing.wholesaleApplied;
+      existing.pricingType = pricing.wholesaleApplied ? 'WHOLESALE' : 'UNIT';
+    } else {
+      this.items.push({
+        productId: product.id,
+        productName: product.name,
+        quantity: this.quantity,
+        unitPrice: pricing.unitPrice,
+        total: pricing.unitPrice * this.quantity,
+        wholesaleApplied: pricing.wholesaleApplied,
+        pricingType: pricing.wholesaleApplied ? 'WHOLESALE' : 'UNIT'
+      });
+    }
+
+    this.selectedProduct = undefined;
+    this.quantity = 1;
+    this.updateTotal();
   }
 
-  if (this.quantity <= 0) {
-    console.warn('Cantidad inválida');
-    return;
-  }
-
-  const existing = this.items.find(
-    item => item.productId === this.selectedProduct!.id
-  );
-
-  if (existing) {
-
-    existing.quantity += this.quantity;
-
-    existing.total =
-      existing.quantity * existing.unitPrice;
-
-  } else {
-
-    this.items.push({
-
-      productId: this.selectedProduct.id,
-
-      productName: this.selectedProduct.name,
-
-      quantity: this.quantity,
-
-      unitPrice: this.selectedProduct.price,
-
-      total:
-        this.selectedProduct.price *
-        this.quantity
-
-    });
-
-  }
-
-  this.selectedProduct = undefined;
-  this.quantity = 1;
-
-  this.updateTotal();
-
-  console.log('Items:', this.items);
-}
 removeProduct(index: number): void {
 
   if (index < 0 || index >= this.items.length) {
