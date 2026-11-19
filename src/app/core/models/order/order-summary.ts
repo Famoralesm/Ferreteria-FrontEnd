@@ -10,6 +10,6 @@ export interface OrderSummary {
 
     estado:string;
     
-    statusChangedAt: string;
+    statusChangedAt: string | null;
 
 }
