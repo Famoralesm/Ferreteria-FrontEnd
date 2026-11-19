@@ -53,7 +53,7 @@ export class OrderForm implements OnInit , OnDestroy {
   selectedProduct?: Product;
   quantity = 1;
   items: {
-  productId: number;
+  productId: number | null;
   productName: string;
   quantity: number;
   unitPrice: number;
