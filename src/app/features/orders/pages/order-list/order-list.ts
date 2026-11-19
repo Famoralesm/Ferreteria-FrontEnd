@@ -1,17 +1,27 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  of
+} from 'rxjs';
 
-import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { catchError, map, shareReplay } from 'rxjs/operators';
-
+import {
+  catchError,
+  filter,
+  map,
+  shareReplay,
+  switchMap
+} from 'rxjs/operators';
+import { StoreService } from '../../../../core/services/store.service';
 import { ButtonModule } from 'primeng/button';
-
 import { OrderTable } from '../../components/order-table/order-table';
 import { OrderToolbar } from '../../components/order-toolbar/order-toolbar';
-
 import { OrderService } from '../../../../core/services/order.service';
 import { OrderSummary } from '../../../../core/models/order/order-summary';
+
 
 
 interface StatusThreshold {
@@ -64,42 +74,61 @@ export class OrderList {
 
   constructor(
     private orderService: OrderService,
-    private router: Router
-  ) {
+    private router: Router,
+    private storeService: StoreService
+) {
 
-    const orders$ = this.orderService.findAll().pipe(
+    const orders$ = this.storeService.selectedStore$.pipe(
 
-      map(data => this.sortByUrgency(data)),
+        filter(store => store !== null),
 
-      catchError(err => {
+        switchMap(store =>
 
-        console.error('Error cargando pedidos:', err);
+            this.orderService.findAll(store.id).pipe(
 
-        return of([] as OrderSummary[]);
+                map(data => this.sortByUrgency(data)),
 
-      }),
+                catchError(err => {
 
-      shareReplay(1)
+                    console.error(
+                        'Error cargando pedidos:',
+                        err
+                    );
+
+                    return of([] as OrderSummary[]);
+
+                })
+
+            )
+
+        ),
+
+        shareReplay({
+            bufferSize: 1,
+            refCount: true
+        })
 
     );
-
 
     this.filteredOrders$ = combineLatest([
 
-      orders$,
-      this.searchTerm$
+        orders$,
+        this.searchTerm$
 
     ]).pipe(
 
-      map(([orders, term]) =>
-        this.filterOrders(orders, term)
-      ),
+        map(([orders, term]) =>
+            this.filterOrders(orders, term)
+        ),
 
-      shareReplay(1)
+        shareReplay({
+            bufferSize: 1,
+            refCount: true
+        })
 
     );
 
-  }
+}
 
 
   onSearchChange(term: string): void {

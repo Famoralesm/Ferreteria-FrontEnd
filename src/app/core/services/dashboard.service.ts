@@ -21,11 +21,17 @@ export class DashboardService {
       return this.http.get<Dashboard>(this.API);
 
   }
-  getLatestOrders(){
+  
+getLatestOrders(storeId: number): Observable<OrderSummary[]> {
 
-   return this.http.get<OrderSummary[]>(
-      `${environment.apiUrl}/orders/latest`
-   );
+    return this.http.get<OrderSummary[]>(
+        `${environment.apiUrl}/orders/latest`,
+        {
+            params: {
+                storeId: storeId
+            }
+        }
+    );
 
 }
 

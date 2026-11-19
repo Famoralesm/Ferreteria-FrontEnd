@@ -17,9 +17,16 @@ export class OrderService {
   private readonly API =
       `${environment.apiUrl}/orders`;
 
-findAll(){
+findAll(storeId: number) {
 
-    return this.http.get<OrderSummary[]>(this.API+"/all");
+    return this.http.get<OrderSummary[]>(
+        `${this.API}/all`,
+        {
+            params: {
+                storeId: storeId
+            }
+        }
+    );
 
 }
 
@@ -56,10 +63,16 @@ delete(id:number){
     );
 
 }
-latest(){
+
+latest(storeId: number) {
 
     return this.http.get<OrderSummary[]>(
-        `${this.API}/latest`
+        `${this.API}/latest`,
+        {
+            params: {
+                storeId: storeId
+            }
+        }
     );
 
 }

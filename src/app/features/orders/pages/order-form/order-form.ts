@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ORDER_STATUSES,OrderStatus } from '../../../../core/models/order/order-status';
 import { OrderSummary } from '../../../../core/models/order/order-summary';
+import { StoreService } from '../../../../core/services/store.service';
 import { NotificationService } from '../../../../core/services/notification.service';   
 import { CustomerService } from '../../../../core/services/customer.service';
 import { Customer } from '../../../../core/models/customer/customer';
@@ -66,7 +67,7 @@ export class OrderForm implements OnInit , OnDestroy {
   selectedCustomerOption: CustomerOption | null = null;
 
   private customerService = inject(CustomerService);
-
+  private storeService = inject(StoreService);
   private productService = inject(ProductService);
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
@@ -648,10 +649,22 @@ saveOrder(): void {
     return;
   }
 
+  const selectedStoreId = this.storeService.selectedStoreId;
+
+  if (!this.id && selectedStoreId === null) {
+
+    this.notificationService.warning(
+      'Debes seleccionar una sucursal antes de crear el pedido.'
+    );
+
+    return;
+  }
+
   const formValue = this.form.getRawValue();
 
   const data = {
 
+    storeId: selectedStoreId!,
     customerName: formValue.customerName,
     phone: formValue.phone || '',
     address: formValue.address,
@@ -659,6 +672,7 @@ saveOrder(): void {
     paymentMethod: formValue.paymentMethod,
     notes: formValue.notes,
     status: formValue.status,
+    
 
     items: this.items.map(item => ({
       productId: item.productId,

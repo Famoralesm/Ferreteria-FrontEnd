@@ -1,61 +1,82 @@
-
 <header class="navbar">
 
-    <div class="left">
+  <div class="left">
 
-        <i class="pi pi-search"></i>
+    <i class="pi pi-search"></i>
 
-        <input
-            pInputText
-            placeholder="Buscar productos, pedidos..."
-        />
+    <input
+      pInputText
+      placeholder="Buscar productos, pedidos..."
+    />
 
-    </div>
+  </div>
 
-    <div class="center">
+  <div class="center">
 
-        <div class="store-selector">
+    <div class="store-selector">
 
-            <i class="pi pi-map-marker"></i>
+      <i class="pi pi-map-marker"></i>
 
-            <p-select
-                [options]="stores"
-                [(ngModel)]="selectedStore"
-                optionLabel="nombre"
-                placeholder="Seleccionar sucursal"
-                [loading]="loadingStores"
-                [disabled]="loadingStores || stores.length <= 1"
-                (onChange)="onStoreChange($event.value)"
-                styleClass="store-select">
-            </p-select>
-
-        </div>
+      <p-select
+        [options]="stores"
+        [(ngModel)]="selectedStore"
+        optionLabel="nombre"
+        placeholder="Seleccionar sucursal"
+        [loading]="loadingStores"
+        [disabled]="loadingStores || stores.length <= 1"
+        (onChange)="onStoreChange($event.value)"
+        styleClass="store-select">
+      </p-select>
 
     </div>
 
-    <div class="right">
+  </div>
 
-        <div class="notification">
+  <div class="right">
 
-            <i class="pi pi-bell"></i>
+    <div class="notification">
 
-            <p-badge value="3"></p-badge>
-
-        </div>
-
-        <div class="user">
-
-            <p-avatar
-                icon="pi pi-user"
-                shape="circle">
-            </p-avatar>
-
-            <span>Felipe</span>
-
-            <i class="pi pi-angle-down"></i>
-
-        </div>
+      <i class="pi pi-bell"></i>
+      <p-badge value="3"></p-badge>
 
     </div>
+
+    @if (currentUser$ | async; as user) {
+
+      <div class="user">
+
+        <button
+          type="button"
+          class="user-trigger"
+          aria-label="Abrir opciones de usuario"
+          (click)="profileMenu.toggle($event)">
+
+          <p-avatar
+            [image]="avatarImage(user.avatarUrl)"
+            [label]="user.avatarUrl ? undefined : initials(user.name)"
+            [icon]="user.avatarUrl ? undefined : 'pi pi-user'"
+            shape="circle">
+          </p-avatar>
+
+          <span class="user-details">
+            <strong>{{ user.name }}</strong>
+          </span>
+
+          <i class="pi pi-angle-down"></i>
+
+        </button>
+
+        <p-menu
+          #profileMenu
+          [model]="profileItems"
+          [popup]="true"
+          appendTo="body">
+        </p-menu>
+
+      </div>
+
+    }
+
+  </div>
 
 </header>

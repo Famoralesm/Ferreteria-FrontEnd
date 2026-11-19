@@ -8,6 +8,17 @@ import { AsyncPipe} from '@angular/common';
 import { TagModule } from 'primeng/tag';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { StoreService } from '../../core/services/store.service';
+
+import {
+    catchError,
+    filter,
+    switchMap,
+    shareReplay
+} from 'rxjs/operators';
+
+import { of } from 'rxjs';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -23,37 +34,47 @@ import { CommonModule } from '@angular/common';
   styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Dashboard  implements OnInit  {
+export class Dashboard    {
+
   orders$!: Observable<OrderSummary[]>;
 
 
 constructor(
-    private dashboardService: DashboardService, 
-    private cd: ChangeDetectorRef
+    private dashboardService: DashboardService,
+    private storeService: StoreService
 ) {
 
-    console.log('Constructor Dashboard');
+    this.orders$ = this.storeService.selectedStore$.pipe(
+
+        filter(store => store !== null),
+
+        switchMap(store =>
+
+            this.dashboardService.getLatestOrders(store.id).pipe(
+
+                catchError(err => {
+
+                    console.error(
+                        'Error cargando pedidos del dashboard:',
+                        err
+                    );
+
+                    return of([] as OrderSummary[]);
+
+                })
+
+            )
+
+        ),
+
+        shareReplay({
+            bufferSize: 1,
+            refCount: true
+        })
+
+    );
 
 }
-ngOnInit() {
-
-    console.log('ngOnInit');
-
-    this.orders$ = this.dashboardService.getLatestOrders();
-/*     this.dashboardService.getLatestOrders()
-        .subscribe(data => {
-
-            console.log('subscribe');
-            console.log(document.querySelector('p-table'));
-
-            this.orders = data;
-            this.cd.detectChanges();
-
-        }); */
-
-
-
-    }
 
   getSeverity(status: string) {
 

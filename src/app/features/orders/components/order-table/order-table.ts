@@ -1,6 +1,12 @@
-import { Component, OnDestroy,OnInit } from '@angular/core';
-import { Input, Output } from '@angular/core';
-import { EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectorRef
+} from '@angular/core';
 import { OrderSummary } from '../../../../core/models/order/order-summary';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -58,10 +64,9 @@ export class OrderTable implements OnInit, OnDestroy{
     }
 
   };
-  constructor(
-    
-
-  ) {}
+constructor(
+  private cd: ChangeDetectorRef
+) {}
 
 
 ngOnInit(): void {
@@ -70,6 +75,8 @@ ngOnInit(): void {
     .subscribe(() => {
 
       this.currentTime = Date.now();
+
+      this.cd.markForCheck();
 
     });
 
