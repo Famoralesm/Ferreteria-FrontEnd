@@ -302,9 +302,21 @@ export class ProductForm implements OnInit {
     unit: value.unit
   };
 
-  const updateRequest: UpdateProductRequest = {
-    ...request
-  };
+  const formValue = this.form.getRawValue();
+const updateRequest: UpdateProductRequest = {
+  // Mantén aquí el resto de las propiedades que ya tienes.
+  sku: formValue.sku,
+  name: formValue.name,
+  description: formValue.description,
+  price: formValue.price,
+  wholesalePrice: formValue.wholesalePrice,
+  wholesaleMinQuantity: formValue.wholesaleMinQuantity,
+  stock: formValue.stock,
+  active: formValue.active ?? true,
+  category: formValue.category,
+  brand: formValue.brand,
+  unit: formValue.unit
+};
 
   const finish = () => {
     this.notificationService.success(

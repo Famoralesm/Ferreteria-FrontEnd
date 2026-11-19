@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
-import { Store } from '../models/store';
+import { Store } from '../models/store/store';
 
 @Injectable({
   providedIn: 'root'

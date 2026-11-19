@@ -3,11 +3,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import {
-  Product,
-  CreateProductRequest,
-  UpdateProductRequest
-} from '../models/product';
+import {  Product} from '../models/product/product';
+import {  CreateProductRequest} from '../models/product/create-product-request';
+import {  UpdateProductRequest} from '../models/product/update-product-request';
+
 
 @Injectable({
   providedIn: 'root'
