@@ -118,15 +118,12 @@ ngOnInit(): void {
 
     }
 
-    if (!order.statusChangedAt) {
+    const referenceDate = order.statusChangedAt || order.fecha;
+    const referenceTimestamp = new Date(referenceDate).getTime();
 
-      return 'green';
+    if (!Number.isFinite(referenceTimestamp)) return 'green';
 
-    }
-
-    const elapsed =
-      this.currentTime -
-      new Date(order.statusChangedAt).getTime();
+    const elapsed = this.currentTime - referenceTimestamp;
 
     const threshold =
       this.statusThresholds[order.estado];
@@ -172,18 +169,12 @@ ngOnInit(): void {
 
     }
 
-    if (!order.statusChangedAt) {
+    const referenceDate = order.statusChangedAt || order.fecha;
+    const referenceTimestamp = new Date(referenceDate).getTime();
 
-      return '00:00:00';
+    if (!Number.isFinite(referenceTimestamp)) return '00:00:00';
 
-    }
-
-    const elapsed =
-      Math.max(
-        0,
-        this.currentTime -
-        new Date(order.statusChangedAt).getTime()
-      );
+    const elapsed = Math.max(0, this.currentTime - referenceTimestamp);
 
     const totalSeconds =
       Math.floor(elapsed / 1000);
