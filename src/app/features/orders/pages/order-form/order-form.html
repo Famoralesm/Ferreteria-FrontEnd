@@ -294,6 +294,9 @@
                     <strong>
                       {{ item.productName }}
                     </strong>
+                    @if (item.wholesaleApplied) {
+                      <span class="wholesale-badge">PRECIO MAYORISTA</span>
+                    }
                   </td>
 
                   <td>
