@@ -211,15 +211,76 @@
             Producto<br>
           </label>
           
-          <p-select
-            id="product"
-            [options]="products"
-            optionLabel="name"
-            [(ngModel)]="selectedProduct"
-            [ngModelOptions]="{standalone: true}"
-            placeholder="Seleccione un producto"
-            class="w-full">
-          </p-select>
+<p-select
+  id="product"
+  [options]="products"
+  optionLabel="name"
+  [(ngModel)]="selectedProduct"
+  [ngModelOptions]="{standalone: true}"
+  placeholder="Seleccione un producto"
+  class="w-full"
+  [filter]="true"
+  filterBy="name,sku">
+
+  <ng-template #item let-product>
+
+    <div class="order-product-option">
+
+      <div class="order-product-main">
+        <strong>{{ product.name }}</strong>
+        <small>{{ product.sku }}</small>
+      </div>
+
+      <div class="order-product-stock">
+
+      <strong
+        [class.stock-low]="item.stockAvailable <= item.stockMinimo"
+        [class.stock-ok]="item.stockAvailable > item.stockMinimo">
+        {{ item.stockAvailable }}
+      </strong>
+
+        <small>
+          {{ product.stock <= (product.stockMinimo ?? 0)
+              ? 'Stock bajo'
+              : 'Disponible' }}
+        </small>
+
+      </div>
+
+    </div>
+
+  </ng-template>
+
+  <ng-template #selectedItem let-product>
+
+    @if (product) {
+      <div>
+        {{ product.name }} — Stock: {{ product.stock }}
+      </div>
+    }
+
+  </ng-template>
+
+</p-select>
+@if (selectedProduct) {
+
+  <div class="selected-product-stock"
+       [class.stock-low-card]="selectedProduct.stock <= (selectedProduct.stockMinimo ?? 0)"
+       [class.stock-ok-card]="selectedProduct.stock > (selectedProduct.stockMinimo ?? 0)">
+
+    <div>
+      <strong>{{ selectedProduct.name }}</strong>
+      <small>Existencias en la sucursal seleccionada</small>
+    </div>
+
+    <div class="selected-stock-number">
+      {{ selectedProduct.stock }}
+      <small>unidades</small>
+    </div>
+
+  </div>
+
+}
 
         </div>
 

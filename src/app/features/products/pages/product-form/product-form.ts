@@ -22,12 +22,14 @@ import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { CheckboxModule } from 'primeng/checkbox';
-import { Product } from '../../../../core/models/product/product';
 import { CreateProductRequest } from '../../../../core/models/product/create-product-request';
 import { UpdateProductRequest } from '../../../../core/models/product/update-product-request';
 import {  ProductService} from '../../../../core/services/product.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { environment } from '../../../../../environments/environment';
+import { StoreService } from '../../../../core/services/store.service';
+import { Store } from '../../../../core/models/store/store';
+import { Subject, filter, distinctUntilChanged, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-product-form',
@@ -53,6 +55,10 @@ export class ProductForm implements OnInit {
   form!: FormGroup;
 
   private fb = inject(FormBuilder);
+  private storeService = inject(StoreService);
+  private destroy$ = new Subject<void>();
+  currentStock = 0;
+  currentStoreName = '';
 
   private route = inject(
     ActivatedRoute
@@ -204,72 +210,99 @@ export class ProductForm implements OnInit {
   }
 
 
-  ngOnInit(): void {
+ngOnInit(): void {
 
-    const paramId =
-      this.route.snapshot.paramMap.get('id');
+  const paramId = this.route.snapshot.paramMap.get('id');
 
-    if (paramId) {
-
-      this.id = Number(paramId);
-
-      this.loadProduct(this.id);
-
-    }
-
+  if (!paramId) {
+    return;
   }
 
+  this.id = Number(paramId);
 
-  loadProduct(id: number): void {
+  let previousStore: Store | null = null;
 
-    this.productService
-      .findById(id)
-      .subscribe({
+  this.storeService.selectedStore$
+    .pipe(
+      filter((store): store is Store => store !== null),
+      distinctUntilChanged((a, b) => a.id === b.id),
+      takeUntil(this.destroy$)
+    )
+    .subscribe(store => {
 
-        next: product => {
+      if (
+        previousStore &&
+        previousStore.id !== store.id &&
+        this.form.dirty
+      ) {
 
-          this.currentImageUrl = product.imageUrl ?? null;
-          
-          this.form.patchValue({
+        const confirmed = confirm(
+          'Cambiar de sucursal recargará el producto y se perderán los cambios no guardados. ¿Deseas continuar?'
+        );
 
-            sku: product.sku,
-
-            name: product.name,
-
-            description:
-              product.description,
-
-            price: product.price,
-
-            active: product.active,
-
-            category: product.category,
-
-            brand: product.brand,
-
-            unit: product.unit,
-
-            createdAt:
-              product.createdAt,
-
-            updatedAt:
-              product.updatedAt
-
-          });
-
-        },
-
-        error: err => {
-
-       this.notificationService.error(
-            'Error cargando producto.'
-          );
-
+        if (!confirmed) {
+          this.storeService.setSelectedStore(previousStore);
+          return;
         }
 
-      });
+      }
 
-  }
+      previousStore = store;
+
+      this.currentStoreName = store.nombre;
+
+      this.loadProduct(this.id!, store.id);
+
+    });
+
+}
+
+ngOnDestroy(): void {
+  this.destroy$.next();
+  this.destroy$.complete();
+}
+
+
+  loadProduct(id: number, sucursalId: number): void {
+
+  this.productService
+    .findById(id, sucursalId)
+    .subscribe({
+
+      next: product => {
+
+        this.currentStock = product.stock ?? 0;
+
+        this.currentImageUrl = product.imageUrl ?? null;
+
+        this.form.patchValue({
+          sku: product.sku,
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          active: product.active,
+          category: product.category,
+          brand: product.brand,
+          unit: product.unit,
+          createdAt: product.createdAt,
+          updatedAt: product.updatedAt
+        });
+
+        this.form.markAsPristine();
+
+      },
+
+      error: err => {
+        console.error('Error cargando producto:', err);
+
+        this.notificationService.error(
+          'Error cargando producto.'
+        );
+      }
+
+    });
+
+}
 
 
   save(): void {

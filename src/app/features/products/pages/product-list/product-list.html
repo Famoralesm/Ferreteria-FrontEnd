@@ -37,12 +37,13 @@
   <!-- TABLA -->
   <div class="page-card">
 
-    <app-product-table
-      [products]="products"
-      (edit)="edit($event)"
-      (view)="view($event)"
-      (delete)="delete($event)">
-    </app-product-table>
+  <app-product-table
+    [products]="products"
+    (edit)="edit($event)"
+    (view)="view($event)"
+    (delete)="delete($event)"
+    (statusChange)="changeProductStatus($event)">
+  </app-product-table>
 
   </div>
 

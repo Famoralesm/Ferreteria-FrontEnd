@@ -9,7 +9,7 @@ export interface Product {
   wholesaleMinQuantity?: number | null;
 
   stock: number;
-
+  stockMinimo?: number;
   active: boolean;
   category?: string | null;
   brand?: string | null;
@@ -18,4 +18,5 @@ export interface Product {
   createdAt?: string;
   updatedAt?: string;
   imageUrl?: string | null;
+  
 }

@@ -19,6 +19,7 @@ import { StoreService } from '../../../../core/services/store.service';
 
 import { Product } from '../../../../core/models/product/product';
 import { Store } from '../../../../core/models/store/store';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-product-list',
@@ -46,7 +47,8 @@ export class ProductList implements OnInit, OnDestroy {
     private productService: ProductService,
     private storeService: StoreService,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -138,4 +140,40 @@ export class ProductList implements OnInit, OnDestroy {
 
   }
 
+  changeProductStatus(event: {
+      id: number;
+      active: boolean;
+  }): void {
+
+    this.productService.patch(event.id, {
+      active: event.active
+    }).subscribe({
+
+      next: () => {
+
+        this.products = this.products.map(product =>
+          product.id === event.id
+            ? { ...product, active: event.active }
+            : product
+        );
+
+        this.cdr.detectChanges();
+
+      },
+
+      error: err => {
+
+        console.error('Error cambiando estado:', err);
+
+        this.notificationService.error(
+          'No fue posible cambiar el estado del producto.'
+        );
+
+        this.loadProducts();
+
+      }
+
+    });
+
+  }
 }

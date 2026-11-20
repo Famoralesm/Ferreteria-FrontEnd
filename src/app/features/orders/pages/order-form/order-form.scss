@@ -254,3 +254,64 @@ form {
   row-gap: 9px;
 }
 
+.order-product-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.order-product-main,
+.order-product-stock {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.order-product-main small,
+.order-product-stock small,
+.selected-product-stock small {
+  color: #7b8794;
+  font-size: 0.78rem;
+}
+
+.order-product-stock {
+  text-align: right;
+}
+
+.stock-low {
+  color: #dc2626 !important;
+}
+
+.stock-ok {
+  color: #15803d !important;
+}
+
+.selected-product-stock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+.stock-low-card {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.stock-ok-card {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.selected-stock-number {
+  font-size: 1.25rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+

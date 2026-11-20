@@ -27,9 +27,15 @@ findAll(sucursalId: number): Observable<Product[]> {
   );
 }
 
-  findById(id: number): Observable<Product> {
-    return this.http.get<Product>(`${this.api}/${id}`);
-  }
+findById(id: number, sucursalId: number): Observable<Product> {
+  const params = new HttpParams()
+    .set('sucursalId', sucursalId);
+
+  return this.http.get<Product>(
+    `${this.api}/${id}`,
+    { params }
+  );
+}
 
   search(query: string): Observable<Product[]> {
 
@@ -76,5 +82,15 @@ findAll(sucursalId: number): Observable<Product[]> {
       `${this.api}/${id}/image`
     );
   }
+patch(
+  id: number,
+  request: { active?: boolean }
+): Observable<Product> {
+
+  return this.http.patch<Product>(
+    `${this.api}/${id}`,
+    request
+  );
+}
 
 }

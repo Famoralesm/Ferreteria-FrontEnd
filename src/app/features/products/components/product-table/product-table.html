@@ -9,6 +9,7 @@
 
   <ng-template pTemplate="header">
 
+
     <!-- ENCABEZADOS -->
     <tr>
       <th>ID</th>
@@ -17,6 +18,7 @@
       <th>Categoría</th>
       <th>Marca</th>
       <th>Precio</th>
+      <th>Stock</th>
       <th>Unidad</th>
       <th>Estado</th>
       <th>Acciones</th>
@@ -114,14 +116,25 @@
       <td>
         {{ product.price | currency:'CLP':'symbol':'1.0-0':'es-CL' }}
       </td>      
+      <td>
+        <strong>{{ product.stock ?? 0 }}</strong>
+      </td>
 
       <td>{{ product.unit }}</td>
 
       <td>
-        <p-tag
-          [value]="product.active ? 'Activo' : 'Inactivo'"
-          [severity]="product.active ? 'success' : 'danger'">
-        </p-tag>
+        <select
+          class="column-filter"
+          [value]="product.active ? 'true' : 'false'"
+          (change)="statusChange.emit({
+            id: product.id,
+            active: $any($event.target).value === 'true'
+          })">
+
+          <option value="true">Activo</option>
+          <option value="false">Inactivo</option>
+
+        </select>
       </td>
 
       <td>

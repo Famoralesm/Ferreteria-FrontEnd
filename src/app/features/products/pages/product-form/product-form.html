@@ -86,6 +86,26 @@
 
               </div>
             }
+            @if (id) {
+            <div class="stock-info-card">
+
+              <div>
+                <span>Stock disponible</span>
+                <strong>{{ currentStoreName }}</strong>
+              </div>
+
+              <strong class="stock-info-value">
+                {{ currentStock }}
+                <small>unidades</small>
+              </strong>
+
+              <small>
+                Existencias de esta sucursal. Para modificarlas,
+                utiliza el módulo Inventario.
+              </small>
+
+            </div>
+          }
 
 
           </div>

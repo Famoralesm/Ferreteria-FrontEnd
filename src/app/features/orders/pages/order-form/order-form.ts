@@ -59,6 +59,8 @@ export class OrderForm implements OnInit , OnDestroy {
   quantity: number;
   unitPrice: number;
   total: number;
+  stockAvailable: number;
+  stockMinimo: number;
   }[] = [];
   orderStatuses = ORDER_STATUSES;
 
@@ -288,7 +290,9 @@ private loadProducts(): void {
                 productName: item.productName,
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
-                total: item.totalPrice
+                total: item.totalPrice,
+                stockAvailable: item.stockAvailable,
+                stockMinimo: item.stockMinimo ?? 0
               }));
 
           this.statusChangedAt = order.statusChangedAt
@@ -329,7 +333,10 @@ private loadProducts(): void {
     items: this.items.map(item => ({
       productId: item.productId,
       quantity: item.quantity,
-      unitPrice: item.unitPrice
+      unitPrice: item.unitPrice,
+      total: item.total,
+      stockAvailable: item.stockAvailable,
+      stockMinimo: item.stockMinimo ?? 0
     }))
 
   };
@@ -411,7 +418,10 @@ private loadProducts(): void {
 
       total:
         this.selectedProduct.price *
-        this.quantity
+        this.quantity ,
+      
+      stockAvailable: this.selectedProduct.stock,
+      stockMinimo: this.selectedProduct.stockMinimo ?? 0
 
     });
 
