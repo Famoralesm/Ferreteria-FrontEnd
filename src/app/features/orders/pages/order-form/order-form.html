@@ -299,13 +299,7 @@
             [max]="100" /> 
 
         </div>
-        <td>
-          <strong
-            [class.stock-low]="item.stockAvailable <= item.stockMinimo"
-            [class.stock-ok]="item.stockAvailable > item.stockMinimo">
-            {{ item.stockAvailable }}
-          </strong>
-        </td>
+
           <br>
 
 
@@ -333,23 +327,14 @@
           <table>
 
             <thead>
-
               <tr>
-
                 <th>Producto</th>
-
                 <th>Cant</th>
-
                 <th>Stock sucursal</th>
-
                 <th>Precio</th>
-
                 <th>Total</th>
-
                 <th></th>
-
               </tr>
-
             </thead>
 
             <tbody>
@@ -369,6 +354,14 @@
                   </td>
 
                   <td>
+                    <strong
+                      [class.stock-low]="item.stockAvailable <= item.stockMinimo"
+                      [class.stock-ok]="item.stockAvailable > item.stockMinimo">
+                      {{ item.stockAvailable }}
+                    </strong>
+                  </td>
+
+                  <td>
                     {{ item.unitPrice | currency:'CLP':'symbol':'1.0-0':'es-CL' }}
                   </td>
 
@@ -379,7 +372,6 @@
                   </td>
 
                   <td>
-
                     <button
                       pButton
                       type="button"
@@ -389,7 +381,6 @@
                       text
                       (click)="removeProduct($index)">
                     </button>
-
                   </td>
 
                 </tr>
@@ -402,24 +393,19 @@
 
         </div>
 
-      <!-- ========================= -->
-      <!-- TOTAL -->
-      <!-- ========================= -->
+        <div class="form-field">
 
-      <div class="form-field">
+          <label for="totalAmount">
+            Total
+          </label>
 
-        <label for="totalAmount">
-          Total
-        </label>
+          <input
+            id="totalAmount"
+            pInputText
+            formControlName="totalAmount"
+            readonly>
 
-        <input
-          id="totalAmount"
-          pInputText
-          formControlName="totalAmount"
-          readonly>
-
-      </div>
-
+        </div>
       }
 
     </section>
