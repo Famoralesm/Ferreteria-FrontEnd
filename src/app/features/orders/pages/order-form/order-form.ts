@@ -215,8 +215,19 @@ ngOnInit(): void {
  
 private loadProducts(): void {
 
+  const sucursalId = this.storeService.selectedStoreId;
+
+  if (sucursalId === null) {
+
+    this.notificationService.warning(
+      'Debes seleccionar una sucursal para cargar los productos.'
+    );
+
+    return;
+  }
+
   this.productService
-    .findAll()
+    .findAll(sucursalId)
     .subscribe({
 
       next: products => {
@@ -227,7 +238,6 @@ private loadProducts(): void {
         );
 
         this.products = products;
-
       },
 
       error: err => {
@@ -237,11 +247,14 @@ private loadProducts(): void {
           err
         );
 
+        this.notificationService.error(
+          'No fue posible cargar los productos de la sucursal.'
+        );
       }
 
     });
 
-  }
+}
   loadOrder(id: number): void {
 
     this.orderService.findById(id)

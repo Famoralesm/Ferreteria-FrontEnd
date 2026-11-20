@@ -241,8 +241,6 @@ export class ProductForm implements OnInit {
 
             price: product.price,
 
-            stock: product.stock,
-
             active: product.active,
 
             category: product.category,

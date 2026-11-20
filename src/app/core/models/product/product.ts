@@ -3,13 +3,18 @@ export interface Product {
   sku: string;
   name: string;
   description?: string | null;
+
   price: number;
   wholesalePrice?: number | null;
   wholesaleMinQuantity?: number | null;
+
+  stock: number;
+
   active: boolean;
   category?: string | null;
   brand?: string | null;
   unit?: string | null;
+
   createdAt?: string;
   updatedAt?: string;
   imageUrl?: string | null;
