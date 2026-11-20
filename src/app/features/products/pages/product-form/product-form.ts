@@ -169,14 +169,6 @@ export class ProductForm implements OnInit {
         ]
       ],
 
-      stock: [
-        0,
-        [
-          Validators.required,
-          Validators.min(0)
-        ]
-      ],
-
       active: [
         true
       ],
@@ -295,7 +287,6 @@ export class ProductForm implements OnInit {
     name: value.name,
     description: value.description,
     price: value.price,
-    stock: value.stock,
     active: value.active,
     category: value.category,
     brand: value.brand,
@@ -311,7 +302,6 @@ const updateRequest: UpdateProductRequest = {
   price: formValue.price,
   wholesalePrice: formValue.wholesalePrice,
   wholesaleMinQuantity: formValue.wholesaleMinQuantity,
-  stock: formValue.stock,
   active: formValue.active ?? true,
   category: formValue.category,
   brand: formValue.brand,

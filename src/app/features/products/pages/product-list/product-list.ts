@@ -2,17 +2,23 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   ChangeDetectorRef
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subject, takeUntil, filter, switchMap } from 'rxjs';
+
 import { ButtonModule } from 'primeng/button';
 
 import { ProductTable } from '../../components/product-table/product-table';
 
 import { ProductService } from '../../../../core/services/product.service';
+import { StoreService } from '../../../../core/services/store.service';
+
 import { Product } from '../../../../core/models/product/product';
+import { Store } from '../../../../core/models/store/store';
 
 @Component({
   selector: 'app-product-list',
@@ -27,57 +33,89 @@ import { Product } from '../../../../core/models/product/product';
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss',
 })
-export class ProductList implements OnInit {
+export class ProductList implements OnInit, OnDestroy {
 
   products: Product[] = [];
 
+  selectedStore: Store | null = null;
+  loading = false;
+
+  private destroy$ = new Subject<void>();
+
   constructor(
     private productService: ProductService,
+    private storeService: StoreService,
     private cdr: ChangeDetectorRef,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.loadProducts();
+
+    this.storeService.selectedStore$
+      .pipe(
+        filter((store): store is Store => store !== null),
+
+        switchMap(store => {
+          this.selectedStore = store;
+          this.loading = true;
+          this.products = [];
+
+          return this.productService.findAll(store.id);
+        }),
+
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+
+        next: data => {
+          this.products = data;
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+
+        error: err => {
+          console.error('Error cargando productos:', err);
+          this.loading = false;
+          this.cdr.detectChanges();
+        }
+
+      });
+
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadProducts(): void {
+    const storeId = this.storeService.selectedStoreId;
 
-    this.productService.findAll().subscribe({
+    if (storeId === null) {
+      return;
+    }
 
+    this.productService.findAll(storeId).subscribe({
       next: data => {
-
         this.products = data;
         this.cdr.detectChanges();
-
       },
-
       error: err => {
-
         console.error('Error cargando productos:', err);
-
       }
-
     });
-
   }
 
   newProduct(): void {
-
     this.router.navigate(['/products/new']);
-
   }
 
   edit(id: number): void {
-
     this.router.navigate(['/products/edit', id]);
-
   }
 
   view(id: number): void {
-
     this.router.navigate(['/products', id]);
-
   }
 
   delete(id: number): void {

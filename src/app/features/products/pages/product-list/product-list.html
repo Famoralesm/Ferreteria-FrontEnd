@@ -17,6 +17,11 @@
 
   </div>
 
+    @if (selectedStore) {
+    <div class="inventory-store-label">
+      Inventario de: <strong>{{ selectedStore.nombre }}</strong>
+    </div>
+  }
   <!-- TOTAL DE PRODUCTOS -->
   <div class="page-info product-total">
 

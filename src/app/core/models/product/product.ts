@@ -6,7 +6,6 @@ export interface Product {
   price: number;
   wholesalePrice?: number | null;
   wholesaleMinQuantity?: number | null;
-  stock: number;
   active: boolean;
   category?: string | null;
   brand?: string | null;

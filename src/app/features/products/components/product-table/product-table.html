@@ -17,7 +17,6 @@
       <th>Categoría</th>
       <th>Marca</th>
       <th>Precio</th>
-      <th>Stock</th>
       <th>Unidad</th>
       <th>Estado</th>
       <th>Acciones</th>
@@ -114,9 +113,7 @@
 
       <td>
         {{ product.price | currency:'CLP':'symbol':'1.0-0':'es-CL' }}
-      </td>
-
-      <td>{{ product.stock }}</td>
+      </td>      
 
       <td>{{ product.unit }}</td>
 

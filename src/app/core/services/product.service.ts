@@ -17,9 +17,15 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  findAll(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.api);
-  }
+findAll(sucursalId: number): Observable<Product[]> {
+  const params = new HttpParams()
+    .set('sucursalId', sucursalId);
+
+  return this.http.get<Product[]>(
+    this.api,
+    { params }
+  );
+}
 
   findById(id: number): Observable<Product> {
     return this.http.get<Product>(`${this.api}/${id}`);
