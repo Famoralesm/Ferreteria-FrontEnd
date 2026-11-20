@@ -17,6 +17,7 @@ import { StoreService } from '../../../../core/services/store.service';
 import { NotificationService } from '../../../../core/services/notification.service';   
 import { CustomerService } from '../../../../core/services/customer.service';
 import { Customer } from '../../../../core/models/customer/customer';
+
 type UnknownCustomerOption = {
   id: null;
   nombre: string;
@@ -240,6 +241,7 @@ private loadProducts(): void {
         );
 
         this.products = products;
+        this.refreshItemsStock();
       },
 
       error: err => {
@@ -285,15 +287,21 @@ private loadProducts(): void {
 
           });
           this.syncSelectedCustomer();
-          this.items = order.items.map(item => ({
-                productId: item.productId,
-                productName: item.productName,
-                quantity: item.quantity,
-                unitPrice: item.unitPrice,
-                total: item.totalPrice,
-                stockAvailable: item.stockAvailable,
-                stockMinimo: item.stockMinimo ?? 0
-              }));
+          this.items = order.items.map(item => {
+            const product = this.products.find(
+              p => p.id === item.productId
+            );
+
+            return {
+              productId: item.productId,
+              productName: item.productName,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              total: item.totalPrice,
+              stockAvailable: product?.stock ?? 0,
+              stockMinimo: product?.stockMinimo ?? 0
+            };
+          });
 
           this.statusChangedAt = order.statusChangedAt
           this.updateElapsedTime();
@@ -334,9 +342,7 @@ private loadProducts(): void {
       productId: item.productId,
       quantity: item.quantity,
       unitPrice: item.unitPrice,
-      total: item.total,
-      stockAvailable: item.stockAvailable,
-      stockMinimo: item.stockMinimo ?? 0
+      total: item.total
     }))
 
   };
@@ -940,6 +946,18 @@ get isUnknownCustomerSelected(): boolean {
 }
 
 
+private refreshItemsStock(): void {
+  this.items = this.items.map(item => {
+    const product = this.products.find(
+      p => p.id === item.productId
+    );
 
+    return {
+      ...item,
+      stockAvailable: product?.stock ?? 0,
+      stockMinimo: product?.stockMinimo ?? 0
+    };
+  });
+}
   
 }

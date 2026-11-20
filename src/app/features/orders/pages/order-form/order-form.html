@@ -232,19 +232,17 @@
       </div>
 
       <div class="order-product-stock">
-
-      <strong
-        [class.stock-low]="item.stockAvailable <= item.stockMinimo"
-        [class.stock-ok]="item.stockAvailable > item.stockMinimo">
-        {{ item.stockAvailable }}
-      </strong>
+        <strong
+          [class.stock-low]="product.stock <= (product.stockMinimo ?? 0)"
+          [class.stock-ok]="product.stock > (product.stockMinimo ?? 0)">
+          {{ product.stock }}
+        </strong>
 
         <small>
           {{ product.stock <= (product.stockMinimo ?? 0)
               ? 'Stock bajo'
               : 'Disponible' }}
         </small>
-
       </div>
 
     </div>
@@ -301,6 +299,13 @@
             [max]="100" /> 
 
         </div>
+        <td>
+          <strong
+            [class.stock-low]="item.stockAvailable <= item.stockMinimo"
+            [class.stock-ok]="item.stockAvailable > item.stockMinimo">
+            {{ item.stockAvailable }}
+          </strong>
+        </td>
           <br>
 
 
@@ -334,6 +339,8 @@
                 <th>Producto</th>
 
                 <th>Cant</th>
+
+                <th>Stock sucursal</th>
 
                 <th>Precio</th>
 

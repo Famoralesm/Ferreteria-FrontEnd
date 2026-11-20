@@ -35,6 +35,10 @@ export class ProductTable {
   @Output() edit = new EventEmitter<number>();
   @Output() view = new EventEmitter<number>();
   @Output() delete = new EventEmitter<number>();
+  @Output() statusChange = new EventEmitter<{
+    id: number;
+    active: boolean;
+  }>();
 
   // Filtros por columna
   skuSearch = '';
