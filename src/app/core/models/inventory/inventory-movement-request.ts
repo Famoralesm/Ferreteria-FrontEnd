@@ -1,4 +1,4 @@
-import { MovementType } from './inventory-movement';
+import { MovementType } from './movement-type';
 
 export interface InventoryMovementRequest {
   productoId: number;
@@ -9,7 +9,3 @@ export interface InventoryMovementRequest {
   referenciaId?: number;
 }
 
-export interface InventoryMovementAction {
-  type: Exclude<MovementType, 'INITIAL' | 'RETURN'>;
-  request: InventoryMovementRequest;
-}

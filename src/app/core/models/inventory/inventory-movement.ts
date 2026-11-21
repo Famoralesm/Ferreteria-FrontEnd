@@ -1,9 +1,4 @@
-export type MovementType =
-  | 'INITIAL'
-  | 'ENTRY'
-  | 'EXIT'
-  | 'ADJUSTMENT'
-  | 'RETURN';
+import { MovementType } from './movement-type';
 
 export interface InventoryMovement {
   id: number;
