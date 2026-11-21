@@ -83,7 +83,19 @@
       <th></th>
       <th></th>
       <th></th>
-      <th></th>
+      <th>
+        <select
+          class="column-filter category-filter"
+          aria-label="Filtrar por estado"
+          [value]="statusSearch"
+          (change)="statusSearch = $any($event.target).value">
+
+          <option value="ALL">Todos</option>
+          <option value="ACTIVE">Activos</option>
+          <option value="INACTIVE">Inactivos</option>
+
+        </select>
+      </th>
 
       <th>
 
@@ -123,18 +135,10 @@
       <td>{{ product.unit }}</td>
 
       <td>
-        <select
-          class="column-filter"
-          [value]="product.active ? 'true' : 'false'"
-          (change)="statusChange.emit({
-            id: product.id,
-            active: $any($event.target).value === 'true'
-          })">
-
-          <option value="true">Activo</option>
-          <option value="false">Inactivo</option>
-
-        </select>
+        <p-tag
+          [value]="product.active ? 'Activo' : 'Inactivo'"
+          [severity]="product.active ? 'success' : 'danger'">
+        </p-tag>
       </td>
 
       <td>

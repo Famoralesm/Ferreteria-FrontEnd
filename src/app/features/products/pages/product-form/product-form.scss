@@ -312,3 +312,71 @@
     width: 100%;
   }
 }
+.stock-info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid #e1e7ed;
+  border-radius: 12px;
+  background: #fafbfc;
+}
+
+.stock-info-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.stock-info-heading span {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stock-info-heading strong {
+  color: #243447;
+  font-size: 15px;
+}
+
+.stock-info-main {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.stock-info-main strong {
+  font-size: 30px;
+  color: #243447;
+}
+
+.stock-info-main small {
+  color: #64748b;
+}
+
+.stock-info-message {
+  font-weight: 600;
+}
+
+.stock-low-card {
+  background: #fff7f7;
+  border-color: #fecaca;
+}
+
+.stock-ok-card {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.stock-low-text {
+  color: #b91c1c;
+}
+
+.stock-ok-text {
+  color: #15803d;
+}
+
+.stock-info-help {
+  color: #64748b;
+  line-height: 1.5;
+}

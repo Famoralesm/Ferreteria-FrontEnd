@@ -58,8 +58,8 @@ export class ProductForm implements OnInit {
   private storeService = inject(StoreService);
   private destroy$ = new Subject<void>();
   currentStock = 0;
+  currentStockMinimo = 0;
   currentStoreName = '';
-
   private route = inject(
     ActivatedRoute
   );
@@ -203,7 +203,11 @@ export class ProductForm implements OnInit {
           value: '',
           disabled: true
         }
-      ]
+      ],
+
+      wholesalePrice: [null, Validators.min(0)],
+      
+      wholesaleMinQuantity: [null, Validators.min(1)],
 
     });
 
@@ -272,6 +276,8 @@ ngOnDestroy(): void {
       next: product => {
 
         this.currentStock = product.stock ?? 0;
+        this.currentStock = product.stock ?? 0;
+        this.currentStockMinimo = product.stockMinimo ?? 0;
 
         this.currentImageUrl = product.imageUrl ?? null;
 
@@ -285,7 +291,9 @@ ngOnDestroy(): void {
           brand: product.brand,
           unit: product.unit,
           createdAt: product.createdAt,
-          updatedAt: product.updatedAt
+          updatedAt: product.updatedAt,
+          wholesalePrice: product.wholesalePrice,
+          wholesaleMinQuantity: product.wholesaleMinQuantity
         });
 
         this.form.markAsPristine();
@@ -321,7 +329,9 @@ ngOnDestroy(): void {
     active: value.active,
     category: value.category,
     brand: value.brand,
-    unit: value.unit
+    unit: value.unit,
+    wholesalePrice: value.wholesalePrice,
+    wholesaleMinQuantity: value.wholesaleMinQuantity
   };
 
   const formValue = this.form.getRawValue();
@@ -471,6 +481,16 @@ get productImageSrc(): string | null {
       ? this.currentImageUrl
       : `/${this.currentImageUrl}`
   }`;
+}
+
+get isStockAtMinimum(): boolean {
+  return this.currentStock <= this.currentStockMinimo;
+}
+
+get stockStatusMessage(): string {
+  return this.isStockAtMinimum
+    ? 'Está en el límite de existencias mínimas.'
+    : 'Stock disponible por encima del mínimo establecido.';
 }
 
 }

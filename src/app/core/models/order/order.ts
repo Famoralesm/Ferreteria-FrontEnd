@@ -35,4 +35,5 @@ export interface Order {
 
   items: OrderItem[];
 
+  storeId: number;
 }

@@ -16,17 +16,16 @@
     <div class="store-selector">
 
       <i class="pi pi-map-marker"></i>
-
-      <p-select
-        [options]="stores"
-        [(ngModel)]="selectedStore"
-        optionLabel="nombre"
-        placeholder="Seleccionar sucursal"
-        [loading]="loadingStores"
-        [disabled]="loadingStores || stores.length <= 1"
-        (onChange)="onStoreChange($event.value)"
-        styleClass="store-select">
-      </p-select>
+    <p-select
+      [options]="stores"
+      [(ngModel)]="selectedStore"
+      optionLabel="nombre"
+      placeholder="Seleccionar sucursal"
+      [loading]="loadingStores"
+      [disabled]="loadingStores || stores.length <= 1 || isEditingOrder"
+      (onChange)="onStoreChange($event.value)"
+      class="store-select">
+    </p-select>
 
     </div>
 

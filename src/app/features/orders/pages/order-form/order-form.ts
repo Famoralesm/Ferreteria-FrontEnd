@@ -81,6 +81,8 @@ export class OrderForm implements OnInit , OnDestroy {
   private pad(value: number): string {
     return value.toString().padStart(2, '0');
   }
+  private orderStoreId?: number;
+
   private extractCoordinates(url: string): {
       latitude: number;
       longitude: number;
@@ -220,6 +222,7 @@ private loadProducts(): void {
 
   const sucursalId = this.storeService.selectedStoreId;
 
+
   if (sucursalId === null) {
 
     this.notificationService.warning(
@@ -228,6 +231,7 @@ private loadProducts(): void {
 
     return;
   }
+
 
   this.productService
     .findAll(sucursalId)
@@ -266,7 +270,17 @@ private loadProducts(): void {
 
         next: order => {
 
+          const selectedStoreId = this.storeService.selectedStoreId;
+          this.orderStoreId = order.storeId;
+          if (order.storeId !== selectedStoreId) {
+            this.notificationService.error(
+              'Este pedido pertenece a otra sucursal. Regresa al listado y selecciona la sucursal correspondiente.'
+            );
 
+            this.router.navigate(['/orders']);
+            return;
+          }
+          this.orderStoreId = order.storeId;
           this.form.patchValue({
 
             customerName: order.customerName,
@@ -645,6 +659,15 @@ onAddressChange(): void {
 
 saveOrder(): void {
 
+  if (
+    this.id &&
+    this.orderStoreId !== this.storeService.selectedStoreId
+  ) {
+    this.notificationService.error(
+      'No puedes guardar el pedido desde una sucursal diferente a la original.'
+    );
+    return;
+  }
   this.form.markAllAsTouched();
 
   const requiredFields: { control: string; label: string }[] = [

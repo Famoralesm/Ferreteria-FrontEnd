@@ -87,21 +87,30 @@
               </div>
             }
             @if (id) {
-            <div class="stock-info-card">
+            <div
+              class="stock-info-card"
+              [class.stock-low-card]="isStockAtMinimum"
+              [class.stock-ok-card]="!isStockAtMinimum">
 
-              <div>
+              <div class="stock-info-heading">
                 <span>Stock disponible</span>
                 <strong>{{ currentStoreName }}</strong>
               </div>
 
-              <strong class="stock-info-value">
-                {{ currentStock }}
+              <div class="stock-info-main">
+                <strong>{{ currentStock }}</strong>
                 <small>unidades</small>
-              </strong>
+              </div>
 
-              <small>
-                Existencias de esta sucursal. Para modificarlas,
-                utiliza el módulo Inventario.
+              <small
+                class="stock-info-message"
+                [class.stock-low-text]="isStockAtMinimum"
+                [class.stock-ok-text]="!isStockAtMinimum">
+                {{ stockStatusMessage }}
+              </small>
+
+              <small class="stock-info-help">
+                Para modificar las existencias, utiliza el módulo Inventario.
               </small>
 
             </div>

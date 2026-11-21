@@ -35,16 +35,13 @@ export class ProductTable {
   @Output() edit = new EventEmitter<number>();
   @Output() view = new EventEmitter<number>();
   @Output() delete = new EventEmitter<number>();
-  @Output() statusChange = new EventEmitter<{
-    id: number;
-    active: boolean;
-  }>();
 
   // Filtros por columna
   skuSearch = '';
   nameSearch = '';
   categorySearch = '';
   brandSearch = '';
+  statusSearch: 'ALL' | 'ACTIVE' | 'INACTIVE' = 'ALL';
 
   categories = [
     { label: 'Herramientas', value: 'HERRAMIENTAS' },
@@ -69,6 +66,11 @@ export class ProductTable {
         (
           !this.categorySearch ||
           product.category === this.categorySearch
+        )&&
+        (
+          this.statusSearch === 'ALL' ||
+          (this.statusSearch === 'ACTIVE' && product.active) ||
+          (this.statusSearch === 'INACTIVE' && !product.active)
         )
       );
 

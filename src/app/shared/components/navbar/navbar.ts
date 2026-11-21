@@ -17,7 +17,10 @@ import { Role } from '../../../core/enums/role';
 import { CurrentUserService } from '../../../core/services/current-user.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { StoreService } from '../../../core/services/store.service';
-
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs';
+import { DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Store } from '../../../core/models/store/store';
 import { environment } from '../../../../environments/environment';
 
@@ -46,10 +49,15 @@ export class Navbar implements OnInit {
   selectedStore: Store | null = null;
   loadingStores = false;
 
+  isEditingOrder = false;
+
+  private destroyRef = inject(DestroyRef);
+
   constructor(
     currentUserService: CurrentUserService,
     private authService: AuthService,
-    private storeService: StoreService
+    private storeService: StoreService,
+    private router: Router
   ) {
 
     this.currentUser$ = currentUserService.user$;
@@ -105,6 +113,18 @@ export class Navbar implements OnInit {
     this.storeService.selectedStore$.subscribe(store => {
       this.selectedStore = store;
     });
+    this.updateOrderEditLock();
+
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd =>
+          event instanceof NavigationEnd
+        ),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(() => {
+        this.updateOrderEditLock();
+      });
 
   }
 
@@ -177,5 +197,9 @@ export class Navbar implements OnInit {
     return `${backendOrigin}${url.startsWith('/') ? url : `/${url}`}`;
 
   }
+  private updateOrderEditLock(): void {
+  this.isEditingOrder =
+    /^\/orders\/edit\/\d+/.test(this.router.url);
+}
 
 }
