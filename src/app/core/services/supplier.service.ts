@@ -41,6 +41,10 @@ export class SupplierService {
     );
   }
 
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
   getProductSuppliers(productId: number): Observable<ProductSupplier[]> {
     return this.http.get<ProductSupplier[]>(
       `${this.apiUrl}/products/${productId}`
