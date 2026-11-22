@@ -89,38 +89,7 @@
 
               </div>
             }
-            @if (id) {
-            <div
-              class="stock-info-card"
-              [class.stock-low-card]="isStockAtMinimum"
-              [class.stock-ok-card]="!isStockAtMinimum">
-
-              <div class="stock-info-heading">
-                <span>Stock disponible</span>
-                <strong>{{ currentStoreName }}</strong>
-              </div>
-
-              <div class="stock-info-main">
-                <strong>{{ currentStock }}</strong>
-                <small>unidades</small>
-              </div>
-
-              <small
-                class="stock-info-message"
-                [class.stock-low-text]="isStockAtMinimum"
-                [class.stock-ok-text]="!isStockAtMinimum">
-                {{ stockStatusMessage }}
-              </small>
-
-              <small class="stock-info-help">
-                Stock mínimo de esta sucursal: <strong>{{ currentStockMinimo }} unidades</strong>.
-              </small>
-              <small class="stock-info-help">
-                El stock actual se controla por sucursal y no se modifica desde esta ficha.
-              </small>
-
-            </div>
-          }
+            
 
 
           </div>
@@ -176,6 +145,39 @@
               <small>Disponible para ventas y pedidos.</small>
             </div>
           </div>
+
+          @if (id) {
+            <div
+              class="stock-info-card"
+              [class.stock-low-card]="isStockAtMinimum"
+              [class.stock-ok-card]="!isStockAtMinimum">
+
+              <div class="stock-info-heading">
+                <span>Stock disponible</span>
+                <strong>{{ currentStoreName }}</strong>
+              </div>
+
+              <div class="stock-info-main">
+                <strong>{{ currentStock }}</strong>
+                <small>unidades</small>
+              </div>
+
+              <small
+                class="stock-info-message"
+                [class.stock-low-text]="isStockAtMinimum"
+                [class.stock-ok-text]="!isStockAtMinimum">
+                {{ stockStatusMessage }}
+              </small>
+
+              <small class="stock-info-help">
+                Stock mínimo de esta sucursal: <strong>{{ currentStockMinimo }} unidades</strong>.
+              </small>
+              <small class="stock-info-help">
+                El stock actual se controla por sucursal y no se modifica desde esta ficha.
+              </small>
+
+            </div>
+          }
 
 
           </div>
