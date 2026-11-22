@@ -85,7 +85,7 @@ export class CustomerForm implements OnInit {
       razonSocial: [''],
       giro: [''],
       tipoCompra: [''],
-      direccion: [''],
+      direccion: ['', Validators.required],
 
       comuna: [
         null,
@@ -109,7 +109,7 @@ export class CustomerForm implements OnInit {
 
       telefono: [
         '',
-        [chileanPhoneValidator]
+        [Validators.required, chileanPhoneValidator]
       ],
 
       rutSolicita: [''],
