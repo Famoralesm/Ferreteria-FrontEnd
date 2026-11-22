@@ -748,7 +748,7 @@ saveOrder(): void {
               ? err.error
               : JSON.stringify(err.error, null, 2);
 
-          this.notificationService.warning(
+          this.notificationService.error(
             `No fue posible actualizar el pedido: ${detail || 'Error sin detalle del servidor'}`
           );
 
@@ -785,7 +785,7 @@ saveOrder(): void {
               ? err.error
               : JSON.stringify(err.error, null, 2);
 
-          this.notificationService.warning(
+          this.notificationService.error(
             `No fue posible actualizar el pedido: ${detail || 'Error sin detalle del servidor'}`
           );
 
