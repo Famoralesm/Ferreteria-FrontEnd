@@ -17,6 +17,26 @@ export class InventoryService {
 
   constructor(private http: HttpClient) {}
 
+  initializeStock(request: {
+    productoId: number;
+    sucursalId: number;
+    stock: number;
+    stockMinimo: number;
+    motivo?: string;
+  }): Observable<ProductStock> {
+    return this.http.post<ProductStock>(
+      `${this.apiUrl}/product-stocks/initialization`,
+      request
+    );
+  }
+
+  updateMinimumStock(productoId: number, sucursalId: number, stockMinimo: number): Observable<ProductStock> {
+    return this.http.put<ProductStock>(
+      `${this.apiUrl}/product-stocks/${productoId}/minimum`,
+      { sucursalId, stockMinimo }
+    );
+  }
+
   getStocks(sucursalId: number): Observable<ProductStock[]> {
     const params = new HttpParams()
       .set('sucursalId', sucursalId);
