@@ -122,8 +122,8 @@ export class SupplierList implements OnInit {
       razonSocial: supplier.razonSocial ?? '',
       giro: supplier.giro ?? '',
       direccion: supplier.direccion ?? '',
-      ciudad: supplier.ciudad ?? null,
-      comuna: supplier.comuna ?? null,
+      ciudad: supplier.ciudad?.id ?? null,
+      comuna: supplier.comuna?.id ?? null,
       telefono: supplier.telefono ?? '',
       email: supplier.email ?? '',
       activo: supplier.activo ?? true
@@ -145,8 +145,8 @@ export class SupplierList implements OnInit {
       razonSocial: String(value.razonSocial).trim(),
       giro: String(value.giro).trim(),
       direccion: String(value.direccion).trim(),
-      ciudad: value.ciudad ? { id: Number(value.ciudad.id ?? value.ciudad) } : null,
-      comuna: value.comuna ? { id: Number(value.comuna.id ?? value.comuna) } : null,
+      ciudad: value.ciudad ? { id: Number(value.ciudad) } : null,
+      comuna: value.comuna ? { id: Number(value.comuna) } : null,
       telefono: normalizeChileanPhone(value.telefono),
       email: value.email?.trim() || '',
       activo: value.activo ?? true
