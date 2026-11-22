@@ -114,8 +114,8 @@
               (paste)="onAddressPaste($event)"
               (input)="onAddressChange()"
               >
-
           </div>
+          <app-field-error [control]="form.get('address')" [messages]="{ required: 'La dirección es obligatoria.' }" />
 
         </div>
 
@@ -139,7 +139,7 @@
             placeholder="Seleccione método de pago"
             class="w-full">
           </p-select>
-
+          <app-field-error [control]="form.get('paymentMethod')" [messages]="{ required: 'Selecciona un método de pago.' }" />
         </div>
 
 
@@ -248,6 +248,9 @@
     </div>
 
   </ng-template>
+  @if (productSelectionError) {
+    <small class="field-error">Selecciona un producto antes de agregarlo.</small>
+  }
 
   <ng-template #selectedItem let-product>
 
@@ -314,7 +317,11 @@
             (click)="addProduct()">
           </button>
 
-        </div>  <br>
+        </div>
+        @if (itemsTouched && items.length === 0) {
+          <small class="field-error">Agrega al menos un producto al pedido.</small>
+        }
+        <br>
 
       </div>
 
@@ -429,6 +436,7 @@
           type="date"
           pInputText
           formControlName="deliveryDate">
+        <app-field-error [control]="form.get('deliveryDate')" [messages]="{ required: 'La fecha de entrega es obligatoria.' }" />
 
         <label for="notes">
           Observaciones
