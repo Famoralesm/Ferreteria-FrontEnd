@@ -6,6 +6,15 @@
     </div>
   </div>
 
+  <div class="page-card product-summary">
+    <div>
+      <span>PRODUCTO EN COMPARACIÓN</span>
+      <h2>{{ productName }}</h2>
+      @if (productSku) { <small>SKU: {{ productSku }}</small> }
+    </div>
+    <strong>{{ comparisons.length }} proveedor(es)</strong>
+  </div>
+
   <div class="page-card comparison-help">
     <i class="pi pi-info-circle"></i>
     <div>
@@ -27,7 +36,17 @@
           optionValue="id"
           placeholder="Seleccionar proveedor"
           [showClear]="true"
+          [filter]="true"
+          filterBy="nombre,rut,razonSocial"
+          appendTo="body"
+          [panelStyle]="{ 'max-height': '70vh' }"
           class="w-full">
+          <ng-template #item let-supplier>
+            <div class="supplier-option">
+              <strong>{{ supplier.nombre }}</strong>
+              <small>{{ supplier.rut || supplier.razonSocial || 'Sin RUT registrado' }}</small>
+            </div>
+          </ng-template>
         </p-select>
       </div>
       <div class="form-field">
@@ -57,7 +76,7 @@
     </div>
     <p-table [value]="sortedComparisons" [loading]="loading" [tableStyle]="{ 'min-width': '48rem' }" responsiveLayout="scroll">
       <ng-template #header>
-        <tr><th>Proveedor</th><th>Precio de compra</th><th>Contacto</th><th>Selección</th><th class="actions-column">Acción</th></tr>
+        <tr><th>Proveedor</th><th>Precio de compra</th><th>Contacto</th><th>Selección</th><th class="actions-column">Acciones</th></tr>
       </ng-template>
       <ng-template #body let-item>
         <tr [class.selected-supplier-row]="item.seleccionado">
@@ -72,6 +91,8 @@
             } @else {
               <span class="selected-label"><i class="pi pi-check-circle"></i> Seleccionado</span>
             }
+            <button pButton type="button" icon="pi pi-trash" severity="danger" text rounded size="small"
+              aria-label="Quitar proveedor de la comparación" (click)="removeSupplier(item)"></button>
           </td>
         </tr>
       </ng-template>
