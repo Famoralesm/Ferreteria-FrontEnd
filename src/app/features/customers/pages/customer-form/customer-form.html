@@ -164,7 +164,7 @@
         <div class="field">
 
           <label for="telefono">
-            Teléfono
+            Teléfono *
           </label>
 
           <input
@@ -174,7 +174,7 @@
             formControlName="telefono"
             placeholder="+56 9..."
           />
-          <app-field-error [control]="telefono" [messages]="{ telefonoChilenoInvalido: 'Ingresa un teléfono chileno válido, por ejemplo +56912345678.' }" />
+          <app-field-error [control]="telefono" [messages]="{ required: 'El teléfono es obligatorio.', telefonoChilenoInvalido: 'Ingresa un teléfono chileno válido, por ejemplo +56912345678.' }" />
 
         </div>
 
@@ -203,7 +203,7 @@
         <div class="field field-full">
 
           <label for="direccion">
-            Dirección
+            Dirección *
           </label>
 
           <input
@@ -213,6 +213,7 @@
             formControlName="direccion"
             placeholder="Dirección"
           />
+          <app-field-error [control]="customerForm.get('direccion')" [messages]="{ required: 'La dirección es obligatoria.' }" />
 
         </div>
 
