@@ -37,8 +37,8 @@ export class SupplierList implements OnInit {
       razonSocial: ['', [Validators.required, Validators.maxLength(200)]],
       giro: ['', [Validators.required, Validators.maxLength(200)]],
       direccion: ['', Validators.required],
-      ciudad: ['', [Validators.required, Validators.maxLength(100)]],
-      comuna: ['', [Validators.required, Validators.maxLength(100)]],
+      ciudad: ['', Validators.maxLength(100)],
+      comuna: ['', Validators.maxLength(100)],
       telefono: ['', [Validators.required, chileanPhoneValidator]],
       email: ['', [Validators.email, Validators.maxLength(150)]],
       activo: [true]
