@@ -1,0 +1,18 @@
+:host { display: block; min-width: 0; }
+.comparison-help { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px; padding: 18px; }
+.comparison-help > i { color: #2563eb; font-size: 20px; margin-top: 2px; }
+.comparison-help strong { color: #243447; }
+.comparison-help p { margin: 5px 0 0; color: #64748b; font-size: 13px; line-height: 1.5; }
+.add-price-card { margin-bottom: 18px; padding: 20px; }
+.add-price-card h3, .comparison-heading h3 { margin: 0; color: #243447; font-size: 16px; }
+.add-price-form { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(180px, 220px) auto; align-items: end; gap: 16px; margin-top: 18px; }
+.form-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.form-field label { color: #34495e; font-size: 13px; font-weight: 600; }
+.form-field p-select, .form-field p-inputNumber { width: 100%; }
+.hint { display: block; margin-top: 12px; color: #64748b; }
+.comparison-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.comparison-heading span { color: #64748b; font-size: 12px; }
+.selected-supplier-row { background: #f0fdf4; }
+.selected-label { color: #15803d; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.selected-label i { margin-right: 4px; }
+@media (max-width: 760px) { .add-price-form { grid-template-columns: 1fr; } }
