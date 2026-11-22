@@ -137,7 +137,7 @@
               <button pButton type="button" icon="pi pi-pencil" severity="secondary" [text]="true"
                 [rounded]="true" aria-label="Editar proveedor" (click)="editSupplier(supplier)"></button>
               <button pButton type="button" icon="pi pi-trash" severity="danger" [text]="true"
-                [rounded]="true" aria-label="Eliminar proveedor" (click)="deleteSupplier(supplier)"></button>
+                [rounded]="true" [disabled]="!supplier.activo" aria-label="Eliminar proveedor" (click)="deleteSupplier(supplier)"></button>
             </td>
           </tr>
         </ng-template>
