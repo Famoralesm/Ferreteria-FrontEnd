@@ -1,0 +1,87 @@
+<div class="page-shell supplier-comparison-page">
+  <div class="page-header">
+    <div class="page-header-content">
+      <span class="page-kicker">COMPRAS · COMPARACIÓN DE PRECIOS</span>
+      <p>Compara los precios de compra registrados para este producto y selecciona el proveedor preferido.</p>
+    </div>
+  </div>
+
+  <div class="page-card comparison-help">
+    <i class="pi pi-info-circle"></i>
+    <div>
+      <strong>Comparación por producto</strong>
+      <p>Registra el precio que ofrece cada proveedor. La tabla se ordena desde el precio más bajo y puedes marcar cuál será el proveedor seleccionado para este producto.</p>
+    </div>
+  </div>
+
+  <div class="page-card add-price-card">
+    <h3>Agregar precio de proveedor</h3>
+    <div class="add-price-form">
+      <div class="form-field">
+        <label for="comparisonSupplier">Proveedor</label>
+        <p-select
+          inputId="comparisonSupplier"
+          [options]="availableSuppliers"
+          [(ngModel)]="selectedSupplierId"
+          optionLabel="nombre"
+          optionValue="id"
+          placeholder="Seleccionar proveedor"
+          [showClear]="true"
+          class="w-full">
+        </p-select>
+      </div>
+      <div class="form-field">
+        <label for="comparisonPrice">Precio de compra</label>
+        <p-inputNumber
+          inputId="comparisonPrice"
+          [(ngModel)]="purchasePrice"
+          mode="currency"
+          currency="CLP"
+          locale="es-CL"
+          [min]="0"
+          class="w-full">
+        </p-inputNumber>
+      </div>
+      <button pButton type="button" label="Agregar precio" icon="pi pi-plus" severity="success"
+        [loading]="saving" [disabled]="availableSuppliers.length === 0" (click)="addSupplierPrice()"></button>
+    </div>
+    @if (availableSuppliers.length === 0) {
+      <small class="hint">No hay proveedores activos disponibles para asociar, o todos ya tienen un precio registrado para este producto.</small>
+    }
+  </div>
+
+  <div class="page-card">
+    <div class="comparison-heading">
+      <h3>Precios registrados</h3>
+      <span>{{ comparisons.length }} proveedor(es)</span>
+    </div>
+    <p-table [value]="sortedComparisons" [loading]="loading" [tableStyle]="{ 'min-width': '48rem' }" responsiveLayout="scroll">
+      <ng-template #header>
+        <tr><th>Proveedor</th><th>Precio de compra</th><th>Contacto</th><th>Selección</th><th class="actions-column">Acción</th></tr>
+      </ng-template>
+      <ng-template #body let-item>
+        <tr [class.selected-supplier-row]="item.seleccionado">
+          <td><strong>{{ item.nombreProveedor }}</strong></td>
+          <td>{{ item.precioCompra | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</td>
+          <td>{{ item.telefonoProveedor || item.emailProveedor || '—' }}</td>
+          <td>{{ item.seleccionado ? 'Proveedor elegido' : 'Alternativa' }}</td>
+          <td class="actions-column">
+            @if (!item.seleccionado) {
+              <button pButton type="button" label="Elegir" icon="pi pi-check" severity="secondary" size="small"
+                (click)="selectSupplier(item)"></button>
+            } @else {
+              <span class="selected-label"><i class="pi pi-check-circle"></i> Seleccionado</span>
+            }
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr><td colspan="5" class="empty-message">Todavía no hay precios asociados a este producto. Agrega un proveedor y su precio de compra para comenzar la comparación.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <div class="page-actions page-actions--bottom">
+    <button pButton type="button" label="Volver al producto" icon="pi pi-arrow-left" severity="secondary" (click)="backToProduct()"></button>
+  </div>
+</div>
