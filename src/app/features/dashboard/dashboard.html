@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="stats">
-        <app-stat-card title="Productos activos" [value]="stats.productos.toString()" icon="pi pi-box"></app-stat-card>
+        <app-stat-card title="Productos" [value]="stats.productos.toString()" icon="pi pi-box"></app-stat-card>
         <app-stat-card title="Pedidos pendientes" [value]="stats.pedidosPendientes.toString()" icon="pi pi-shopping-cart"></app-stat-card>
         <app-stat-card title="Clientes" [value]="stats.clientes.toString()" icon="pi pi-users"></app-stat-card>
         <app-stat-card title="Ventas hoy" [value]="(stats.ventasHoy | currency:'CLP':'symbol':'1.0-0':'es-CL') ?? '$0'" icon="pi pi-dollar"></app-stat-card>
