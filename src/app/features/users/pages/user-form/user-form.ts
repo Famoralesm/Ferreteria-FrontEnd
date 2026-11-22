@@ -293,77 +293,52 @@ export class UserForm implements OnInit {
       : this.userService.create(request);
 
     operation.subscribe({
+      next: user => {
+        if (!this.selectedAvatar) {
+          this.saving = false;
+          this.notificationService.success(
+            this.id ? 'Usuario actualizado correctamente.' : 'Usuario creado correctamente.'
+          );
+          this.router.navigate(['/users']);
+          return;
+        }
 
-next: user => {
+        this.uploadingAvatar = true;
+        this.userService.uploadAvatar(user.id, this.selectedAvatar).subscribe({
+          next: updatedUser => {
+            this.currentAvatarUrl = updatedUser.avatarUrl ?? null;
+            this.uploadingAvatar = false;
+            this.saving = false;
 
-  if (!this.selectedAvatar) {
-    this.saving = false;
+            if (this.avatarPreview) {
+              URL.revokeObjectURL(this.avatarPreview);
+              this.avatarPreview = undefined;
+            }
 
-    this.notificationService.success(
-      this.id
-        ? 'Usuario actualizado correctamente.'
-        : 'Usuario creado correctamente.'
-    );
-
-    this.router.navigate(['/users']);
-    return;
-  }
-
-  this.uploadingAvatar = true;
-
-  this.userService.uploadAvatar(
-    user.id,
-    this.selectedAvatar
-  ).subscribe({
-
-next: updatedUser => {
-
-  this.currentAvatarUrl = updatedUser.avatarUrl ?? null;
-
-  this.uploadingAvatar = false;
-  this.saving = false;
-
-  if (this.avatarPreview) {
-    URL.revokeObjectURL(this.avatarPreview);
-    this.avatarPreview = undefined;
-  }
-
-  this.currentUserService.refresh()
-    .pipe(take(1))
-    .subscribe({
-
-      next: () => {
-
-        this.notificationService.success(
-          'Usuario e imagen actualizados correctamente.'
-        );
-
-        this.router.navigate(['/users']);
-
+            this.currentUserService.refresh().pipe(take(1)).subscribe({
+              next: () => {
+                this.notificationService.success('Usuario e imagen actualizados correctamente.');
+                this.router.navigate(['/users']);
+              },
+              error: err => {
+                console.error('Error refrescando usuario autenticado:', err);
+                this.notificationService.warning(
+                  'La fotografía se guardó, pero no fue posible actualizar los datos en pantalla.'
+                );
+                this.router.navigate(['/users']);
+              }
+            });
+          },
+          error: err => {
+            console.error('Error subiendo fotografía del usuario:', err);
+            this.uploadingAvatar = false;
+            this.saving = false;
+            this.notificationService.error(
+              'El usuario se guardó, pero no fue posible subir la fotografía.'
+            );
+          }
+        });
       },
-
-      error: err => {
-
-        console.error(
-          'Error refrescando usuario autenticado:',
-          err
-        );
-
-        this.notificationService.warning(
-          'La fotografía se guardó, pero no fue posible actualizar los datos en pantalla.'
-        );
-
-        this.router.navigate(['/users']);
-
-      }
-
-    });
-
-},
-
-  });
-
-},
       error: err => {
         console.error('Error guardando usuario:', err);
         this.saving = false;
@@ -371,7 +346,6 @@ next: updatedUser => {
           this.getErrorMessage(err, 'No fue posible guardar el usuario.')
         );
       }
-
     });
 
   }
