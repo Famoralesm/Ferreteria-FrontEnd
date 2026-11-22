@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -31,24 +31,25 @@ export class SupplierList implements OnInit {
   saving = false;
   dialogVisible = false;
   editingId?: number;
-
-  readonly supplierForm = this.fb.group({
-    rut: [''],
-    nombre: ['', [Validators.required, Validators.maxLength(150)]],
-    razonSocial: [''],
-    giro: [''],
-    direccion: [''],
-    telefono: [''],
-    email: ['', [Validators.email]],
-    activo: [true]
-  });
+  readonly supplierForm: FormGroup;
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly supplierService: SupplierService,
     private readonly notificationService: NotificationService,
     private readonly cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.supplierForm = this.fb.group({
+      rut: [''],
+      nombre: ['', [Validators.required, Validators.maxLength(150)]],
+      razonSocial: [''],
+      giro: [''],
+      direccion: [''],
+      telefono: [''],
+      email: ['', [Validators.email]],
+      activo: [true]
+    });
+  }
 
   ngOnInit(): void {
     this.loadSuppliers();
