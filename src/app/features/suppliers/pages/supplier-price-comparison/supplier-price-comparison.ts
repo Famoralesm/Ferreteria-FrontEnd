@@ -10,6 +10,8 @@ import { ProductSupplier, ProductSupplierRequest } from '../../../../core/models
 import { Supplier } from '../../../../core/models/supplier/supplier';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { SupplierService } from '../../../../core/services/supplier.service';
+import { ProductService } from '../../../../core/services/product.service';
+import { StoreService } from '../../../../core/services/store.service';
 
 @Component({
   selector: 'app-supplier-price-comparison',
@@ -20,6 +22,8 @@ import { SupplierService } from '../../../../core/services/supplier.service';
 })
 export class SupplierPriceComparison implements OnInit {
   productId = 0;
+  productName = 'Producto';
+  productSku = '';
   suppliers: Supplier[] = [];
   comparisons: ProductSupplier[] = [];
   selectedSupplierId: number | null = null;
@@ -31,6 +35,8 @@ export class SupplierPriceComparison implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly supplierService: SupplierService,
+    private readonly productService: ProductService,
+    private readonly storeService: StoreService,
     private readonly notificationService: NotificationService,
     private readonly cdr: ChangeDetectorRef
   ) {}
@@ -42,7 +48,20 @@ export class SupplierPriceComparison implements OnInit {
       return;
     }
     this.loadSuppliers();
+    this.loadProduct();
     this.loadComparisons();
+  }
+
+  loadProduct(): void {
+    const storeId = this.storeService.selectedStoreId;
+    if (storeId === null) return;
+    this.productService.findById(this.productId, storeId).subscribe({
+      next: product => {
+        this.productName = product.name;
+        this.productSku = product.sku;
+      },
+      error: error => console.error('Error cargando producto comparado:', error)
+    });
   }
 
   get sortedComparisons(): ProductSupplier[] {
@@ -93,6 +112,21 @@ export class SupplierPriceComparison implements OnInit {
         console.error('Error asociando proveedor:', error);
         this.notificationService.error(error?.error?.message ?? 'No fue posible agregar el precio del proveedor.');
         this.cdr.detectChanges();
+      }
+    });
+  }
+
+  removeSupplier(item: ProductSupplier): void {
+    if (!confirm(`¿Quitar a ${item.nombreProveedor} de la comparación de este producto?`)) return;
+    this.supplierService.deleteProductSupplier(this.productId, item.id).subscribe({
+      next: () => {
+        this.comparisons = this.comparisons.filter(row => row.id !== item.id);
+        this.notificationService.success('Proveedor quitado de la comparación.');
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        console.error('Error quitando proveedor del producto:', error);
+        this.notificationService.error(error?.error?.message ?? 'No fue posible quitar el proveedor.');
       }
     });
   }
