@@ -68,12 +68,20 @@
               }
             </div>
             <div class="form-field">
-              <label for="supplierCity">Ciudad</label>
-              <input id="supplierCity" pInputText formControlName="ciudad" placeholder="Ciudad">
+              <label for="supplierCity">Ciudad <span>*</span></label>
+              <p-select inputId="supplierCity" [options]="ciudades" optionLabel="nombre" formControlName="ciudad"
+                placeholder="Seleccione ciudad" [showClear]="true" class="w-full"></p-select>
+              @if (supplierForm.get('ciudad')?.hasError('required') && supplierForm.get('ciudad')?.touched) {
+                <small class="error">La ciudad es obligatoria.</small>
+              }
             </div>
             <div class="form-field">
-              <label for="supplierCommune">Comuna</label>
-              <input id="supplierCommune" pInputText formControlName="comuna" placeholder="Comuna">
+              <label for="supplierCommune">Comuna <span>*</span></label>
+              <p-select inputId="supplierCommune" [options]="comunasFiltradas" optionLabel="nombre" formControlName="comuna"
+                placeholder="Seleccione comuna" [showClear]="true" [disabled]="!supplierForm.get('ciudad')?.value" class="w-full"></p-select>
+              @if (supplierForm.get('comuna')?.hasError('required') && supplierForm.get('comuna')?.touched) {
+                <small class="error">La comuna es obligatoria.</small>
+              }
             </div>
           </div>
         </section>
@@ -95,12 +103,19 @@
       </form>
     </div>
   } @else {
-    <div class="page-info">
-      <i class="pi pi-truck"></i>
-      <span>Total de proveedores: <strong>{{ suppliers.length }}</strong></span>
+    <div class="supplier-toolbar">
+      <div class="supplier-search">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" [(ngModel)]="searchTerm" [ngModelOptions]="{standalone: true}"
+          placeholder="Buscar por RUT o nombre del proveedor" aria-label="Buscar proveedores por RUT o nombre">
+      </div>
+      <div class="page-info supplier-total">
+        <i class="pi pi-truck"></i>
+        <span>Total de proveedores: <strong>{{ suppliers.length }}</strong></span>
+      </div>
     </div>
     <div class="page-card">
-      <p-table [value]="suppliers" [loading]="loading" [paginator]="true" [rows]="10"
+      <p-table [value]="filteredSuppliers" [loading]="loading" [paginator]="true" [rows]="10"
         [rowsPerPageOptions]="[10, 20, 50]" [tableStyle]="{ 'min-width': '58rem' }" responsiveLayout="scroll">
         <ng-template #header>
           <tr>
@@ -121,11 +136,13 @@
             <td class="actions-column">
               <button pButton type="button" icon="pi pi-pencil" severity="secondary" [text]="true"
                 [rounded]="true" aria-label="Editar proveedor" (click)="editSupplier(supplier)"></button>
+              <button pButton type="button" icon="pi pi-trash" severity="danger" [text]="true"
+                [rounded]="true" aria-label="Eliminar proveedor" (click)="deleteSupplier(supplier)"></button>
             </td>
           </tr>
         </ng-template>
         <ng-template #emptymessage>
-          <tr><td colspan="7" class="empty-message">No hay proveedores registrados.</td></tr>
+          <tr><td colspan="7" class="empty-message">{{ searchTerm ? 'No se encontraron proveedores con ese RUT o nombre.' : 'No hay proveedores registrados.' }}</td></tr>
         </ng-template>
       </p-table>
     </div>
