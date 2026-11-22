@@ -1,0 +1,11 @@
+:host {
+  display: block;
+}
+
+.field-error {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--p-red-500, #dc2626);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
