@@ -25,6 +25,7 @@ import { CustomerService } from '../../../../core/services/customer.service';
 import { ComunaService } from '../../../../core/services/comuna.service';
 import { CiudadService } from '../../../../core/services/ciudad.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error';
 
 @Component({
   selector: 'app-customer-form',
@@ -34,7 +35,8 @@ import { NotificationService } from '../../../../core/services/notification.serv
     ReactiveFormsModule,
     ButtonModule,
     InputTextModule,  
-    SelectModule
+    SelectModule,
+    FieldErrorComponent
   ],
   templateUrl: './customer-form.html',
   styleUrl: './customer-form.scss'
@@ -404,6 +406,9 @@ private loadInitialData(): void {
         );
 
         this.saving = false;
+        this.notificationService.error(
+          err?.error?.message ?? 'No fue posible guardar el cliente.'
+        );
 
       }
 
