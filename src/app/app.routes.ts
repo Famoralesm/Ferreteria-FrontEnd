@@ -18,6 +18,7 @@ import { CustomerForm } from './features/customers/pages/customer-form/customer-
 import { SupplierList } from './features/suppliers/pages/supplier-list/supplier-list';
 import { Profile } from './features/profile/profile';
 import { InitialStock } from './features/inventory/pages/initial-stock/initial-stock';
+import { SupplierPriceComparison } from './features/suppliers/pages/supplier-price-comparison/supplier-price-comparison';
 
 export const routes: Routes = [
   {
@@ -71,6 +72,11 @@ export const routes: Routes = [
       {
         path: 'products/edit/:id',
         component: ProductForm
+      },
+      {
+        path: 'products/:id/suppliers',
+        component: SupplierPriceComparison,
+        canActivate: [roleGuard([Role.ADMIN])]
       },
       // Clientes
       {
