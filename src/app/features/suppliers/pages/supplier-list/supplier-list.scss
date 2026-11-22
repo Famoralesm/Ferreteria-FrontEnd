@@ -1,7 +1,12 @@
 :host { display: block; width: 100%; min-width: 0; }
 
 .supplier-page {
-  .actions-column { width: 6rem; text-align: center; }
+  .actions-column { width: 7rem; text-align: center; }
+  .supplier-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+  .supplier-search { display: flex; align-items: center; gap: .65rem; width: min(100%, 420px); }
+  .supplier-search i { color: #64748b; }
+  .supplier-search input { width: 100%; }
+  .supplier-total { margin-left: auto; justify-content: flex-end; text-align: right; }
   .status {
     display: inline-flex; align-items: center; padding: 0.25rem 0.65rem;
     border-radius: 999px; background: #e8f5ec; color: #247342;
@@ -28,6 +33,9 @@
 @media (max-width: 768px) {
   .supplier-form { padding: 5px; }
   .form-grid { grid-template-columns: 1fr; }
+  .supplier-toolbar { align-items: stretch; flex-direction: column; }
+  .supplier-search { width: 100%; }
+  .supplier-total { justify-content: flex-end; }
   .field-full { grid-column: auto; }
   .form-actions { flex-direction: column-reverse; }
   .form-actions button { width: 100%; }
