@@ -19,8 +19,7 @@
       [rows]="10"
       [rowsPerPageOptions]="[10, 20, 50]"
       [tableStyle]="{ 'min-width': '58rem' }"
-      responsiveLayout="scroll"
-      emptyMessage="No hay proveedores registrados.">
+      responsiveLayout="scroll">
 
       <ng-template #header>
         <tr>
@@ -57,6 +56,14 @@
               aria-label="Editar proveedor"
               (click)="editSupplier(supplier)">
             </button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="7" class="empty-message">
+            No hay proveedores registrados.
           </td>
         </tr>
       </ng-template>
@@ -102,7 +109,7 @@
           pInputText
           formControlName="nombre"
           placeholder="Nombre del proveedor">
-        @if (supplierForm.controls.nombre.invalid && supplierForm.controls.nombre.touched) {
+        @if (supplierForm.get('nombre')?.invalid && supplierForm.get('nombre')?.touched) {
           <small class="error">El nombre es obligatorio.</small>
         }
       </div>
@@ -142,7 +149,7 @@
           pInputText
           formControlName="email"
           placeholder="contacto@proveedor.cl">
-        @if (supplierForm.controls.email.hasError('email') && supplierForm.controls.email.touched) {
+        @if (supplierForm.get('email')?.hasError('email') && supplierForm.get('email')?.touched) {
           <small class="error">Ingresa un email válido.</small>
         }
       </div>
