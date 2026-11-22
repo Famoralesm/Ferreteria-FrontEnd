@@ -72,6 +72,7 @@
             </ng-template>
 
           </p-select>
+          <app-field-error [control]="form.get('customerName')" [messages]="{ required: 'Selecciona un cliente.' }" />
         </div>
 
 
