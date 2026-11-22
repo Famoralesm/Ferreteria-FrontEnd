@@ -11,7 +11,8 @@
             <th>#</th>
             <th>Cliente</th>
             <th>Total</th>
-            <th>Estado - Tiempo</th>
+            <th>Estado</th>
+            <th>Tiempo</th>
              <th>Fecha</th>
             <th>Acciones</th>
 
@@ -28,8 +29,15 @@
             <td>{{ order.cliente }}</td>
 
             <td>{{ order.total | currency:'CLP':'symbol':'1.0-0':'es-CL' }}</td>
-            <td><div class="status-badge" [ngClass]="getStatusColor(order)">{{ order.estado }}</div> 
-                <div class="status-timer" >  <i class="pi pi-clock"> </i>{{ getElapsedTime(order) }}</div>
+            <td>
+                <div class="status-badge" [ngClass]="getStatusColor(order)">{{ order.estado }}</div>
+            </td>
+
+            <td>
+                <div class="status-timer">
+                    <i class="pi pi-clock"></i>
+                    {{ getElapsedTime(order) }}
+                </div>
             </td>
             
             <td>{{ order.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
