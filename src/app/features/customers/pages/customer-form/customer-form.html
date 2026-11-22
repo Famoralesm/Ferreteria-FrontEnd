@@ -233,6 +233,7 @@
           [showClear]="true"
           class="w-full">
         </p-select>
+        <app-field-error [control]="customerForm.get('ciudad')" [messages]="{ required: 'Selecciona una ciudad.' }" />
 
       </div>
 
@@ -253,6 +254,7 @@
         [showClear]="true"
         class="w-full">
       </p-select>
+      <app-field-error [control]="customerForm.get('comuna')" [messages]="{ required: 'Selecciona una comuna.' }" />
 
       </div>
 
