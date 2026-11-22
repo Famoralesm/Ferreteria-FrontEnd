@@ -363,9 +363,7 @@ next: updatedUser => {
 
   });
 
-}
-
-    ,
+},
       error: err => {
         console.error('Error guardando usuario:', err);
         this.saving = false;
