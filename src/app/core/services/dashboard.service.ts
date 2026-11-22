@@ -33,6 +33,11 @@ getLatestOrders(storeId: number): Observable<OrderSummary[]> {
         }
     );
 
+getAllOrders(storeId: number): Observable<OrderSummary[]> {
+  return this.http.get<OrderSummary[]>(
+    `${environment.apiUrl}/orders/all`,
+    { params: { storeId } }
+  );
 }
 
 }
