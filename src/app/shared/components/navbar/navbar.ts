@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -64,7 +64,8 @@ export class Navbar implements OnInit {
     private authService: AuthService,
     private storeService: StoreService,
     private inventoryService: InventoryService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
 
     this.currentUser$ = currentUserService.user$;
@@ -138,6 +139,10 @@ export class Navbar implements OnInit {
         this.selectedStore = store;
         this.loadLowStockAlerts();
       });
+    this.inventoryService.stockChanged$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadLowStockAlerts());
+
     this.updateOrderEditLock();
 
     this.router.events
@@ -165,8 +170,9 @@ export class Navbar implements OnInit {
       .subscribe({
 
       next: stores => {
-        this.stores = stores;
+        this.stores = [...stores];
         this.loadingStores = false;
+        this.cdr.detectChanges();
       },
 
       error: error => {
