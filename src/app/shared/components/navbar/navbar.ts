@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -64,8 +64,7 @@ export class Navbar implements OnInit {
     private authService: AuthService,
     private storeService: StoreService,
     private inventoryService: InventoryService,
-    private router: Router,
-    private cdr: ChangeDetectorRef
+    private router: Router
   ) {
 
     this.currentUser$ = currentUserService.user$;
@@ -172,7 +171,6 @@ export class Navbar implements OnInit {
       next: stores => {
         this.stores = [...stores];
         this.loadingStores = false;
-        this.cdr.detectChanges();
       },
 
       error: error => {
@@ -209,10 +207,11 @@ export class Navbar implements OnInit {
           console.error('Error al cargar alertas de stock mínimo:', error);
           return of([]);
         }),
+        observeOn(asyncScheduler),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(alerts => {
-        this.lowStockAlerts = alerts;
+        this.lowStockAlerts = [...alerts];
       });
   }
 
