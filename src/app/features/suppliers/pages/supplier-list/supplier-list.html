@@ -6,185 +6,121 @@
     </div>
   </div>
 
-  <div class="page-info">
-    <i class="pi pi-truck"></i>
-    <span>Total de proveedores: <strong>{{ suppliers.length }}</strong></span>
-  </div>
+  @if (formVisible) {
+    <div class="page-card supplier-form-card">
+      <form [formGroup]="supplierForm" (ngSubmit)="save()" class="supplier-form">
+        <section class="form-section">
+          <h3>{{ editingId ? 'Editar proveedor' : 'Datos del proveedor' }}</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="supplierRut">RUT <span>*</span></label>
+              <input id="supplierRut" pInputText formControlName="rut" placeholder="76.123.456-7" maxlength="12">
+              @if (supplierForm.get('rut')?.hasError('required') && supplierForm.get('rut')?.touched) {
+                <small class="error">El RUT es obligatorio.</small>
+              }
+              @if (supplierForm.get('rut')?.hasError('rutInvalido') && supplierForm.get('rut')?.touched) {
+                <small class="error">El RUT no es válido. Revisa el dígito verificador.</small>
+              }
+            </div>
+            <div class="form-field">
+              <label for="supplierName">Nombre del proveedor <span>*</span></label>
+              <input id="supplierName" pInputText formControlName="nombre" placeholder="Nombre comercial">
+              @if (supplierForm.get('nombre')?.hasError('required') && supplierForm.get('nombre')?.touched) {
+                <small class="error">El nombre es obligatorio.</small>
+              }
+            </div>
+            <div class="form-field">
+              <label for="supplierBusinessName">Razón social <span>*</span></label>
+              <input id="supplierBusinessName" pInputText formControlName="razonSocial" placeholder="Razón social">
+              @if (supplierForm.get('razonSocial')?.hasError('required') && supplierForm.get('razonSocial')?.touched) {
+                <small class="error">La razón social es obligatoria.</small>
+              }
+            </div>
+            <div class="form-field">
+              <label for="supplierBusiness">Giro <span>*</span></label>
+              <input id="supplierBusiness" pInputText formControlName="giro" placeholder="Giro comercial">
+              @if (supplierForm.get('giro')?.hasError('required') && supplierForm.get('giro')?.touched) {
+                <small class="error">El giro es obligatorio.</small>
+              }
+            </div>
+            <div class="form-field">
+              <label for="supplierPhone">Teléfono <span>*</span></label>
+              <input id="supplierPhone" pInputText formControlName="telefono" placeholder="+56 9 1234 5678">
+              @if (supplierForm.get('telefono')?.hasError('required') && supplierForm.get('telefono')?.touched) {
+                <small class="error">El teléfono es obligatorio.</small>
+              }
+              @if (supplierForm.get('telefono')?.hasError('telefonoChilenoInvalido') && supplierForm.get('telefono')?.touched) {
+                <small class="error">Ingresa un teléfono chileno válido, por ejemplo +56912345678.</small>
+              }
+            </div>
+            <div class="form-field">
+              <label for="supplierEmail">Email</label>
+              <input id="supplierEmail" type="email" pInputText formControlName="email" placeholder="contacto@proveedor.cl">
+              @if (supplierForm.get('email')?.hasError('email') && supplierForm.get('email')?.touched) {
+                <small class="error">Ingresa un correo electrónico válido.</small>
+              }
+            </div>
+            <div class="form-field field-full">
+              <label for="supplierAddress">Dirección</label>
+              <input id="supplierAddress" pInputText formControlName="direccion" placeholder="Dirección comercial">
+            </div>
+          </div>
+        </section>
 
-  <div class="page-card">
-    <p-table
-      [value]="suppliers"
-      [loading]="loading"
-      [paginator]="true"
-      [rows]="10"
-      [rowsPerPageOptions]="[10, 20, 50]"
-      [tableStyle]="{ 'min-width': '58rem' }"
-      responsiveLayout="scroll">
+        <section class="form-section supplier-status-section">
+          <h3>Estado</h3>
+          <label class="active-field">
+            <input type="checkbox" formControlName="activo">
+            Proveedor activo
+          </label>
+        </section>
 
-      <ng-template #header>
-        <tr>
-          <th>RUT</th>
-          <th>Proveedor</th>
-          <th>Razón social</th>
-          <th>Teléfono</th>
-          <th>Email</th>
-          <th>Estado</th>
-          <th class="actions-column">Acciones</th>
-        </tr>
-      </ng-template>
-
-      <ng-template #body let-supplier>
-        <tr>
-          <td>{{ supplier.rut || '—' }}</td>
-          <td>{{ supplier.nombre }}</td>
-          <td>{{ supplier.razonSocial || '—' }}</td>
-          <td>{{ supplier.telefono || '—' }}</td>
-          <td>{{ supplier.email || '—' }}</td>
-          <td>
-            <span class="status" [class.status-inactive]="!supplier.activo">
+        <div class="form-actions">
+          <button pButton type="button" label="Cancelar" icon="pi pi-times" severity="secondary"
+            [disabled]="saving" (click)="cancelForm()"></button>
+          <button pButton type="submit" [label]="editingId ? 'Guardar cambios' : 'Registrar proveedor'"
+            icon="pi pi-check" severity="success" [disabled]="saving"></button>
+        </div>
+      </form>
+    </div>
+  } @else {
+    <div class="page-info">
+      <i class="pi pi-truck"></i>
+      <span>Total de proveedores: <strong>{{ suppliers.length }}</strong></span>
+    </div>
+    <div class="page-card">
+      <p-table [value]="suppliers" [loading]="loading" [paginator]="true" [rows]="10"
+        [rowsPerPageOptions]="[10, 20, 50]" [tableStyle]="{ 'min-width': '58rem' }" responsiveLayout="scroll">
+        <ng-template #header>
+          <tr>
+            <th>RUT</th><th>Proveedor</th><th>Razón social</th><th>Teléfono</th>
+            <th>Email</th><th>Estado</th><th class="actions-column">Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-supplier>
+          <tr>
+            <td>{{ supplier.rut || '—' }}</td>
+            <td>{{ supplier.nombre }}</td>
+            <td>{{ supplier.razonSocial || '—' }}</td>
+            <td>{{ supplier.telefono || '—' }}</td>
+            <td>{{ supplier.email || '—' }}</td>
+            <td><span class="status" [class.status-inactive]="!supplier.activo">
               {{ supplier.activo ? 'Activo' : 'Inactivo' }}
-            </span>
-          </td>
-          <td class="actions-column">
-            <button
-              pButton
-              type="button"
-              icon="pi pi-pencil"
-              severity="secondary"
-              [text]="true"
-              [rounded]="true"
-              aria-label="Editar proveedor"
-              (click)="editSupplier(supplier)">
-            </button>
-          </td>
-        </tr>
-      </ng-template>
-
-      <ng-template #emptymessage>
-        <tr>
-          <td colspan="7" class="empty-message">
-            No hay proveedores registrados.
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-
-  <div class="page-actions page-actions--bottom">
-    <button
-      pButton
-      type="button"
-      label="Nuevo proveedor"
-      icon="pi pi-plus"
-      severity="success"
-      (click)="newSupplier()">
-    </button>
-  </div>
+            </span></td>
+            <td class="actions-column">
+              <button pButton type="button" icon="pi pi-pencil" severity="secondary" [text]="true"
+                [rounded]="true" aria-label="Editar proveedor" (click)="editSupplier(supplier)"></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+          <tr><td colspan="7" class="empty-message">No hay proveedores registrados.</td></tr>
+        </ng-template>
+      </p-table>
+    </div>
+    <div class="page-actions page-actions--bottom">
+      <button pButton type="button" label="Nuevo proveedor" icon="pi pi-plus" severity="success"
+        (click)="newSupplier()"></button>
+    </div>
+  }
 </div>
-
-<p-dialog
-  [(visible)]="dialogVisible"
-  [modal]="true"
-  [draggable]="false"
-  [resizable]="false"
-  [style]="{ width: 'min(680px, 95vw)' }"
-  [header]="editingId ? 'Editar proveedor' : 'Nuevo proveedor'"
-  (onHide)="closeDialog()">
-
-  <form [formGroup]="supplierForm" (ngSubmit)="save()">
-    <div class="supplier-form-grid">
-      <div class="field">
-        <label for="supplierRut">RUT</label>
-        <input
-          id="supplierRut"
-          pInputText
-          formControlName="rut"
-          placeholder="76.123.456-7">
-      </div>
-
-      <div class="field">
-        <label for="supplierName">Nombre *</label>
-        <input
-          id="supplierName"
-          pInputText
-          formControlName="nombre"
-          placeholder="Nombre del proveedor">
-        @if (supplierForm.get('nombre')?.invalid && supplierForm.get('nombre')?.touched) {
-          <small class="error">El nombre es obligatorio.</small>
-        }
-      </div>
-
-      <div class="field">
-        <label for="supplierBusinessName">Razón social</label>
-        <input
-          id="supplierBusinessName"
-          pInputText
-          formControlName="razonSocial"
-          placeholder="Razón social">
-      </div>
-
-      <div class="field">
-        <label for="supplierBusiness">Giro</label>
-        <input
-          id="supplierBusiness"
-          pInputText
-          formControlName="giro"
-          placeholder="Giro comercial">
-      </div>
-
-      <div class="field">
-        <label for="supplierPhone">Teléfono</label>
-        <input
-          id="supplierPhone"
-          pInputText
-          formControlName="telefono"
-          placeholder="+56 9...">
-      </div>
-
-      <div class="field">
-        <label for="supplierEmail">Email</label>
-        <input
-          id="supplierEmail"
-          type="email"
-          pInputText
-          formControlName="email"
-          placeholder="contacto@proveedor.cl">
-        @if (supplierForm.get('email')?.hasError('email') && supplierForm.get('email')?.touched) {
-          <small class="error">Ingresa un email válido.</small>
-        }
-      </div>
-
-      <div class="field field-full">
-        <label for="supplierAddress">Dirección</label>
-        <input
-          id="supplierAddress"
-          pInputText
-          formControlName="direccion"
-          placeholder="Dirección comercial">
-      </div>
-
-      <label class="active-field">
-        <input type="checkbox" formControlName="activo">
-        Proveedor activo
-      </label>
-    </div>
-
-    <div class="form-actions">
-      <button
-        pButton
-        type="button"
-        label="Cancelar"
-        severity="secondary"
-        [disabled]="saving"
-        (click)="closeDialog()">
-      </button>
-      <button
-        pButton
-        type="submit"
-        [label]="editingId ? 'Guardar cambios' : 'Registrar proveedor'"
-        icon="pi pi-check"
-        [disabled]="saving">
-      </button>
-    </div>
-  </form>
-</p-dialog>
