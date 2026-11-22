@@ -30,6 +30,7 @@ import { environment } from '../../../../../environments/environment';
 import { StoreService } from '../../../../core/services/store.service';
 import { Store } from '../../../../core/models/store/store';
 import { Subject, filter, distinctUntilChanged, takeUntil } from 'rxjs';
+import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error';
 
 @Component({
   selector: 'app-product-form',
@@ -42,7 +43,8 @@ import { Subject, filter, distinctUntilChanged, takeUntil } from 'rxjs';
     SelectModule,
     InputNumberModule,
     TextareaModule,
-    CheckboxModule
+    CheckboxModule,
+    FieldErrorComponent
   ],
 
   templateUrl: './product-form.html',
