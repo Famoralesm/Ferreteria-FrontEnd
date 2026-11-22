@@ -84,7 +84,7 @@ export class InventoryService {
     return this.http.post<InventoryMovement>(
       `${this.apiUrl}/inventory/entries`,
       request
-    );
+    ).pipe(tap(() => this.notifyStockChanged()));
   }
 
   registerExit(
@@ -93,7 +93,7 @@ export class InventoryService {
     return this.http.post<InventoryMovement>(
       `${this.apiUrl}/inventory/exits`,
       request
-    );
+    ).pipe(tap(() => this.notifyStockChanged()));
   }
 
   registerAdjustment(
@@ -102,7 +102,7 @@ export class InventoryService {
     return this.http.post<InventoryMovement>(
       `${this.apiUrl}/inventory/adjustments`,
       request
-    );
+    ).pipe(tap(() => this.notifyStockChanged()));
   }
 
   
