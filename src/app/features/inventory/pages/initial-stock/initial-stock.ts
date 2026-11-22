@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Subject, filter, switchMap, takeUntil } from 'rxjs';
+import { Subject, asyncScheduler, filter, observeOn, switchMap, takeUntil } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -34,15 +34,16 @@ export class InitialStock implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.storeService.selectedStore$.pipe(
+      observeOn(asyncScheduler),
       filter((store): store is Store => store !== null),
       switchMap(store => { this.selectedStore = store; this.loading = true; this.rows = []; return this.inventoryService.getStocks(store.id); }),
       takeUntil(this.destroy$)
     ).subscribe({
       next: stocks => {
         this.rows = (stocks ?? []).map(stock => ({ ...stock, stockInicialDraft: Number(stock.stock ?? 0), stockMinimoDraft: Number(stock.stockMinimo ?? 0) }));
-        this.loading = false; this.cdr.detectChanges();
+        this.loading = false; this.cdr.markForCheck();
       },
-      error: error => { console.error('Error cargando existencias:', error); this.loading = false; this.notificationService.error('No fue posible cargar las existencias de la sucursal.'); this.cdr.detectChanges(); }
+      error: error => { console.error('Error cargando existencias:', error); this.loading = false; this.notificationService.error('No fue posible cargar las existencias de la sucursal.'); this.cdr.markForCheck(); }
     });
   }
 
@@ -63,8 +64,8 @@ export class InitialStock implements OnInit, OnDestroy {
     }
     this.savingIds.add(row.productoId);
     this.inventoryService.initializeStock({ productoId: row.productoId, sucursalId: this.selectedStore.id, stock: row.stockInicialDraft, stockMinimo: row.stockMinimoDraft, motivo: 'Conteo físico de apertura' }).subscribe({
-      next: updated => { this.updateRow(updated); this.savingIds.delete(row.productoId); this.notificationService.success('Inventario inicial registrado para ' + row.nombreProducto + '.'); this.cdr.detectChanges(); },
-      error: error => { this.savingIds.delete(row.productoId); this.notificationService.error(error?.error?.message ?? 'No fue posible registrar el inventario inicial.'); this.cdr.detectChanges(); }
+      next: updated => { this.updateRow(updated); this.savingIds.delete(row.productoId); this.notificationService.success('Inventario inicial registrado para ' + row.nombreProducto + '.'); this.cdr.markForCheck(); },
+      error: error => { this.savingIds.delete(row.productoId); this.notificationService.error(error?.error?.message ?? 'No fue posible registrar el inventario inicial.'); this.cdr.markForCheck(); }
     });
   }
 
@@ -73,8 +74,8 @@ export class InitialStock implements OnInit, OnDestroy {
     if (row.stockMinimoDraft == null || row.stockMinimoDraft < 0) { this.notificationService.error('El stock mínimo debe ser igual o mayor que cero.'); return; }
     this.savingIds.add(row.productoId);
     this.inventoryService.updateMinimumStock(row.productoId, this.selectedStore.id, row.stockMinimoDraft).subscribe({
-      next: updated => { this.updateRow(updated); this.savingIds.delete(row.productoId); this.notificationService.success('Stock mínimo actualizado para ' + row.nombreProducto + '.'); this.cdr.detectChanges(); },
-      error: error => { this.savingIds.delete(row.productoId); this.notificationService.error(error?.error?.message ?? 'No fue posible actualizar el stock mínimo.'); this.cdr.detectChanges(); }
+      next: updated => { this.updateRow(updated); this.savingIds.delete(row.productoId); this.notificationService.success('Stock mínimo actualizado para ' + row.nombreProducto + '.'); this.cdr.markForCheck(); },
+      error: error => { this.savingIds.delete(row.productoId); this.notificationService.error(error?.error?.message ?? 'No fue posible actualizar el stock mínimo.'); this.cdr.markForCheck(); }
     });
   }
 
