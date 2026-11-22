@@ -4,21 +4,30 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
+import { CiudadService } from '../../../../core/services/ciudad.service';
+import { ComunaService } from '../../../../core/services/comuna.service';
+import { Ciudad } from '../../../../core/models/lists/ciudad';
+import { Comuna } from '../../../../core/models/lists/comuna';
 import { Supplier } from '../../../../core/models/supplier/supplier';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { SupplierService } from '../../../../core/services/supplier.service';
 import { normalizeRut, rutValidator } from '../../../../core/utils/rut.util';
 import { chileanPhoneValidator, normalizeChileanPhone } from '../../../../core/utils/phone.util';
+import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-supplier-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule, TableModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule, TableModule, SelectModule],
   templateUrl: './supplier-list.html',
   styleUrl: './supplier-list.scss'
 })
 export class SupplierList implements OnInit {
   suppliers: Supplier[] = [];
+  searchTerm = '';
+  ciudades: Ciudad[] = [];
+  comunas: Comuna[] = [];
+  comunasFiltradas: Comuna[] = [];
   loading = false;
   saving = false;
   formVisible = false;
@@ -28,6 +37,8 @@ export class SupplierList implements OnInit {
   constructor(
     private readonly fb: FormBuilder,
     private readonly supplierService: SupplierService,
+    private readonly ciudadService: CiudadService,
+    private readonly comunaService: ComunaService,
     private readonly notificationService: NotificationService,
     private readonly cdr: ChangeDetectorRef
   ) {
@@ -37,8 +48,8 @@ export class SupplierList implements OnInit {
       razonSocial: ['', [Validators.required, Validators.maxLength(200)]],
       giro: ['', [Validators.required, Validators.maxLength(200)]],
       direccion: ['', Validators.required],
-      ciudad: ['', Validators.maxLength(100)],
-      comuna: ['', Validators.maxLength(100)],
+      ciudad: [null, Validators.required],
+      comuna: [null, Validators.required],
       telefono: ['', [Validators.required, chileanPhoneValidator]],
       email: ['', [Validators.email, Validators.maxLength(150)]],
       activo: [true]
@@ -47,6 +58,33 @@ export class SupplierList implements OnInit {
 
   ngOnInit(): void {
     this.loadSuppliers();
+    this.ciudadService.findAll().subscribe({
+      next: data => { this.ciudades = data ?? []; this.cdr.detectChanges(); },
+      error: error => console.error('Error cargando ciudades:', error)
+    });
+    this.comunaService.findAll().subscribe({
+      next: data => { this.comunas = data ?? []; this.filtrarComunas(); this.cdr.detectChanges(); },
+      error: error => console.error('Error cargando comunas:', error)
+    });
+    this.supplierForm.get('ciudad')?.valueChanges.subscribe(() => this.filtrarComunas());
+  }
+
+  get filteredSuppliers(): Supplier[] {
+    const query = this.searchTerm.trim().toLocaleLowerCase('es-CL');
+    if (!query) return this.suppliers;
+    return this.suppliers.filter(s =>
+      (s.rut ?? '').toLocaleLowerCase('es-CL').includes(query) ||
+      (s.nombre ?? '').toLocaleLowerCase('es-CL').includes(query)
+    );
+  }
+
+  private filtrarComunas(): void {
+    const ciudadId = Number(this.supplierForm.get('ciudad')?.value?.id ?? this.supplierForm.get('ciudad')?.value);
+    this.comunasFiltradas = ciudadId ? this.comunas.filter(c => c.id_ciudad === ciudadId) : [];
+    const comunaId = this.supplierForm.get('comuna')?.value?.id ?? this.supplierForm.get('comuna')?.value;
+    if (comunaId && !this.comunasFiltradas.some(c => c.id === Number(comunaId))) {
+      this.supplierForm.get('comuna')?.setValue(null, { emitEvent: false });
+    }
   }
 
   loadSuppliers(): void {
@@ -70,7 +108,7 @@ export class SupplierList implements OnInit {
     this.editingId = undefined;
     this.supplierForm.reset({
       rut: '', nombre: '', razonSocial: '', giro: '',
-      direccion: '', ciudad: '', comuna: '', telefono: '', email: '', activo: true
+      direccion: '', ciudad: null, comuna: null, telefono: '', email: '', activo: true
     });
     this.formVisible = true;
   }
@@ -83,8 +121,8 @@ export class SupplierList implements OnInit {
       razonSocial: supplier.razonSocial ?? '',
       giro: supplier.giro ?? '',
       direccion: supplier.direccion ?? '',
-      ciudad: supplier.ciudad?.nombre ?? supplier.ciudad ?? '',
-      comuna: supplier.comuna?.nombre ?? supplier.comuna ?? '',
+      ciudad: supplier.ciudad ?? null,
+      comuna: supplier.comuna ?? null,
       telefono: supplier.telefono ?? '',
       email: supplier.email ?? '',
       activo: supplier.activo ?? true
@@ -106,8 +144,8 @@ export class SupplierList implements OnInit {
       razonSocial: String(value.razonSocial).trim(),
       giro: String(value.giro).trim(),
       direccion: String(value.direccion).trim(),
-      ciudad: String(value.ciudad).trim(),
-      comuna: String(value.comuna).trim(),
+      ciudad: value.ciudad ? { id: Number(value.ciudad.id ?? value.ciudad) } : null,
+      comuna: value.comuna ? { id: Number(value.comuna.id ?? value.comuna) } : null,
       telefono: normalizeChileanPhone(value.telefono),
       email: value.email?.trim() || '',
       activo: value.activo ?? true
@@ -133,6 +171,21 @@ export class SupplierList implements OnInit {
         this.saving = false;
         this.notificationService.error(error?.error?.message ?? 'No fue posible guardar el proveedor.');
         this.cdr.detectChanges();
+      }
+    });
+  }
+
+  deleteSupplier(supplier: Supplier): void {
+    const confirmed = confirm(`¿Eliminar el proveedor ${supplier.nombre}? Se conservará su historial y quedará inactivo.`);
+    if (!confirmed) return;
+    this.supplierService.delete(supplier.id).subscribe({
+      next: () => {
+        this.notificationService.success('Proveedor eliminado (desactivado) correctamente.');
+        this.loadSuppliers();
+      },
+      error: error => {
+        console.error('Error eliminando proveedor:', error);
+        this.notificationService.error(error?.error?.message ?? 'No fue posible eliminar el proveedor.');
       }
     });
   }
