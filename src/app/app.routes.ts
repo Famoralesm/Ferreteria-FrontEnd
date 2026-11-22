@@ -17,6 +17,7 @@ import { CustomerList } from './features/customers/pages/customer-list/customer-
 import { CustomerForm } from './features/customers/pages/customer-form/customer-form';
 import { SupplierList } from './features/suppliers/pages/supplier-list/supplier-list';
 import { Profile } from './features/profile/profile';
+import { InitialStock } from './features/inventory/pages/initial-stock/initial-stock';
 
 export const routes: Routes = [
   {
@@ -92,6 +93,12 @@ export const routes: Routes = [
       {
         path: 'suppliers',
         component: SupplierList,
+        canActivate: [roleGuard([Role.ADMIN])]
+      },
+      // Inventario inicial
+      {
+        path: 'inventory/initial-stock',
+        component: InitialStock,
         canActivate: [roleGuard([Role.ADMIN])]
       },
       // Usuarios
