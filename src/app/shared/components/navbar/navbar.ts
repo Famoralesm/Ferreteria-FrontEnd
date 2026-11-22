@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, asyncScheduler, catchError, observeOn, of } from 'rxjs';
 
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
@@ -110,9 +110,14 @@ export class Navbar implements OnInit {
 
     this.loadStores();
 
-    this.storeService.selectedStore$.subscribe(store => {
-      this.selectedStore = store;
-    });
+    this.storeService.selectedStore$
+      .pipe(
+        observeOn(asyncScheduler),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(store => {
+        this.selectedStore = store;
+      });
     this.updateOrderEditLock();
 
     this.router.events
@@ -132,7 +137,12 @@ export class Navbar implements OnInit {
 
     this.loadingStores = true;
 
-    this.storeService.findActive().subscribe({
+    this.storeService.findActive()
+      .pipe(
+        observeOn(asyncScheduler),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
 
       next: stores => {
         this.stores = stores;
