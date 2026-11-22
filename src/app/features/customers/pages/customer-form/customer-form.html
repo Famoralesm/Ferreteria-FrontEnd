@@ -1,21 +1,15 @@
-
-  <div class="customer-form">
-
-  <div class="customer-form-header">
-    <div>
-              
-
-          
+<div class="page-shell">
+  <div class="page-header">
+    <div class="page-header-content">
       <span class="page-kicker">
         {{
           readonlyMode
-            ? 'Ver cliente'
+            ? 'VER CLIENTE'
             : id
-              ? 'Editar cliente'
-              : 'Nuevo cliente'
+              ? 'EDITAR CLIENTE'
+              : 'NUEVO CLIENTE'
         }}
       </span>
-
       <p>
         {{
           readonlyMode
@@ -28,7 +22,8 @@
     </div>
   </div>
 
-
+  <div class="page-card">
+    <div class="customer-form">
     <form
       [formGroup]="customerForm"
       (ngSubmit)="save()">
