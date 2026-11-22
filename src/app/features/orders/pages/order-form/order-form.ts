@@ -693,11 +693,6 @@ onAddressChange(): void {
 
 saveOrder(): void {
 
-  if (this.isInRoute) {
-    this.notificationService.warning('Un pedido en ruta no permite modificar sus productos.');
-    return;
-  }
-
   if (
     this.id &&
     this.orderStoreId !== this.storeService.selectedStoreId
