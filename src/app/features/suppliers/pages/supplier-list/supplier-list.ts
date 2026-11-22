@@ -36,7 +36,9 @@ export class SupplierList implements OnInit {
       nombre: ['', [Validators.required, Validators.maxLength(150)]],
       razonSocial: ['', [Validators.required, Validators.maxLength(200)]],
       giro: ['', [Validators.required, Validators.maxLength(200)]],
-      direccion: [''],
+      direccion: ['', Validators.required],
+      ciudad: ['', [Validators.required, Validators.maxLength(100)]],
+      comuna: ['', [Validators.required, Validators.maxLength(100)]],
       telefono: ['', [Validators.required, chileanPhoneValidator]],
       email: ['', [Validators.email, Validators.maxLength(150)]],
       activo: [true]
@@ -68,7 +70,7 @@ export class SupplierList implements OnInit {
     this.editingId = undefined;
     this.supplierForm.reset({
       rut: '', nombre: '', razonSocial: '', giro: '',
-      direccion: '', telefono: '', email: '', activo: true
+      direccion: '', ciudad: '', comuna: '', telefono: '', email: '', activo: true
     });
     this.formVisible = true;
   }
@@ -81,6 +83,8 @@ export class SupplierList implements OnInit {
       razonSocial: supplier.razonSocial ?? '',
       giro: supplier.giro ?? '',
       direccion: supplier.direccion ?? '',
+      ciudad: supplier.ciudad?.nombre ?? supplier.ciudad ?? '',
+      comuna: supplier.comuna?.nombre ?? supplier.comuna ?? '',
       telefono: supplier.telefono ?? '',
       email: supplier.email ?? '',
       activo: supplier.activo ?? true
@@ -101,7 +105,9 @@ export class SupplierList implements OnInit {
       nombre: String(value.nombre).trim(),
       razonSocial: String(value.razonSocial).trim(),
       giro: String(value.giro).trim(),
-      direccion: value.direccion?.trim() || '',
+      direccion: String(value.direccion).trim(),
+      ciudad: String(value.ciudad).trim(),
+      comuna: String(value.comuna).trim(),
       telefono: normalizeChileanPhone(value.telefono),
       email: value.email?.trim() || '',
       activo: value.activo ?? true
