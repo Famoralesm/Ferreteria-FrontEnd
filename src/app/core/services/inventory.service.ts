@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 
@@ -14,6 +14,12 @@ import { InventoryMovementRequest } from '../models/inventory/inventory-movement
 export class InventoryService {
 
   private readonly apiUrl = `${environment.apiUrl}`;
+  private readonly stockChangedSubject = new Subject<void>();
+  readonly stockChanged$ = this.stockChangedSubject.asObservable();
+
+  notifyStockChanged(): void {
+    this.stockChangedSubject.next();
+  }
 
   constructor(private http: HttpClient) {}
 
@@ -27,14 +33,14 @@ export class InventoryService {
     return this.http.post<ProductStock>(
       `${this.apiUrl}/product-stocks/initialization`,
       request
-    );
+    ).pipe(tap(() => this.notifyStockChanged()));
   }
 
   updateMinimumStock(productoId: number, sucursalId: number, stockMinimo: number): Observable<ProductStock> {
     return this.http.put<ProductStock>(
       `${this.apiUrl}/product-stocks/${productoId}/minimum`,
       { sucursalId, stockMinimo }
-    );
+    ).pipe(tap(() => this.notifyStockChanged()));
   }
 
   getStocks(sucursalId: number): Observable<ProductStock[]> {
