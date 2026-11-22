@@ -67,6 +67,12 @@ export class SupplierService {
     );
   }
 
+  deleteProductSupplier(productId: number, productSupplierId: number): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/${productId}/suppliers/${productSupplierId}`
+    );
+  }
+
   selectSupplier(
     productId: number,
     productSupplierId: number
