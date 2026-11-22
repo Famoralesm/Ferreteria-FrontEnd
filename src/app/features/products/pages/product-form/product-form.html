@@ -74,6 +74,33 @@
               </p-inputNumber>
               <app-field-error [control]="form.get('price')" [messages]="{ required: 'El precio es obligatorio.', min: 'El precio no puede ser negativo.' }" />
             </div>
+            <div class="form-field wholesale-field">
+              <label for="wholesalePrice">Precio mayorista</label>
+              <p-inputNumber
+                id="wholesalePrice"
+                formControlName="wholesalePrice"
+                mode="currency"
+                currency="CLP"
+                locale="es-CL"
+                [min]="0"
+                [showClear]="true"
+                class="w-full">
+              </p-inputNumber>
+              <small>Precio unitario que se aplicará al alcanzar la cantidad mayorista.</small>
+            </div>
+
+            <div class="form-field wholesale-field">
+              <label for="wholesaleMinQuantity">Desde cuántas unidades</label>
+              <p-inputNumber
+                id="wholesaleMinQuantity"
+                formControlName="wholesaleMinQuantity"
+                [min]="1"
+                [showClear]="true"
+                [useGrouping]="false"
+                class="w-full">
+              </p-inputNumber>
+              <small>Deja ambos campos vacíos si el producto no tiene precio mayorista.</small>
+            </div>
             @if (id) {
               <div class="audit-grid">
 
