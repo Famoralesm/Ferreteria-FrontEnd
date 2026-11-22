@@ -350,32 +350,6 @@ export class UserForm implements OnInit {
 
   }
 
-  private getValidationMessage(): string {
-
-    if (this.passwordControl?.hasError('required')) {
-      return 'Debes ingresar una contraseña.';
-    }
-
-    if (this.passwordControl?.hasError('minlength')) {
-      return 'La contraseña debe tener al menos 8 caracteres.';
-    }
-
-    if (this.userForm.hasError('confirmationRequired')) {
-      return 'Debes confirmar la contraseña.';
-    }
-
-    if (this.userForm.hasError('passwordRequired')) {
-      return 'Debes ingresar primero la contraseña.';
-    }
-
-    if (this.userForm.hasError('passwordMismatch')) {
-      return 'Las contraseñas no coinciden.';
-    }
-
-    return 'Revisa los campos obligatorios antes de guardar.';
-
-  }
-
   private getErrorMessage(error: any, fallback: string): string {
 
     const body = error?.error;
