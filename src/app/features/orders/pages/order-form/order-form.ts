@@ -329,6 +329,7 @@ private loadProducts(): void {
               wholesaleApplied: false
             };
           });
+          this.refreshItemsStock();
 
           this.statusChangedAt = order.statusChangedAt
           this.updateElapsedTime();
