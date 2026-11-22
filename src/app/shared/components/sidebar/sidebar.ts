@@ -56,7 +56,7 @@ export class Sidebar {
             items.push(
               {
                 label: 'Inventario',
-                icon: 'pi pi-warehouse',
+                icon: 'pi pi-box',
                 routerLink: ['/inventory/initial-stock']
               },
               {
