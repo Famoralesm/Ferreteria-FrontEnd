@@ -68,18 +68,12 @@
               }
             </div>
             <div class="form-field">
-              <label for="supplierCity">Ciudad <span>*</span></label>
+              <label for="supplierCity">Ciudad</label>
               <input id="supplierCity" pInputText formControlName="ciudad" placeholder="Ciudad">
-              @if (supplierForm.get('ciudad')?.hasError('required') && supplierForm.get('ciudad')?.touched) {
-                <small class="error">La ciudad es obligatoria.</small>
-              }
             </div>
             <div class="form-field">
-              <label for="supplierCommune">Comuna <span>*</span></label>
+              <label for="supplierCommune">Comuna</label>
               <input id="supplierCommune" pInputText formControlName="comuna" placeholder="Comuna">
-              @if (supplierForm.get('comuna')?.hasError('required') && supplierForm.get('comuna')?.touched) {
-                <small class="error">La comuna es obligatoria.</small>
-              }
             </div>
           </div>
         </section>
