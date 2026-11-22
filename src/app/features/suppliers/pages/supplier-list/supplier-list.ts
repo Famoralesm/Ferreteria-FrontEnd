@@ -83,7 +83,7 @@ export class SupplierList implements OnInit {
     const ciudadId = Number(this.supplierForm.get('ciudad')?.value?.id ?? this.supplierForm.get('ciudad')?.value);
     this.comunasFiltradas = ciudadId ? this.comunas.filter(c => c.id_ciudad === ciudadId) : [];
     const comunaId = this.supplierForm.get('comuna')?.value?.id ?? this.supplierForm.get('comuna')?.value;
-    if (comunaId && !this.comunasFiltradas.some(c => c.id === Number(comunaId))) {
+    if (this.comunas.length > 0 && comunaId && !this.comunasFiltradas.some(c => c.id === Number(comunaId))) {
       this.supplierForm.get('comuna')?.setValue(null, { emitEvent: false });
     }
   }
