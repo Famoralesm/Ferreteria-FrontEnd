@@ -315,3 +315,12 @@ form {
   white-space: nowrap;
 }
 
+
+
+.field-error {
+  display: block;
+  margin-top: 6px;
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
