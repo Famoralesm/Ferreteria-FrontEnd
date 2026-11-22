@@ -24,6 +24,7 @@ import { environment } from '../../../../../environments/environment';
 import { UserService } from '../../../../core/services/user.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { take } from 'rxjs';
+import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error';
 
 const passwordConfirmationValidator: ValidatorFn = (
   control: AbstractControl
@@ -60,7 +61,8 @@ const passwordConfirmationValidator: ValidatorFn = (
     ButtonModule,
     InputTextModule,
     SelectModule,
-    CheckboxModule
+    CheckboxModule,
+    FieldErrorComponent
   ],
   templateUrl: './user-form.html',
   styleUrl: './user-form.scss'
@@ -260,10 +262,6 @@ export class UserForm implements OnInit {
 
       this.userForm.markAllAsTouched();
 
-      this.notificationService.warning(
-        this.getValidationMessage()
-      );
-
       return;
 
     }
@@ -366,6 +364,15 @@ next: updatedUser => {
   });
 
 }
+
+    ,
+      error: err => {
+        console.error('Error guardando usuario:', err);
+        this.saving = false;
+        this.notificationService.error(
+          this.getErrorMessage(err, 'No fue posible guardar el usuario.')
+        );
+      }
 
     });
 
