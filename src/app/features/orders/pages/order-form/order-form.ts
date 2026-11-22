@@ -64,6 +64,10 @@ export class OrderForm implements OnInit , OnDestroy {
   total: number;
   stockAvailable: number;
   stockMinimo: number;
+  regularUnitPrice: number;
+  wholesalePrice: number | null;
+  wholesaleMinQuantity: number;
+  wholesaleApplied: boolean;
   }[] = [];
   orderStatuses = ORDER_STATUSES;
 
@@ -318,7 +322,11 @@ private loadProducts(): void {
               unitPrice: item.unitPrice,
               total: item.totalPrice,
               stockAvailable: product?.stock ?? 0,
-              stockMinimo: product?.stockMinimo ?? 0
+              stockMinimo: product?.stockMinimo ?? 0,
+              regularUnitPrice: product?.price ?? item.unitPrice,
+              wholesalePrice: product?.wholesalePrice ?? null,
+              wholesaleMinQuantity: product?.wholesaleMinQuantity ?? 0,
+              wholesaleApplied: false
             };
           });
 
@@ -427,33 +435,34 @@ private loadProducts(): void {
   );
 
   if (existing) {
-
     existing.quantity += this.quantity;
-
-    existing.total =
-      existing.quantity * existing.unitPrice;
-
+    this.applyItemPricing(existing, this.selectedProduct);
+    if (existing.wholesaleApplied) {
+      this.notificationService.success(
+        `Precio mayorista aplicado a ${existing.productName}: ${existing.wholesaleMinQuantity} unidades o más.`
+      );
+    }
   } else {
-
-    this.items.push({
-
+    const newItem = {
       productId: this.selectedProduct.id,
-
       productName: this.selectedProduct.name,
-
       quantity: this.quantity,
-
       unitPrice: this.selectedProduct.price,
-
-      total:
-        this.selectedProduct.price *
-        this.quantity ,
-      
+      total: this.selectedProduct.price * this.quantity,
       stockAvailable: this.selectedProduct.stock,
-      stockMinimo: this.selectedProduct.stockMinimo ?? 0
-
-    });
-
+      stockMinimo: this.selectedProduct.stockMinimo ?? 0,
+      regularUnitPrice: this.selectedProduct.price,
+      wholesalePrice: this.selectedProduct.wholesalePrice ?? null,
+      wholesaleMinQuantity: this.selectedProduct.wholesaleMinQuantity ?? 0,
+      wholesaleApplied: false
+    };
+    this.applyItemPricing(newItem, this.selectedProduct);
+    this.items.push(newItem);
+    if (newItem.wholesaleApplied) {
+      this.notificationService.success(
+        `Precio mayorista aplicado a ${newItem.productName}: ${newItem.wholesaleMinQuantity} unidades o más.`
+      );
+    }
   }
 
   this.selectedProduct = undefined;
@@ -954,18 +963,33 @@ get isUnknownCustomerSelected(): boolean {
 }
 
 
+private applyItemPricing(item: any, product: Product): void {
+  item.regularUnitPrice = product.price;
+  item.wholesalePrice = product.wholesalePrice ?? null;
+  item.wholesaleMinQuantity = product.wholesaleMinQuantity ?? 0;
+  item.wholesaleApplied = item.wholesalePrice != null
+    && item.wholesalePrice > 0
+    && item.wholesaleMinQuantity > 0
+    && item.quantity >= item.wholesaleMinQuantity;
+  item.unitPrice = item.wholesaleApplied
+    ? item.wholesalePrice!
+    : item.regularUnitPrice;
+  item.total = item.unitPrice * item.quantity;
+}
+
 private refreshItemsStock(): void {
   this.items = this.items.map(item => {
-    const product = this.products.find(
-      p => p.id === item.productId
-    );
+    const product = this.products.find(p => p.id === item.productId);
+    if (!product) return item;
 
+    this.applyItemPricing(item, product);
     return {
       ...item,
-      stockAvailable: product?.stock ?? 0,
-      stockMinimo: product?.stockMinimo ?? 0
+      stockAvailable: product.stock ?? 0,
+      stockMinimo: product.stockMinimo ?? 0
     };
   });
+  this.updateTotal();
 }
   
 }
