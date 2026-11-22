@@ -1,8 +1,7 @@
 .customer-form {
   width: 100%;
-  max-width: 1050px;
-
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
 
   padding: 25px;
 }
@@ -40,36 +39,23 @@
 }
 
 
-.form-section {
-  background: #ffffff;
-
-  border-radius: 12px;
-
-  padding: 18px 22px;
-
-  margin-bottom: 14px;
-
-  box-shadow:
-    0 4px 14px rgba(0, 0, 0, 0.05);
+.form-section,
+.form-grid {
+  display: contents;
 }
-
 
 .form-section h3 {
-  margin: 0 0 14px;
-
-  color: #123b63;
-
-  font-size: 16px;
+  display: none;
 }
 
+form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 22px;
+}
 
 .form-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-
-  gap: 14px 20px;
+  display: contents;
 }
 
 
@@ -102,7 +88,8 @@
 }
 
 
-.form-actions {
+ .form-actions {
+  grid-column: 1 / -1;
   display: flex;
 
   justify-content: flex-end;
