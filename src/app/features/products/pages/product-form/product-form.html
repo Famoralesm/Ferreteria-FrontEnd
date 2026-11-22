@@ -113,6 +113,9 @@
               </small>
 
               <small class="stock-info-help">
+                Stock mínimo de esta sucursal: <strong>{{ currentStockMinimo }} unidades</strong>.
+              </small>
+              <small class="stock-info-help">
                 Para modificar las existencias, utiliza el módulo Inventario.
               </small>
 
@@ -126,7 +129,7 @@
           <div class="product-classification-fields">
 
             <div class="form-field">
-              <label for="category">Categoría</label>
+              <label for="category">Categoría <span>*</span></label>
               <p-select
                 id="category"
                 [options]="categories"
@@ -136,19 +139,21 @@
                 placeholder="Seleccione categoría"
                 class="w-full">
               </p-select>
+              <app-field-error [control]="form.get('category')" [messages]="{ required: 'La categoría es obligatoria.' }" />
             </div>
 
             <div class="form-field">
-              <label for="brand">Marca</label>
+              <label for="brand">Marca <span>*</span></label>
               <input
                 id="brand"
                 pInputText
                 formControlName="brand"
                 placeholder="Marca">
+              <app-field-error [control]="form.get('brand')" [messages]="{ required: 'La marca es obligatoria.' }" />
             </div>
 
             <div class="form-field">
-              <label for="unit">Unidad</label>
+              <label for="unit">Unidad <span>*</span></label>
               <p-select
                 id="unit"
                 [options]="units"
@@ -158,6 +163,7 @@
                 placeholder="Seleccione unidad"
                 class="w-full">
               </p-select>
+              <app-field-error [control]="form.get('unit')" [messages]="{ required: 'La unidad es obligatoria.' }" />
             </div>
             <div class="active-field">
             <p-checkbox
