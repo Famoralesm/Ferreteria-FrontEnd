@@ -392,6 +392,12 @@ const updateRequest: UpdateProductRequest = {
 }
 
 
+  compareSupplierPrices(): void {
+    if (this.id) {
+      this.router.navigate(['/products', this.id, 'suppliers']);
+    }
+  }
+
   cancel(): void {
 
     this.router.navigate([
