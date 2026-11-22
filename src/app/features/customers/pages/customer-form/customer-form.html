@@ -61,13 +61,7 @@
             placeholder="12.345.678-9"
           />
 
-        @if (rut?.hasError('required') && rut?.touched) {
-          <small class="error">El RUT es obligatorio.</small>
-        }
-
-        @if (rut?.hasError('rutInvalido') && rut?.touched) {
-          <small class="error">El RUT no es válido. Revisa el dígito verificador.</small>
-        }
+        <app-field-error [control]="rut" [messages]="{ required: 'El RUT es obligatorio.', rutInvalido: 'El RUT no es válido. Revisa el dígito verificador.' }" />
 
         </div>
 
@@ -86,13 +80,7 @@
             placeholder="Nombre del cliente"
           />
 
-          @if (nombre?.invalid && nombre?.touched) {
-
-            <small class="error">
-              El nombre es obligatorio
-            </small>
-
-          }
+          <app-field-error [control]="nombre" [messages]="{ required: 'El nombre es obligatorio.', maxlength: 'El nombre no puede superar los 200 caracteres.' }" />
 
         </div>
 
@@ -168,9 +156,7 @@
             formControlName="email"
             placeholder="correo@empresa.cl"
           />
-          @if (email?.hasError('email') && email?.touched) {
-            <small class="error">Ingresa un correo electrónico válido.</small>
-          }
+          <app-field-error [control]="email" [messages]="{ email: 'Ingresa un correo electrónico válido.', maxlength: 'El correo no puede superar los 150 caracteres.' }" />
 
         </div>
 
@@ -188,11 +174,7 @@
             formControlName="telefono"
             placeholder="+56 9..."
           />
-          @if (telefono?.hasError('telefonoChilenoInvalido') && telefono?.touched) {
-          <small class="error">
-            Ingresa un teléfono chileno válido, por ejemplo +56912345678.
-          </small>
-        }
+          <app-field-error [control]="telefono" [messages]="{ telefonoChilenoInvalido: 'Ingresa un teléfono chileno válido, por ejemplo +56912345678.' }" />
 
         </div>
 
