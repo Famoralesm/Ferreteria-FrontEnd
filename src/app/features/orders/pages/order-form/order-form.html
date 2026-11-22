@@ -355,9 +355,12 @@
                 <tr>
 
                   <td>
-                    <strong>
-                      {{ item.productName }}
-                    </strong>
+                    <strong>{{ item.productName }}</strong>
+                    @if (item.wholesaleApplied) {
+                      <small class="wholesale-applied-label">
+                        <i class="pi pi-tag"></i> Precio mayorista aplicado
+                      </small>
+                    }
                   </td>
 
                   <td>
