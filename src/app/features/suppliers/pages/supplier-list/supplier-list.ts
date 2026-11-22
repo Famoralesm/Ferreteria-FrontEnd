@@ -1,27 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-
 import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
-
 import { Supplier } from '../../../../core/models/supplier/supplier';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { SupplierService } from '../../../../core/services/supplier.service';
+import { normalizeRut, rutValidator } from '../../../../core/utils/rut.util';
+import { chileanPhoneValidator, normalizeChileanPhone } from '../../../../core/utils/phone.util';
 
 @Component({
   selector: 'app-supplier-list',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    ButtonModule,
-    DialogModule,
-    InputTextModule,
-    TableModule
-  ],
+  imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule, TableModule],
   templateUrl: './supplier-list.html',
   styleUrl: './supplier-list.scss'
 })
@@ -29,7 +21,7 @@ export class SupplierList implements OnInit {
   suppliers: Supplier[] = [];
   loading = false;
   saving = false;
-  dialogVisible = false;
+  formVisible = false;
   editingId?: number;
   readonly supplierForm: FormGroup;
 
@@ -40,13 +32,13 @@ export class SupplierList implements OnInit {
     private readonly cdr: ChangeDetectorRef
   ) {
     this.supplierForm = this.fb.group({
-      rut: [''],
+      rut: ['', [Validators.required, rutValidator]],
       nombre: ['', [Validators.required, Validators.maxLength(150)]],
-      razonSocial: [''],
-      giro: [''],
+      razonSocial: ['', [Validators.required, Validators.maxLength(200)]],
+      giro: ['', [Validators.required, Validators.maxLength(200)]],
       direccion: [''],
-      telefono: [''],
-      email: ['', [Validators.email]],
+      telefono: ['', [Validators.required, chileanPhoneValidator]],
+      email: ['', [Validators.email, Validators.maxLength(150)]],
       activo: [true]
     });
   }
@@ -57,7 +49,6 @@ export class SupplierList implements OnInit {
 
   loadSuppliers(): void {
     this.loading = true;
-
     this.supplierService.findAll().subscribe({
       next: data => {
         this.suppliers = data ?? [];
@@ -76,16 +67,10 @@ export class SupplierList implements OnInit {
   newSupplier(): void {
     this.editingId = undefined;
     this.supplierForm.reset({
-      rut: '',
-      nombre: '',
-      razonSocial: '',
-      giro: '',
-      direccion: '',
-      telefono: '',
-      email: '',
-      activo: true
+      rut: '', nombre: '', razonSocial: '', giro: '',
+      direccion: '', telefono: '', email: '', activo: true
     });
-    this.dialogVisible = true;
+    this.formVisible = true;
   }
 
   editSupplier(supplier: Supplier): void {
@@ -100,14 +85,11 @@ export class SupplierList implements OnInit {
       email: supplier.email ?? '',
       activo: supplier.activo ?? true
     });
-    this.dialogVisible = true;
+    this.formVisible = true;
   }
 
   save(): void {
-    if (this.saving) {
-      return;
-    }
-
+    if (this.saving) return;
     if (this.supplierForm.invalid) {
       this.supplierForm.markAllAsTouched();
       return;
@@ -115,12 +97,12 @@ export class SupplierList implements OnInit {
 
     const value = this.supplierForm.getRawValue();
     const request = {
-      rut: value.rut?.trim() || '',
-      nombre: value.nombre?.trim() ?? '',
-      razonSocial: value.razonSocial?.trim() || '',
-      giro: value.giro?.trim() || '',
+      rut: normalizeRut(value.rut),
+      nombre: String(value.nombre).trim(),
+      razonSocial: String(value.razonSocial).trim(),
+      giro: String(value.giro).trim(),
       direccion: value.direccion?.trim() || '',
-      telefono: value.telefono?.trim() || '',
+      telefono: normalizeChileanPhone(value.telefono),
       email: value.email?.trim() || '',
       activo: value.activo ?? true
     };
@@ -135,8 +117,7 @@ export class SupplierList implements OnInit {
         const message = this.editingId
           ? 'Proveedor actualizado correctamente.'
           : 'Proveedor registrado correctamente.';
-
-        this.dialogVisible = false;
+        this.formVisible = false;
         this.saving = false;
         this.notificationService.success(message);
         this.loadSuppliers();
@@ -144,18 +125,15 @@ export class SupplierList implements OnInit {
       error: error => {
         console.error('Error guardando proveedor:', error);
         this.saving = false;
-        this.notificationService.error(
-          error?.error?.message ?? 'No fue posible guardar el proveedor.'
-        );
+        this.notificationService.error(error?.error?.message ?? 'No fue posible guardar el proveedor.');
         this.cdr.detectChanges();
       }
     });
   }
 
-  closeDialog(): void {
-    if (this.saving) {
-      return;
-    }
-    this.dialogVisible = false;
+  cancelForm(): void {
+    if (this.saving) return;
+    this.formVisible = false;
+    this.supplierForm.reset();
   }
 }
