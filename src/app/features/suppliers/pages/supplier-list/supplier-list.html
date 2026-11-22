@@ -60,9 +60,26 @@
                 <small class="error">Ingresa un correo electrónico válido.</small>
               }
             </div>
-            <div class="form-field field-full">
-              <label for="supplierAddress">Dirección</label>
+            <div class="form-field">
+              <label for="supplierAddress">Dirección <span>*</span></label>
               <input id="supplierAddress" pInputText formControlName="direccion" placeholder="Dirección comercial">
+              @if (supplierForm.get('direccion')?.hasError('required') && supplierForm.get('direccion')?.touched) {
+                <small class="error">La dirección es obligatoria.</small>
+              }
+            </div>
+            <div class="form-field">
+              <label for="supplierCity">Ciudad <span>*</span></label>
+              <input id="supplierCity" pInputText formControlName="ciudad" placeholder="Ciudad">
+              @if (supplierForm.get('ciudad')?.hasError('required') && supplierForm.get('ciudad')?.touched) {
+                <small class="error">La ciudad es obligatoria.</small>
+              }
+            </div>
+            <div class="form-field">
+              <label for="supplierCommune">Comuna <span>*</span></label>
+              <input id="supplierCommune" pInputText formControlName="comuna" placeholder="Comuna">
+              @if (supplierForm.get('comuna')?.hasError('required') && supplierForm.get('comuna')?.touched) {
+                <small class="error">La comuna es obligatoria.</small>
+              }
             </div>
           </div>
         </section>
