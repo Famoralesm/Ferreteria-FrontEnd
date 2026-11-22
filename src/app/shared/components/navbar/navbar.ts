@@ -22,6 +22,8 @@ import { filter } from 'rxjs';
 import { DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Store } from '../../../core/models/store/store';
+import { ProductStock } from '../../../core/models/inventory/product-stock';
+import { InventoryService } from '../../../core/services/inventory.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -51,16 +53,33 @@ export class Navbar implements OnInit {
 
   isEditingOrder = false;
 
+  lowStockAlerts: ProductStock[] = [];
+  notificationsOpen = false;
+  private currentRole: Role | null = null;
+
   private destroyRef = inject(DestroyRef);
 
   constructor(
     currentUserService: CurrentUserService,
     private authService: AuthService,
     private storeService: StoreService,
+    private inventoryService: InventoryService,
     private router: Router
   ) {
 
     this.currentUser$ = currentUserService.user$;
+
+    this.currentUser$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(user => {
+        this.currentRole = user?.role ?? null;
+        if (this.currentRole === Role.DELIVERY) {
+          this.lowStockAlerts = [];
+          this.notificationsOpen = false;
+        } else {
+          this.loadLowStockAlerts();
+        }
+      });
 
     currentUserService.getCurrentUser()
       .pipe(
@@ -117,6 +136,7 @@ export class Navbar implements OnInit {
       )
       .subscribe(store => {
         this.selectedStore = store;
+        this.loadLowStockAlerts();
       });
     this.updateOrderEditLock();
 
@@ -166,6 +186,41 @@ export class Navbar implements OnInit {
 
     this.storeService.setSelectedStore(store);
 
+  }
+
+  private loadLowStockAlerts(): void {
+    if (
+      !this.selectedStore ||
+      (this.currentRole !== Role.ADMIN && this.currentRole !== Role.SELLER)
+    ) {
+      this.lowStockAlerts = [];
+      return;
+    }
+
+    this.inventoryService.getLowStock(this.selectedStore.id)
+      .pipe(
+        catchError(error => {
+          console.error('Error al cargar alertas de stock mínimo:', error);
+          return of([]);
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(alerts => {
+        this.lowStockAlerts = alerts;
+      });
+  }
+
+  toggleNotifications(): void {
+    this.notificationsOpen = !this.notificationsOpen;
+  }
+
+  openLowStockProduct(alert: ProductStock): void {
+    this.notificationsOpen = false;
+    this.router.navigate(['/products/edit', alert.productoId]);
+  }
+
+  canViewStockAlerts(user: User): boolean {
+    return user.role === Role.ADMIN || user.role === Role.SELLER;
   }
 
   initials(name: string): string {
