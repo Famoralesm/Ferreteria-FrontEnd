@@ -37,6 +37,7 @@
                 pInputText
                 formControlName="sku"
                 placeholder="Ej: TAL-001">
+              <app-field-error [control]="form.get('sku')" [messages]="{ required: 'El SKU es obligatorio.' }" />
             </div>
 
             <div class="form-field">
@@ -46,6 +47,7 @@
                 pInputText
                 formControlName="name"
                 placeholder="Nombre del producto">
+              <app-field-error [control]="form.get('name')" [messages]="{ required: 'El nombre del producto es obligatorio.' }" />
             </div>
 
             <div class="form-field">
@@ -70,6 +72,7 @@
                 [min]="0"
                 class="w-full">
               </p-inputNumber>
+              <app-field-error [control]="form.get('price')" [messages]="{ required: 'El precio es obligatorio.', min: 'El precio no puede ser negativo.' }" />
             </div>
             @if (id) {
               <div class="audit-grid">
