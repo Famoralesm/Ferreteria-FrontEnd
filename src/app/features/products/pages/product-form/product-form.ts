@@ -182,15 +182,15 @@ export class ProductForm implements OnInit {
       ],
 
       category: [
-        ''
+        '', Validators.required
       ],
 
       brand: [
-        ''
+        '', Validators.required
       ],
 
       unit: [
-        'UNIDAD'
+        'UNIDAD', Validators.required
       ],
 
       createdAt: [
