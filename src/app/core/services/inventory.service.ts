@@ -47,6 +47,16 @@ export class InventoryService {
     );
   }
 
+  getLowStock(sucursalId: number): Observable<ProductStock[]> {
+    const params = new HttpParams()
+      .set('sucursalId', sucursalId);
+
+    return this.http.get<ProductStock[]>(
+      `${this.apiUrl}/product-stocks/low-stock`,
+      { params }
+    );
+  }
+
   getProductMovements(
     productoId: number,
     sucursalId: number
