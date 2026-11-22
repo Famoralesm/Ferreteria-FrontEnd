@@ -33,12 +33,54 @@
 
   <div class="right">
 
-    <div class="notification">
+    @if (currentUser$ | async; as user) {
+      @if (canViewStockAlerts(user)) {
+        <div class="notification">
+          <button
+            type="button"
+            class="notification-trigger"
+            aria-label="Mostrar alertas de stock mínimo"
+            [attr.aria-expanded]="notificationsOpen"
+            (click)="toggleNotifications()">
+            <i class="pi pi-bell"></i>
+            @if (lowStockAlerts.length > 0) {
+              <p-badge [value]="lowStockAlerts.length.toString()" severity="danger"></p-badge>
+            }
+          </button>
 
-      <i class="pi pi-bell"></i>
-      <p-badge value="3"></p-badge>
+          @if (notificationsOpen) {
+            <div class="notification-panel">
+              <div class="notification-heading">
+                <strong>Stock bajo</strong>
+                <span>{{ lowStockAlerts.length }} alerta(s)</span>
+              </div>
 
-    </div>
+              @if (lowStockAlerts.length === 0) {
+                <p class="notification-empty">No hay productos bajo el mínimo en esta sucursal.</p>
+              } @else {
+                <div class="notification-list">
+                  @for (alert of lowStockAlerts; track alert.id) {
+                    <button
+                      type="button"
+                      class="notification-item"
+                      (click)="openLowStockProduct(alert)">
+                      <span class="notification-product">
+                        <strong>{{ alert.nombreProducto }}</strong>
+                        <small>{{ alert.sku }} · {{ alert.nombreSucursal }}</small>
+                      </span>
+                      <span class="notification-stock">
+                        <strong>{{ alert.stock }}</strong>
+                        <small>Mín. {{ alert.stockMinimo }}</small>
+                      </span>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
 
     @if (currentUser$ | async; as user) {
 
