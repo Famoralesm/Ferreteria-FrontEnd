@@ -16,3 +16,10 @@
 .selected-label { color: #15803d; font-size: 12px; font-weight: 600; white-space: nowrap; }
 .selected-label i { margin-right: 4px; }
 @media (max-width: 760px) { .add-price-form { grid-template-columns: 1fr; } }
+
+.product-summary { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px; padding:18px 20px; border-left:4px solid #2563eb; }
+.product-summary span { color:#64748b; font-size:11px; font-weight:700; letter-spacing:.06em; }
+.product-summary h2 { margin:5px 0 3px; color:#243447; font-size:20px; }
+.product-summary small,.product-summary > strong { color:#64748b; font-size:12px; }
+.supplier-option { display:flex; flex-direction:column; gap:3px; padding:3px 0; }
+.supplier-option small { color:#64748b; font-size:11px; }
