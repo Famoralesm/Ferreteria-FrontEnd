@@ -300,7 +300,10 @@
             [showButtons]="true" 
             inputId="minmax-buttons" 
             [min]="0" 
-            [max]="100" /> 
+            [max]="100" />
+          @if (quantityError) {
+            <small class="field-error">La cantidad debe ser mayor que cero.</small>
+          }
 
         </div>
 
