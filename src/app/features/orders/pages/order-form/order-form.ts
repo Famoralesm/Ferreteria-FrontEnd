@@ -17,6 +17,7 @@ import { StoreService } from '../../../../core/services/store.service';
 import { NotificationService } from '../../../../core/services/notification.service';   
 import { CustomerService } from '../../../../core/services/customer.service';
 import { Customer } from '../../../../core/models/customer/customer';
+import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error';
 
 type UnknownCustomerOption = {
   id: null;
@@ -38,7 +39,8 @@ type CustomerOption = Customer | UnknownCustomerOption;
     SelectModule,
     FormsModule,
     CommonModule,
-    InputNumberModule
+    InputNumberModule,
+    FieldErrorComponent
 
     
   ],
@@ -68,6 +70,9 @@ export class OrderForm implements OnInit , OnDestroy {
   customers: Customer[] = [];
   customerOptions: CustomerOption[] = [];
   selectedCustomerOption: CustomerOption | null = null;
+  itemsTouched = false;
+  productSelectionError = false;
+  quantityError = false;
 
   private customerService = inject(CustomerService);
   private storeService = inject(StoreService);
@@ -404,14 +409,18 @@ private loadProducts(): void {
   console.log('Cantidad:', this.quantity);
 
   if (!this.selectedProduct) {
-    console.warn('No hay producto seleccionado');
+    this.productSelectionError = true;
     return;
   }
 
+  this.productSelectionError = false;
+
   if (this.quantity <= 0) {
-    console.warn('Cantidad inválida');
+    this.quantityError = true;
     return;
   }
+
+  this.quantityError = false;
 
   const existing = this.items.find(
     item => item.productId === this.selectedProduct!.id
@@ -449,6 +458,7 @@ private loadProducts(): void {
 
   this.selectedProduct = undefined;
   this.quantity = 1;
+  this.itemsTouched = false;
 
   this.updateTotal();
 
@@ -669,34 +679,9 @@ saveOrder(): void {
     return;
   }
   this.form.markAllAsTouched();
+  this.itemsTouched = this.items.length === 0;
 
-  const requiredFields: { control: string; label: string }[] = [
-    { control: 'customerName', label: 'Cliente' },
-    { control: 'address', label: 'Dirección' },
-    { control: 'deliveryDate', label: 'Fecha de entrega' },
-    { control: 'paymentMethod', label: 'Método de pago' }
-  ];
-
-  const missingFields = requiredFields
-    .filter(field => {
-      const control = this.form.get(field.control);
-
-      return !control ||
-        control.invalid ||
-        !String(control.value ?? '').trim();
-    })
-    .map(field => field.label);
-
-  if (this.items.length === 0) {
-    missingFields.push('Productos del pedido');
-  }
-
-  if (missingFields.length > 0) {
-
-    this.notificationService.warning(
-      `Completa los siguientes campos obligatorios: ${missingFields.join(', ')}.`
-    );
-
+  if (this.form.invalid || this.itemsTouched) {
     this.cdr.detectChanges();
     return;
   }
