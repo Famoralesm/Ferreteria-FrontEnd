@@ -1,0 +1,183 @@
+<div class="page-shell supplier-page">
+  <div class="page-header">
+    <div class="page-header-content">
+      <span class="page-kicker">PROVEEDORES</span>
+      <p>Administración y gestión de proveedores</p>
+    </div>
+  </div>
+
+  <div class="page-info">
+    <i class="pi pi-truck"></i>
+    <span>Total de proveedores: <strong>{{ suppliers.length }}</strong></span>
+  </div>
+
+  <div class="page-card">
+    <p-table
+      [value]="suppliers"
+      [loading]="loading"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[10, 20, 50]"
+      [tableStyle]="{ 'min-width': '58rem' }"
+      responsiveLayout="scroll"
+      emptyMessage="No hay proveedores registrados.">
+
+      <ng-template #header>
+        <tr>
+          <th>RUT</th>
+          <th>Proveedor</th>
+          <th>Razón social</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+          <th>Estado</th>
+          <th class="actions-column">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-supplier>
+        <tr>
+          <td>{{ supplier.rut || '—' }}</td>
+          <td>{{ supplier.nombre }}</td>
+          <td>{{ supplier.razonSocial || '—' }}</td>
+          <td>{{ supplier.telefono || '—' }}</td>
+          <td>{{ supplier.email || '—' }}</td>
+          <td>
+            <span class="status" [class.status-inactive]="!supplier.activo">
+              {{ supplier.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td class="actions-column">
+            <button
+              pButton
+              type="button"
+              icon="pi pi-pencil"
+              severity="secondary"
+              [text]="true"
+              [rounded]="true"
+              aria-label="Editar proveedor"
+              (click)="editSupplier(supplier)">
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <div class="page-actions page-actions--bottom">
+    <button
+      pButton
+      type="button"
+      label="Nuevo proveedor"
+      icon="pi pi-plus"
+      severity="success"
+      (click)="newSupplier()">
+    </button>
+  </div>
+</div>
+
+<p-dialog
+  [(visible)]="dialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: 'min(680px, 95vw)' }"
+  [header]="editingId ? 'Editar proveedor' : 'Nuevo proveedor'"
+  (onHide)="closeDialog()">
+
+  <form [formGroup]="supplierForm" (ngSubmit)="save()">
+    <div class="supplier-form-grid">
+      <div class="field">
+        <label for="supplierRut">RUT</label>
+        <input
+          id="supplierRut"
+          pInputText
+          formControlName="rut"
+          placeholder="76.123.456-7">
+      </div>
+
+      <div class="field">
+        <label for="supplierName">Nombre *</label>
+        <input
+          id="supplierName"
+          pInputText
+          formControlName="nombre"
+          placeholder="Nombre del proveedor">
+        @if (supplierForm.controls.nombre.invalid && supplierForm.controls.nombre.touched) {
+          <small class="error">El nombre es obligatorio.</small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="supplierBusinessName">Razón social</label>
+        <input
+          id="supplierBusinessName"
+          pInputText
+          formControlName="razonSocial"
+          placeholder="Razón social">
+      </div>
+
+      <div class="field">
+        <label for="supplierBusiness">Giro</label>
+        <input
+          id="supplierBusiness"
+          pInputText
+          formControlName="giro"
+          placeholder="Giro comercial">
+      </div>
+
+      <div class="field">
+        <label for="supplierPhone">Teléfono</label>
+        <input
+          id="supplierPhone"
+          pInputText
+          formControlName="telefono"
+          placeholder="+56 9...">
+      </div>
+
+      <div class="field">
+        <label for="supplierEmail">Email</label>
+        <input
+          id="supplierEmail"
+          type="email"
+          pInputText
+          formControlName="email"
+          placeholder="contacto@proveedor.cl">
+        @if (supplierForm.controls.email.hasError('email') && supplierForm.controls.email.touched) {
+          <small class="error">Ingresa un email válido.</small>
+        }
+      </div>
+
+      <div class="field field-full">
+        <label for="supplierAddress">Dirección</label>
+        <input
+          id="supplierAddress"
+          pInputText
+          formControlName="direccion"
+          placeholder="Dirección comercial">
+      </div>
+
+      <label class="active-field">
+        <input type="checkbox" formControlName="activo">
+        Proveedor activo
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button
+        pButton
+        type="button"
+        label="Cancelar"
+        severity="secondary"
+        [disabled]="saving"
+        (click)="closeDialog()">
+      </button>
+      <button
+        pButton
+        type="submit"
+        [label]="editingId ? 'Guardar cambios' : 'Registrar proveedor'"
+        icon="pi pi-check"
+        [disabled]="saving">
+      </button>
+    </div>
+  </form>
+</p-dialog>
