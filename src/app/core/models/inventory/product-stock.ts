@@ -10,5 +10,6 @@ export interface ProductStock {
   stock: number;
   stockMinimo: number;
   bajoStock: boolean;
+  inventarioInicialRegistrado?: boolean;
   fechaActualizacion?: string;
 }
