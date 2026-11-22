@@ -1,0 +1,16 @@
+:host { display: block; width: 100%; min-width: 0; }
+.inventory-page {
+  .inventory-store-label { margin: 0 0 1rem; color: #475569; font-size: .92rem; }
+  .inventory-help { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; padding: 1.1rem 1.25rem; background: #f8fbff; border: 1px solid #dce8f5; }
+  .help-icon { color: #2563eb; font-size: 1.25rem; padding-top: .1rem; }
+  .inventory-help strong { color: #243447; }
+  .inventory-help p { margin: .35rem 0 0; color: #526174; line-height: 1.5; }
+  .inventory-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+  .inventory-search { display: flex; align-items: center; gap: .65rem; width: min(100%, 430px); }
+  .inventory-search i { color: #64748b; } .inventory-search input { width: 100%; }
+  .product-brand { display: block; color: #64748b; margin-top: .2rem; }
+  .actions-column { min-width: 12rem; text-align: center; }
+  .status { display: inline-flex; align-items: center; border-radius: 999px; padding: .25rem .65rem; font-size: .78rem; font-weight: 600; }
+  .status-done { color: #247342; background: #e8f5ec; } .status-pending { color: #9a6700; background: #fff4d6; }
+}
+@media (max-width: 768px) { .inventory-page .inventory-toolbar { align-items: stretch; flex-direction: column; } .inventory-page .inventory-search { width: 100%; } }
