@@ -249,10 +249,6 @@
     </div>
 
   </ng-template>
-  @if (productSelectionError) {
-    <small class="field-error">Selecciona un producto antes de agregarlo.</small>
-  }
-
   <ng-template #selectedItem let-product>
 
     @if (product) {
@@ -264,6 +260,9 @@
   </ng-template>
 
 </p-select>
+@if (productSelectionError) {
+  <small class="field-error">Selecciona un producto antes de agregarlo.</small>
+}
 @if (selectedProduct) {
 
   <div class="selected-product-stock"
@@ -273,6 +272,7 @@
     <div>
       <strong>{{ selectedProduct.name }}</strong>
       <small>Existencias en la sucursal seleccionada</small>
+      <small>Stock mínimo: {{ selectedProduct.stockMinimo ?? 0 }} unidades</small>
     </div>
 
     <div class="selected-stock-number">
@@ -341,7 +341,7 @@
               <tr>
                 <th>Producto</th>
                 <th>Cant</th>
-                <th>Stock </th>
+                <th>Stock / Mín.</th>
                 <th>Precio</th>
                 <th>Total</th>
                 <th></th>
@@ -368,7 +368,7 @@
                     <strong
                       [class.stock-low]="item.stockAvailable <= item.stockMinimo"
                       [class.stock-ok]="item.stockAvailable > item.stockMinimo">
-                      {{ item.stockAvailable }}
+                      {{ item.stockAvailable }} / {{ item.stockMinimo }}
                     </strong>
                   </td>
 
