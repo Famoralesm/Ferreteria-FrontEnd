@@ -253,7 +253,7 @@ private loadProducts(): void {
           products
         );
 
-        this.products = products;
+        this.products = products.filter(product => product.active);
         this.refreshItemsStock();
       },
 
@@ -412,7 +412,16 @@ private loadProducts(): void {
 
   }
 
+  get isInRoute(): boolean {
+    return this.form.get('status')?.value === 'IN_ROUTE';
+  }
+
   addProduct(): void {
+
+  if (this.isInRoute) {
+    this.notificationService.warning('Un pedido en ruta no permite agregar productos.');
+    return;
+  }
 
   console.log('Producto seleccionado:', this.selectedProduct);
   console.log('Cantidad:', this.quantity);
@@ -475,6 +484,11 @@ private loadProducts(): void {
   console.log('Items:', this.items);
 }
 removeProduct(index: number): void {
+
+  if (this.isInRoute) {
+    this.notificationService.warning('Un pedido en ruta no permite eliminar productos.');
+    return;
+  }
 
   if (index < 0 || index >= this.items.length) {
     return;
@@ -678,6 +692,11 @@ onAddressChange(): void {
 }
 
 saveOrder(): void {
+
+  if (this.isInRoute) {
+    this.notificationService.warning('Un pedido en ruta no permite modificar sus productos.');
+    return;
+  }
 
   if (
     this.id &&
