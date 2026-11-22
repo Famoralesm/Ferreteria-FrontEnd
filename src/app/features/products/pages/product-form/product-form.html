@@ -266,6 +266,17 @@
 
       <!-- ACCIONES -->
       <div class="form-actions">
+        @if (id) {
+          <button
+            pButton
+            type="button"
+            label="Comparar precios por proveedor"
+            icon="pi pi-chart-bar"
+            severity="info"
+            (click)="compareSupplierPrices()">
+          </button>
+        }
+
 
         <button
           pButton
