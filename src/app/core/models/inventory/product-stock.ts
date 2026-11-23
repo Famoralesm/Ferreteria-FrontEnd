@@ -11,5 +11,6 @@ export interface ProductStock {
   stockMinimo: number;
   bajoStock: boolean;
   inventarioInicialRegistrado?: boolean;
+  tieneMovimientos?: boolean;
   fechaActualizacion?: string;
 }
