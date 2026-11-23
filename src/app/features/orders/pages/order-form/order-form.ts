@@ -73,6 +73,15 @@ export class OrderForm implements OnInit , OnDestroy {
   }[] = [];
   orderStatuses = ORDER_STATUSES;
 
+  paymentStatus: 'PENDING' | 'PAID' | 'REVERSED' = 'PENDING';
+  paymentReceivedAt?: string | null;
+  paymentReceivedBy?: { name?: string; email?: string } | null;
+  paymentReversedAt?: string | null;
+  paymentReversedBy?: { name?: string; email?: string } | null;
+  paymentReversalReason?: string | null;
+  paymentDialogVisible = false;
+  paymentSaving = false;
+
   customers: Customer[] = [];
   customerOptions: CustomerOption[] = [];
   selectedCustomerOption: CustomerOption | null = null;
@@ -311,6 +320,13 @@ private loadProducts(): void {
 
 
           });
+          this.paymentStatus = order.paymentStatus ?? 'PENDING';
+          this.paymentReceivedAt = order.paymentReceivedAt ?? null;
+          this.paymentReceivedBy = order.paymentReceivedBy ?? null;
+          this.paymentReversedAt = order.paymentReversedAt ?? null;
+          this.paymentReversedBy = order.paymentReversedBy ?? null;
+          this.paymentReversalReason = order.paymentReversalReason ?? null;
+
           this.syncSelectedCustomer();
           this.items = order.items.map(item => {
             const product = this.products.find(
@@ -444,6 +460,49 @@ private loadProducts(): void {
         );
       }
     });
+  }
+
+  openPaymentConfirmation(): void {
+    if (!this.id || this.paymentStatus !== 'PENDING') {
+      return;
+    }
+    this.paymentDialogVisible = true;
+  }
+
+  cancelPaymentConfirmation(): void {
+    this.paymentDialogVisible = false;
+  }
+
+  confirmPayment(): void {
+    if (!this.id || this.paymentStatus !== 'PENDING' || this.paymentSaving) {
+      return;
+    }
+
+    this.paymentSaving = true;
+    this.orderService.confirmPayment(this.id).subscribe({
+      next: order => {
+        this.paymentStatus = order.paymentStatus ?? 'PAID';
+        this.paymentReceivedAt = order.paymentReceivedAt ?? null;
+        this.paymentReceivedBy = order.paymentReceivedBy ?? null;
+        this.paymentDialogVisible = false;
+        this.paymentSaving = false;
+        this.notificationService.success('Pago registrado correctamente.');
+        this.cdr.detectChanges();
+      },
+      error: err => {
+        console.error('Error confirmando el pago:', err);
+        this.paymentSaving = false;
+        this.notificationService.error(
+          err.error?.message ?? 'No fue posible registrar el pago. Actualiza el pedido e inténtalo nuevamente.'
+        );
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  get paymentMethodLabel(): string {
+    const method = this.form.get('paymentMethod')?.value;
+    return this.paymentMethods.find(item => item.value === method)?.label ?? 'No seleccionado';
   }
 
   cancel(): void {
