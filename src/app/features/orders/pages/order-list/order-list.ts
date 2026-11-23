@@ -194,7 +194,7 @@ table{width:100%;border-collapse:collapse}td{padding:3px 0;vertical-align:top}.r
 <div class="line"></div>
 <table><tbody><tr class="total"><td>TOTAL</td><td class="right">${money(order.totalAmount)}</td></tr></tbody></table>
 <p><b>Medio de pago:</b> ${escape(order.paymentMethod)}</p>
-<p><b>Registrado por:</b> ${escape(order.createdBy?.name || order.createdBy?.email || 'No informado')}</p>
+<p><b>Registrado por:</b> ${escape(order.createdBy.name || order.createdBy.email || 'No informado')}</p>
 ${order.notes ? `<div class="line"></div><p><b>Observaciones:</b> ${escape(order.notes)}</p>` : ''}
 <div class="line"></div>
 <p class="footer">Gracias por preferir Ferretería FC<br>Documento de uso interno / comprobante de pedido.<br>No reemplaza una boleta tributaria electrónica.</p>
