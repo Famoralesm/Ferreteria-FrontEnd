@@ -18,6 +18,8 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { CustomerService } from '../../../../core/services/customer.service';
 import { Customer } from '../../../../core/models/customer/customer';
 import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error';
+import { Order } from '../../../../core/models/order/order';
+import { buildOrderReceiptHtml } from '../../utils/order-receipt';
 
 type UnknownCustomerOption = {
   id: null;
@@ -408,6 +410,41 @@ private loadProducts(): void {
 
     });
 
+  }
+
+  printOrder(): void {
+    if (!this.id) {
+      return;
+    }
+
+    // Abrimos la ventana durante el clic para evitar que el navegador bloquee el popup.
+    const printWindow = window.open('', '_blank', 'width=460,height=800');
+    if (!printWindow) {
+      this.notificationService.warning(
+        'El navegador bloqueó la ventana de impresión. Permite las ventanas emergentes para este sitio.'
+      );
+      return;
+    }
+
+    printWindow.document.write('<!doctype html><html><head><title>Preparando comprobante...</title></head><body><p>Preparando comprobante...</p></body></html>');
+    printWindow.document.close();
+
+    this.orderService.findById(this.id).subscribe({
+      next: order => {
+        printWindow.document.open();
+        printWindow.document.write(buildOrderReceiptHtml(order));
+        printWindow.document.close();
+        printWindow.focus();
+        window.setTimeout(() => printWindow.print(), 300);
+      },
+      error: error => {
+        console.error('No fue posible cargar el pedido para imprimir:', error);
+        printWindow.close();
+        this.notificationService.error(
+          'No fue posible obtener los datos del pedido para imprimir.'
+        );
+      }
+    });
   }
 
   cancel(): void {
