@@ -1,27 +1,30 @@
 :host { display:block; width:100%; min-width:0; }
 .dashboard-page { min-width:0; }
-.dashboard-stats-section { margin:1.25rem 0 1.75rem; }
+.dashboard-charts-section { margin:1.25rem 0 1.75rem; }
+.dashboard-stats-section { margin:1.75rem 0 1.25rem; }
 .dashboard-section-heading { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
 .dashboard-section-heading h2 { margin:.25rem 0; color:#243447; font-size:1.15rem; }
 .dashboard-section-heading p { margin:.2rem 0 0; color:#7b8794; font-size:.85rem; }
 .section-kicker { color:#64748b; font-size:.7rem; font-weight:800; letter-spacing:.08em; }
+.dashboard-charts-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; align-items:stretch; }
+.chart-heading { min-height:58px; margin-bottom:.65rem; }
+.chart-heading h3 { margin:0 0 .25rem; color:#243447; font-size:1rem; }
+.chart-heading p { margin:0; color:#7b8794; font-size:.78rem; }
 .stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem; }
-.dashboard-content-grid { display:grid; grid-template-columns:minmax(280px,.85fr) minmax(0,1.65fr); gap:1.25rem; align-items:start; }
 .dashboard-section { min-width:0; }
-.status-chart-card { display:flex; align-items:center; gap:1.5rem; min-height:245px; padding:1.5rem; }
-.status-donut { display:grid; place-items:center; flex:0 0 176px; width:176px; height:176px; border-radius:50%; position:relative; }
-.status-donut::before { content:""; position:absolute; inset:19px; border-radius:50%; background:#fff; }
+.status-chart-card { display:flex; align-items:center; gap:1rem; min-height:235px; height:calc(100% - 58px); padding:1.1rem; }
+.status-donut { display:grid; place-items:center; flex:0 0 138px; width:138px; height:138px; border-radius:50%; position:relative; }
+.status-donut::before { content:""; position:absolute; inset:16px; border-radius:50%; background:#fff; }
 .status-donut-center { z-index:1; display:flex; flex-direction:column; align-items:center; }
-.status-donut-center strong { color:#243447; font-size:2rem; line-height:1.1; }
-.status-donut-center small { margin-top:.25rem; color:#64748b; font-size:.75rem; }
-.status-legend { display:flex; flex:1; flex-direction:column; gap:.8rem; min-width:0; }
-.status-legend-item { display:grid; grid-template-columns:10px minmax(0,1fr) auto auto; align-items:center; gap:.55rem; font-size:.8rem; }
-.status-color { width:9px; height:9px; border-radius:50%; }
+.status-donut-center strong { color:#243447; font-size:1.8rem; line-height:1.1; }
+.status-donut-center small { margin-top:.25rem; color:#64748b; font-size:.72rem; }
+.status-legend { display:flex; flex:1; flex-direction:column; gap:.65rem; min-width:0; }
+.status-legend-item { display:grid; grid-template-columns:9px minmax(0,1fr) auto auto; align-items:center; gap:.4rem; font-size:.73rem; }
+.status-color { width:8px; height:8px; border-radius:50%; }
 .status-name { color:#475569; }
 .status-legend-item strong { color:#243447; font-variant-numeric:tabular-nums; }
-.status-legend-item small { width:2.5rem; color:#94a3b8; text-align:right; }
-.order-count { padding:.45rem .75rem; border-radius:999px; background:#eef4fa; color:#31516f; font-size:.75rem; font-weight:700; white-space:nowrap; }
-.empty-chart-message { margin:0; color:#64748b; font-size:.85rem; }
-.dashboard-orders { overflow:hidden; }
-@media (max-width:1100px) { .stats { grid-template-columns:repeat(2,minmax(0,1fr)); } .dashboard-content-grid { grid-template-columns:1fr; } }
-@media (max-width:650px) { .stats { grid-template-columns:1fr; } .status-chart-card { flex-direction:column; align-items:stretch; } .status-donut { align-self:center; } .dashboard-section-heading { align-items:flex-start; flex-direction:column; } }
+.status-legend-item small { width:2.2rem; color:#94a3b8; text-align:right; }
+.empty-chart-message { margin:0; color:#64748b; font-size:.82rem; }
+@media (max-width:1250px) { .dashboard-charts-grid { grid-template-columns:1fr 1fr; } .dashboard-charts-grid > :last-child { grid-column:1 / -1; } }
+@media (max-width:900px) { .dashboard-charts-grid { grid-template-columns:1fr; } .dashboard-charts-grid > :last-child { grid-column:auto; } .stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:650px) { .stats { grid-template-columns:1fr; } .status-chart-card { flex-direction:column; align-items:stretch; } .status-donut { align-self:center; } }
