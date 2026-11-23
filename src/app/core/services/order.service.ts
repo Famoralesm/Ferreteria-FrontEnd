@@ -56,13 +56,5 @@ update(id:number,request:UpdateOrderRequest){
 
 }
 
-delete(id:number){
-
-    return this.http.delete(
-        `${this.API}/${id}`
-    );
-
-}
-
 }
 
