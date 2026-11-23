@@ -519,6 +519,17 @@
 
   <div class="form-actions">
 
+    @if (id) {
+      <button
+        pButton
+        type="button"
+        label="Imprimir"
+        icon="pi pi-print"
+        severity="info"
+        (click)="printOrder()">
+      </button>
+    }
+
     <button
       pButton
       type="button"
