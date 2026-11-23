@@ -204,6 +204,13 @@
       </div>
 
 
+      @if (isInRoute) {
+        <div class="route-lock-notice" role="status">
+          <i class="pi pi-lock"></i>
+          Pedido en ruta: no puedes agregar, quitar ni modificar productos ni cantidades.
+        </div>
+      }
+
       <div class="product-selector">
 
         <div class="form-field">
