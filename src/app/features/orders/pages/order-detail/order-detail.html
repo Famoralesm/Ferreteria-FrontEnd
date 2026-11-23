@@ -31,7 +31,7 @@
         <div><span>Dirección</span><strong>{{ order.address || 'No informada' }}</strong></div>
         <div><span>Medio de pago</span><strong>{{ order.paymentMethod }}</strong></div>
         <div><span>Sucursal ID</span><strong>{{ order.storeId }}</strong></div>
-        <div><span>Registrado por</span><strong>{{ order.createdBy?.name || order.createdBy?.email || 'No informado' }}</strong></div>
+        <div><span>Registrado por</span><strong>{{ order.createdBy.name || order.createdBy.email || 'No informado' }}</strong></div>
       </div>
       @if (order.wazeLink) {
         <a [href]="order.wazeLink" target="_blank" rel="noopener noreferrer" class="map-link"><i class="pi pi-map-marker"></i> Abrir dirección en Waze</a>
