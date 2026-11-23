@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -64,7 +64,9 @@ export class Navbar implements OnInit {
     private authService: AuthService,
     private storeService: StoreService,
     private inventoryService: InventoryService,
-    private router: Router
+    private router: Router,
+    private readonly changeDetector: ChangeDetectorRef,
+    private readonly ngZone: NgZone
   ) {
 
     this.currentUser$ = currentUserService.user$;
@@ -211,7 +213,12 @@ export class Navbar implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(alerts => {
-        this.lowStockAlerts = [...alerts];
+        // La respuesta puede llegar fuera del ciclo de detección de Angular.
+        // Entramos explícitamente en la zona para refrescar el badge sin abrir la campana.
+        this.ngZone.run(() => {
+          this.lowStockAlerts = [...alerts];
+          this.changeDetector.markForCheck();
+        });
       });
   }
 
