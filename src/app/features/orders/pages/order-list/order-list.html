@@ -1,72 +1,31 @@
-
 <div class="page-shell">
-
-  <!-- HEADER -->
   <div class="page-header">
-
     <div class="page-header-content">
-
-      <span class="page-kicker">
-        PEDIDOS
-      </span>
-
-      <p>
-        Administración y seguimiento de pedidos
-      </p>
-
+      <span class="page-kicker">PEDIDOS</span>
+      <p>Administración y seguimiento de pedidos</p>
     </div>
-
   </div>
 
-  <!-- BUSCADOR Y TOTAL -->
   @if (filteredOrders$ | async; as filteredOrders) {
-
     <div class="order-tools">
-
-      <app-order-toolbar
-        (searchChange)="onSearchChange($event)">
-      </app-order-toolbar>
-
+      <app-order-toolbar (searchChange)="onSearchChange($event)"></app-order-toolbar>
       <div class="page-info order-total">
-
         <i class="pi pi-shopping-cart"></i>
-
-        <span>
-          Total de pedidos:
-          <strong>{{ filteredOrders.length }}</strong>
-        </span>
-
+        <span>Total de pedidos: <strong>{{ filteredOrders.length }}</strong></span>
       </div>
-
     </div>
 
-    <!-- TABLA -->
     <div class="page-card">
-
       <app-order-table
         [orders]="filteredOrders"
         (edit)="edit($event)"
         (view)="view($event)"
-        (delete)="delete($event)"
-        (duplicate)="duplicate($event)"
         (print)="print($event)">
       </app-order-table>
-
     </div>
-
   }
 
-  <!-- ACCIONES -->
   <div class="page-footer-actions">
-
-    <button
-      pButton
-      type="button"
-      icon="pi pi-plus"
-      label="Nuevo Pedido"
-      (click)="newOrder()">
-    </button>
-
+    <button pButton type="button" icon="pi pi-plus" label="Nuevo Pedido" (click)="newOrder()"></button>
   </div>
-
 </div>
