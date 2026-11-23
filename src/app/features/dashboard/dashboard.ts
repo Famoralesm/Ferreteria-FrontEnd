@@ -1,41 +1,49 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StatCard } from '../../shared/components/stat-card/stat-card';
-import { OrderSummary } from '../../core/models/order/order-summary';
-import { Dashboard as DashboardData } from '../../core/models/dashboard';
-import { DashboardService } from '../../core/services/dashboard.service';
-import { TableModule } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, filter, map, shareReplay, switchMap } from 'rxjs/operators';
+import { StatCard } from '../../shared/components/stat-card/stat-card';
+import {
+  Dashboard as DashboardData,
+  DashboardOrderStatus,
+  DashboardProductStatus
+} from '../../core/models/dashboard';
+import { DashboardService } from '../../core/services/dashboard.service';
 import { StoreService } from '../../core/services/store.service';
 
-interface OrderStatusMetric {
+interface ChartMetric {
   status: string;
   label: string;
   count: number;
   percentage: number;
   color: string;
+  start: number;
+  end: number;
 }
 
-interface OrderStatusSummary {
+interface ChartSummary {
   total: number;
   gradient: string;
-  metrics: OrderStatusMetric[];
+  metrics: ChartMetric[];
+  centerLabel: string;
+}
+
+interface DashboardCharts {
+  yesterday: ChartSummary;
+  today: ChartSummary;
+  products: ChartSummary;
 }
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [StatCard, TableModule, TagModule, CommonModule],
+  imports: [StatCard, CommonModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
 export class Dashboard {
   readonly dashboard$: Observable<DashboardData>;
-  readonly orders$: Observable<OrderSummary[]>;
-  readonly allOrders$: Observable<OrderSummary[]>;
-  readonly orderStatusSummary$: Observable<OrderStatusSummary>;
+  readonly charts$: Observable<DashboardCharts>;
 
   constructor(
     private readonly dashboardService: DashboardService,
@@ -54,80 +62,93 @@ export class Dashboard {
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    const selectedStoreOrders$ = this.storeService.selectedStore$.pipe(
+    this.charts$ = this.storeService.selectedStore$.pipe(
       filter(store => store !== null),
-      switchMap(store => this.dashboardService.getLatestOrders(store.id).pipe(
-        catchError(error => {
-          console.error('Error cargando últimos pedidos:', error);
-          return of([] as OrderSummary[]);
-        })
-      )),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
-    this.orders$ = selectedStoreOrders$;
+      switchMap(store => {
+        const now = new Date();
+        const todayStart = new Date(now);
+        todayStart.setHours(0, 0, 0, 0);
 
-    this.allOrders$ = this.storeService.selectedStore$.pipe(
-      filter(store => store !== null),
-      switchMap(store => this.dashboardService.getAllOrders(store.id).pipe(
-        catchError(error => {
-          console.error('Error cargando pedidos para el resumen:', error);
-          return of([] as OrderSummary[]);
-        })
-      )),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
+        const yesterdayStart = new Date(todayStart);
+        yesterdayStart.setDate(yesterdayStart.getDate() - 1);
 
-    this.orderStatusSummary$ = this.allOrders$.pipe(
-      map(orders => this.buildOrderStatusSummary(orders))
+        return forkJoin({
+          yesterday: this.dashboardService.getOrdersByStatus(
+            store.id,
+            this.toLocalDateTime(yesterdayStart),
+            this.toLocalDateTime(todayStart)
+          ),
+          today: this.dashboardService.getOrdersByStatus(
+            store.id,
+            this.toLocalDateTime(todayStart),
+            this.toLocalDateTime(now)
+          ),
+          products: this.dashboardService.getProductStatus(store.id)
+        }).pipe(
+          map(data => ({
+            yesterday: this.buildOrderChart(data.yesterday),
+            today: this.buildOrderChart(data.today),
+            products: this.buildProductChart(data.products)
+          })),
+          catchError(error => {
+            console.error('Error cargando gráficos del dashboard:', error);
+            return of(this.emptyCharts());
+          })
+        );
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
-  private buildOrderStatusSummary(orders: OrderSummary[]): OrderStatusSummary {
-    const definitions = [
-      { status: 'CREATED', label: 'Creados', color: '#64748b' },
-      { status: 'PREPARING', label: 'Preparando', color: '#d97706' },
-      { status: 'IN_ROUTE', label: 'En ruta', color: '#2563eb' },
-      { status: 'DELIVERED', label: 'Entregados', color: '#16a34a' },
-      { status: 'REJECTED', label: 'Rechazados', color: '#dc2626' },
-      { status: 'CANCELED', label: 'Cancelados', color: '#9ca3af' }
-    ];
-    const total = orders.length;
+  private toLocalDateTime(value: Date): string {
+    const pad = (part: number) => String(part).padStart(2, '0');
+    return `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())}` +
+      `T${pad(value.getHours())}:${pad(value.getMinutes())}:${pad(value.getSeconds())}`;
+  }
+
+  private buildOrderChart(data: DashboardOrderStatus): ChartSummary {
+    return this.buildChart(data.total, 'Pedidos', [
+      { status: 'CREATED', label: 'Creados', count: data.created, color: '#64748b' },
+      { status: 'PREPARING', label: 'Preparando', count: data.preparing, color: '#d97706' },
+      { status: 'IN_ROUTE', label: 'En ruta', count: data.inRoute, color: '#2563eb' },
+      { status: 'DELIVERED', label: 'Entregados', count: data.delivered, color: '#16a34a' },
+      { status: 'REJECTED', label: 'Rechazados', count: data.rejected, color: '#dc2626' },
+      { status: 'CANCELED', label: 'Cancelados', count: data.canceled, color: '#9ca3af' }
+    ]);
+  }
+
+  private buildProductChart(data: DashboardProductStatus): ChartSummary {
+    return this.buildChart(data.total, 'Productos', [
+      { status: 'ACTIVE', label: 'Activos (stock normal)', count: data.active, color: '#16a34a' },
+      { status: 'LOW_STOCK', label: 'Stock bajo', count: data.lowStock, color: '#d97706' },
+      { status: 'INACTIVE', label: 'Inactivos', count: data.inactive, color: '#94a3b8' }
+    ]);
+  }
+
+  private buildChart(
+    total: number,
+    centerLabel: string,
+    definitions: Array<{ status: string; label: string; count: number; color: string }>
+  ): ChartSummary {
     let accumulated = 0;
     const metrics = definitions.map(definition => {
-      const count = orders.filter(order => order.estado === definition.status).length;
-      const percentage = total > 0 ? count / total * 100 : 0;
+      const percentage = total > 0 ? definition.count / total * 100 : 0;
       const start = accumulated;
       accumulated += percentage;
-      return { ...definition, count, percentage, start, end: accumulated };
+      return { ...definition, percentage, start, end: accumulated };
     });
     const visible = metrics.filter(metric => metric.count > 0);
     const gradient = total === 0
       ? 'conic-gradient(#e5e7eb 0% 100%)'
-      : `conic-gradient(${visible.map(metric => `${metric.color} ${metric.start}% ${metric.end}%`).join(', ')})`;
-    return { total, gradient, metrics: visible };
+      : `conic-gradient(${visible.map(metric =>
+          `${metric.color} ${metric.start}% ${metric.end}%`
+        ).join(', ')})`;
+
+    return { total, gradient, metrics: visible, centerLabel };
   }
 
-  getSeverity(status: string) {
-    switch (status) {
-      case 'CREATED': return 'secondary';
-      case 'PREPARING': return 'warn';
-      case 'IN_ROUTE': return 'info';
-      case 'DELIVERED': return 'success';
-      case 'REJECTED':
-      case 'CANCELED': return 'danger';
-      default: return 'secondary';
-    }
-  }
-
-  getStatusLabel(status: string) {
-    switch (status) {
-      case 'CREATED': return 'Creado';
-      case 'PREPARING': return 'Preparando';
-      case 'IN_ROUTE': return 'En ruta';
-      case 'DELIVERED': return 'Entregado';
-      case 'REJECTED': return 'Rechazado';
-      case 'CANCELED': return 'Cancelado';
-      default: return status;
-    }
+  private emptyCharts(): DashboardCharts {
+    const empty = this.buildChart(0, 'Sin datos', []);
+    return { yesterday: empty, today: empty, products: empty };
   }
 }
