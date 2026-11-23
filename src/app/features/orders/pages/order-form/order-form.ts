@@ -18,7 +18,6 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { CustomerService } from '../../../../core/services/customer.service';
 import { Customer } from '../../../../core/models/customer/customer';
 import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error';
-import { Order } from '../../../../core/models/order/order';
 import { buildOrderReceiptHtml } from '../../utils/order-receipt';
 
 type UnknownCustomerOption = {
