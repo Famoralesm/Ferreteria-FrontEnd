@@ -57,7 +57,8 @@ export class OrderForm implements OnInit , OnDestroy {
   selectedProduct?: Product;
   quantity = 1;
   items: {
-  productId: number;
+  productId: number | null;
+  unitId?: number | null;
   productName: string;
   quantity: number;
   unitPrice: number;
@@ -317,6 +318,7 @@ private loadProducts(): void {
 
             return {
               productId: item.productId,
+              unitId: item.unitId ?? null,
               productName: item.productName,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
@@ -368,6 +370,8 @@ private loadProducts(): void {
 
     items: this.items.map(item => ({
       productId: item.productId,
+      unitId: item.unitId ?? null,
+      productName: item.productName,
       quantity: item.quantity,
       unitPrice: item.unitPrice,
       total: item.total
@@ -737,6 +741,7 @@ saveOrder(): void {
 
     items: this.items.map(item => ({
       productId: item.productId,
+      unitId: item.unitId ?? null,
       productName: item.productName,
       quantity: item.quantity,
       unitPrice: item.unitPrice
