@@ -64,18 +64,5 @@ delete(id:number){
 
 }
 
-latest(storeId: number) {
-
-    return this.http.get<OrderSummary[]>(
-        `${this.API}/latest`,
-        {
-            params: {
-                storeId: storeId
-            }
-        }
-    );
-
-}
-
 }
 
