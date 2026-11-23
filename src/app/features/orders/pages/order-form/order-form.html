@@ -125,7 +125,7 @@
           <!-- MÉTODO DE PAGO -->
           <!-- ========================= -->
 
-        <div class="form-field">
+        <div class="form-field payment-method-field">
 
           <label for="paymentMethod">
             Método de pago *
@@ -140,6 +140,40 @@
             placeholder="Seleccione método de pago"
             class="w-full">
           </p-select>
+
+          <div class="payment-state-row">
+            @if (paymentStatus === 'PENDING') {
+              <label class="payment-check">
+                <input
+                  type="checkbox"
+                  [checked]="false"
+                  [disabled]="!id"
+                  (change)="openPaymentConfirmation()">
+                <span>Pago recibido</span>
+              </label>
+              <span class="payment-state-badge payment-pending">PENDIENTE</span>
+              @if (!id) {
+                <small class="payment-hint">Guarda el pedido para confirmar el pago.</small>
+              }
+            } @else if (paymentStatus === 'PAID') {
+              <span class="payment-state-badge payment-paid">PAGADO</span>
+              <small class="payment-audit">
+                Confirmado por {{ paymentReceivedBy?.name || paymentReceivedBy?.email || 'usuario' }}
+                @if (paymentReceivedAt) {
+                  · {{ paymentReceivedAt | date:'dd/MM/yyyy HH:mm' }}
+                }
+              </small>
+            } @else {
+              <span class="payment-state-badge payment-reversed">REVERSADO</span>
+              <small class="payment-audit">
+                Pago reversado por {{ paymentReversedBy?.name || paymentReversedBy?.email || 'usuario' }}
+                @if (paymentReversedAt) {
+                  · {{ paymentReversedAt | date:'dd/MM/yyyy HH:mm' }}
+                }
+              </small>
+            }
+          </div>
+
           <app-field-error [control]="form.get('paymentMethod')" [messages]="{ required: 'Selecciona un método de pago.' }" />
         </div>
 
@@ -516,6 +550,36 @@
   <!-- ========================= -->
   <!-- ACCIONES -->
   <!-- ========================= -->
+
+        @if (paymentDialogVisible) {
+          <div class="payment-dialog-backdrop" role="presentation">
+            <section class="payment-dialog" role="dialog" aria-modal="true" aria-labelledby="payment-dialog-title">
+              <h3 id="payment-dialog-title">Confirmar pago</h3>
+
+              <div class="payment-dialog-row">
+                <span>Método de pago</span>
+                <strong>{{ paymentMethodLabel }}</strong>
+              </div>
+
+              <div class="payment-dialog-amount">
+                <span>Monto recibido</span>
+                <strong>{{ form.get('totalAmount')?.value || 0 | currency:'CLP':'symbol':'1.0-0':'es-CL' }}</strong>
+                <small>Corresponde al total del pedido.</small>
+              </div>
+
+              <p class="payment-dialog-note">
+                Al guardar, se registrará la fecha y el usuario que confirma la recepción del dinero.
+              </p>
+
+              <div class="payment-dialog-actions">
+                <button pButton type="button" label="Cancelar" severity="secondary" [outlined]="true"
+                  [disabled]="paymentSaving" (click)="cancelPaymentConfirmation()"></button>
+                <button pButton type="button" label="Guardar" icon="pi pi-check" severity="success"
+                  [loading]="paymentSaving" [disabled]="paymentSaving" (click)="confirmPayment()"></button>
+              </div>
+            </section>
+          </div>
+        }
 
   <div class="form-actions">
 
