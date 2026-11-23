@@ -137,6 +137,7 @@
             optionLabel="label"
             optionValue="value"
             formControlName="paymentMethod"
+            [disabled]="paymentStatus !== 'PENDING'"
             placeholder="Seleccione método de pago"
             class="w-full">
           </p-select>
@@ -154,6 +155,8 @@
               <span class="payment-state-badge payment-pending">PENDIENTE</span>
               @if (!id) {
                 <small class="payment-hint">Guarda el pedido para confirmar el pago.</small>
+              } @else if (form.dirty || itemsChanged) {
+                <small class="payment-hint">Guarda los cambios del pedido antes de confirmar el pago.</small>
               }
             } @else if (paymentStatus === 'PAID') {
               <label class="payment-check">
@@ -567,7 +570,7 @@
 
               <div class="payment-dialog-amount">
                 <span>Monto recibido</span>
-                <strong>{{ (form.get('totalAmount')?.value || 0) | currency:'CLP':'symbol':'1.0-0':'es-CL' }}</strong>
+                <strong>{{ paymentTotalAmount | currency:'CLP':'symbol':'1.0-0':'es-CL' }}</strong>
                 <small>Corresponde al total del pedido.</small>
               </div>
 
