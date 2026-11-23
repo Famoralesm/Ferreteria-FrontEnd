@@ -131,9 +131,7 @@ export class OrderList {
         printWindow.document.write(this.buildReceiptHtml(order));
         printWindow.document.close();
         printWindow.focus();
-        printWindow.onload = () => {
-          printWindow.print();
-        };
+        window.setTimeout(() => printWindow.print(), 300);
       },
       error: error => {
         console.error('No fue posible cargar el pedido para imprimir:', error);
@@ -177,7 +175,7 @@ table{width:100%;border-collapse:collapse}td{padding:3px 0;vertical-align:top}.r
 @media screen{body{margin:12px auto;padding:10px;border:1px solid #ddd}}
 </style></head><body>
 <h1>FERRETERÍA FC</h1>
-<h2>BOLETA / COMPROBANTE DE PEDIDO</h2>
+<h2>COMPROBANTE DE PEDIDO</h2>
 <p class="center">RUT: XX.XXX.XXX-X</p>
 <p class="center">Dirección: [Dirección de la empresa]</p>
 <p class="center">Teléfono: [Teléfono de contacto]</p>
