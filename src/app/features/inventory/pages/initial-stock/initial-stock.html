@@ -9,10 +9,20 @@
       <ng-template #body let-row><tr>
         <td>{{ row.sku }}</td><td><strong>{{ row.nombreProducto }}</strong>@if (row.marca) { <small class="product-brand">{{ row.marca }}</small> }</td>
         <td>{{ row.stock }} unidades</td>
-        <td><p-inputNumber [(ngModel)]="row.stockInicialDraft" [ngModelOptions]="{standalone: true}" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="4" [disabled]="row.inventarioInicialRegistrado" inputStyleClass="stock-input"></p-inputNumber></td>
+        <td><p-inputNumber [(ngModel)]="row.stockInicialDraft" [ngModelOptions]="{standalone: true}" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="4" [disabled]="row.inventarioInicialRegistrado || row.tieneMovimientos" inputStyleClass="stock-input"></p-inputNumber></td>
         <td><p-inputNumber [(ngModel)]="row.stockMinimoDraft" [ngModelOptions]="{standalone: true}" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="4" inputStyleClass="stock-input"></p-inputNumber></td>
-        <td>@if (row.inventarioInicialRegistrado) { <span class="status status-done">Inicializado</span> } @else { <span class="status status-pending">Pendiente</span> }</td>
-        <td class="actions-column">@if (row.inventarioInicialRegistrado) { <button pButton type="button" icon="pi pi-save" label="Guardar mínimo" severity="secondary" size="small" [loading]="isSaving(row)" (click)="updateMinimumStock(row)"></button> } @else { <button pButton type="button" icon="pi pi-check" label="Registrar inicial" severity="success" size="small" [loading]="isSaving(row)" (click)="saveInitialStock(row)"></button> }</td>
+        <td>
+          @if (row.inventarioInicialRegistrado) { <span class="status status-done">Inicializado</span> }
+          @else if (row.tieneMovimientos) { <span class="status status-pending">Con movimientos previos</span> }
+          @else { <span class="status status-pending">Pendiente</span> }
+        </td>
+        <td class="actions-column">
+          @if (row.inventarioInicialRegistrado || row.tieneMovimientos) {
+            <button pButton type="button" icon="pi pi-save" label="Guardar mínimo" severity="secondary" size="small" [loading]="isSaving(row)" (click)="updateMinimumStock(row)"></button>
+          } @else {
+            <button pButton type="button" icon="pi pi-check" label="Registrar inicial" severity="success" size="small" [loading]="isSaving(row)" (click)="saveInitialStock(row)"></button>
+          }
+        </td>
       </tr></ng-template>
       <ng-template #emptymessage><tr><td colspan="7" class="empty-message">{{ searchTerm ? 'No hay productos que coincidan con la búsqueda.' : 'No hay productos para esta sucursal.' }}</td></tr></ng-template>
     </p-table>
