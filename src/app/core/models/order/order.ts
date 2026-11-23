@@ -17,6 +17,18 @@ export interface Order {
 
   paymentMethod: string;
 
+  paymentStatus?: 'PENDING' | 'PAID' | 'REVERSED';
+
+  paymentReceivedAt?: string | null;
+
+  paymentReceivedBy?: UserSummary | null;
+
+  paymentReversedAt?: string | null;
+
+  paymentReversedBy?: UserSummary | null;
+
+  paymentReversalReason?: string | null;
+
   status: string;
   
   statusChangedAt: string;
