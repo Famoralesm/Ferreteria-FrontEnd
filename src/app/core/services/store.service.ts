@@ -4,13 +4,14 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 import { Store } from '../models/store/store';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StoreService {
 
-  private readonly api = 'http://localhost:8080/api/stores';
+  private readonly api = `${environment.apiUrl}/stores`;
   private readonly STORAGE_KEY = 'fc_selected_store';
 
   private readonly selectedStoreSubject =
