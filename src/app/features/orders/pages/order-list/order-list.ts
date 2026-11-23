@@ -9,7 +9,6 @@ import { OrderTable } from '../../components/order-table/order-table';
 import { OrderToolbar } from '../../components/order-toolbar/order-toolbar';
 import { OrderService } from '../../../../core/services/order.service';
 import { OrderSummary } from '../../../../core/models/order/order-summary';
-import { Order } from '../../../../core/models/order/order';
 import { buildOrderReceiptHtml } from '../../utils/order-receipt';
 
 interface StatusThreshold {
