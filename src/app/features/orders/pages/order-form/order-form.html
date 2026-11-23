@@ -147,7 +147,7 @@
                 <input
                   type="checkbox"
                   [checked]="false"
-                  [disabled]="!id"
+                  [disabled]="!canConfirmPayment"
                   (change)="openPaymentConfirmation()">
                 <span>Pago recibido</span>
               </label>
@@ -156,6 +156,10 @@
                 <small class="payment-hint">Guarda el pedido para confirmar el pago.</small>
               }
             } @else if (paymentStatus === 'PAID') {
+              <label class="payment-check">
+                <input type="checkbox" [checked]="true" disabled>
+                <span>Pago recibido</span>
+              </label>
               <span class="payment-state-badge payment-paid">PAGADO</span>
               <small class="payment-audit">
                 Confirmado por {{ paymentReceivedBy?.name || paymentReceivedBy?.email || 'usuario' }}
@@ -563,7 +567,7 @@
 
               <div class="payment-dialog-amount">
                 <span>Monto recibido</span>
-                <strong>{{ form.get('totalAmount')?.value || 0 | currency:'CLP':'symbol':'1.0-0':'es-CL' }}</strong>
+                <strong>{{ (form.get('totalAmount')?.value || 0) | currency:'CLP':'symbol':'1.0-0':'es-CL' }}</strong>
                 <small>Corresponde al total del pedido.</small>
               </div>
 
