@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import {  Product} from '../models/product/product';
 import {  CreateProductRequest} from '../models/product/create-product-request';
 import {  UpdateProductRequest} from '../models/product/update-product-request';
+import { environment } from '../../../environments/environment';
 
 
 @Injectable({
@@ -13,7 +14,7 @@ import {  UpdateProductRequest} from '../models/product/update-product-request';
 })
 export class ProductService {
 
-  private readonly api = 'http://localhost:8080/api/products';
+  private readonly api = `${environment.apiUrl}/products`;
 
   constructor(private http: HttpClient) {}
 
