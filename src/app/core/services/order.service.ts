@@ -47,6 +47,13 @@ create(request:CreateOrderRequest){
 
 }
 
+confirmPayment(id: number) {
+    return this.http.post<Order>(
+        `${this.API}/${id}/payment/confirm`,
+        {}
+    );
+}
+
 update(id:number,request:UpdateOrderRequest){
 
     return this.http.put<Order>(
