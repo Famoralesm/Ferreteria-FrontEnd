@@ -6,6 +6,104 @@
     </div>
   </div>
 
+  @if (charts$ | async; as charts) {
+    <section class="dashboard-charts-section">
+      <div class="dashboard-section-heading">
+        <div>
+          <span class="section-kicker">ACTIVIDAD OPERACIONAL</span>
+          <h2>Resumen de actividad</h2>
+          <p>Distribución por estado en la sucursal seleccionada</p>
+        </div>
+      </div>
+
+      <div class="dashboard-charts-grid">
+        <article class="dashboard-section">
+          <div class="chart-heading">
+            <h3>Pedidos de ayer</h3>
+            <p>Desde las 00:00 hasta el cierre del día</p>
+          </div>
+          <div class="page-card status-chart-card">
+            <div class="status-donut" [style.background]="charts.yesterday.gradient">
+              <div class="status-donut-center">
+                <strong>{{ charts.yesterday.total }}</strong>
+                <small>Pedidos</small>
+              </div>
+            </div>
+            <div class="status-legend">
+              @for (metric of charts.yesterday.metrics; track metric.status) {
+                <div class="status-legend-item">
+                  <span class="status-color" [style.background]="metric.color"></span>
+                  <span class="status-name">{{ metric.label }}</span>
+                  <strong>{{ metric.count }}</strong>
+                  <small>{{ metric.percentage | number:'1.0-0' }}%</small>
+                </div>
+              }
+              @if (charts.yesterday.total === 0) {
+                <p class="empty-chart-message">No hubo pedidos ayer.</p>
+              }
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-section">
+          <div class="chart-heading">
+            <h3>Pedidos de hoy</h3>
+            <p>Desde las 00:00 hasta ahora</p>
+          </div>
+          <div class="page-card status-chart-card">
+            <div class="status-donut" [style.background]="charts.today.gradient">
+              <div class="status-donut-center">
+                <strong>{{ charts.today.total }}</strong>
+                <small>Pedidos</small>
+              </div>
+            </div>
+            <div class="status-legend">
+              @for (metric of charts.today.metrics; track metric.status) {
+                <div class="status-legend-item">
+                  <span class="status-color" [style.background]="metric.color"></span>
+                  <span class="status-name">{{ metric.label }}</span>
+                  <strong>{{ metric.count }}</strong>
+                  <small>{{ metric.percentage | number:'1.0-0' }}%</small>
+                </div>
+              }
+              @if (charts.today.total === 0) {
+                <p class="empty-chart-message">Todavía no hay pedidos hoy.</p>
+              }
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-section">
+          <div class="chart-heading">
+            <h3>Estado de productos</h3>
+            <p>Inventario de la sucursal seleccionada</p>
+          </div>
+          <div class="page-card status-chart-card">
+            <div class="status-donut" [style.background]="charts.products.gradient">
+              <div class="status-donut-center">
+                <strong>{{ charts.products.total }}</strong>
+                <small>Productos</small>
+              </div>
+            </div>
+            <div class="status-legend">
+              @for (metric of charts.products.metrics; track metric.status) {
+                <div class="status-legend-item">
+                  <span class="status-color" [style.background]="metric.color"></span>
+                  <span class="status-name">{{ metric.label }}</span>
+                  <strong>{{ metric.count }}</strong>
+                  <small>{{ metric.percentage | number:'1.0-0' }}%</small>
+                </div>
+              }
+              @if (charts.products.total === 0) {
+                <p class="empty-chart-message">No hay productos asociados a esta sucursal.</p>
+              }
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  }
+
   @let stats = (dashboard$ | async);
   @if (stats) {
     <section class="dashboard-stats-section">
@@ -13,7 +111,7 @@
         <div>
           <span class="section-kicker">INDICADORES</span>
           <h2>Resumen general</h2>
-          <p>Datos entregados por el servidor</p>
+          <p>Indicadores generales entregados por el servidor</p>
         </div>
       </div>
       <div class="stats">
@@ -24,78 +122,4 @@
       </div>
     </section>
   }
-
-  <div class="dashboard-content-grid">
-    <section class="dashboard-section dashboard-status-section">
-      <div class="dashboard-section-heading">
-        <div>
-          <span class="section-kicker">ESTADO OPERACIONAL</span>
-          <h2>Distribución de pedidos</h2>
-          <p>Todos los pedidos de la sucursal seleccionada</p>
-        </div>
-      </div>
-      @if (orderStatusSummary$ | async; as summary) {
-        <div class="page-card status-chart-card">
-          <div class="status-donut" [style.background]="summary.gradient">
-            <div class="status-donut-center">
-              <strong>{{ summary.total }}</strong>
-              <small>Pedidos</small>
-            </div>
-          </div>
-          <div class="status-legend">
-            @for (metric of summary.metrics; track metric.status) {
-              <div class="status-legend-item">
-                <span class="status-color" [style.background]="metric.color"></span>
-                <span class="status-name">{{ metric.label }}</span>
-                <strong>{{ metric.count }}</strong>
-                <small>{{ metric.percentage | number:'1.0-0' }}%</small>
-              </div>
-            }
-            @if (summary.total === 0) {
-              <p class="empty-chart-message">Todavía no hay pedidos registrados en esta sucursal.</p>
-            }
-          </div>
-        </div>
-      }
-    </section>
-
-    <section class="dashboard-section dashboard-orders-section">
-      <div class="dashboard-section-heading">
-        <div>
-          <span class="section-kicker">ACTIVIDAD RECIENTE</span>
-          <h2>Últimos pedidos</h2>
-          <p>Seguimiento de los pedidos más recientes</p>
-        </div>
-        <div class="order-count"><i class="pi pi-shopping-cart"></i> Últimos registros</div>
-      </div>
-
-      @if (orders$ | async; as orders) {
-        <div class="page-card dashboard-orders">
-          <p-table [value]="orders" [paginator]="true" [rows]="5" responsiveLayout="scroll">
-            <ng-template #header>
-              <tr>
-                <th>Pedido</th>
-                <th>Cliente</th>
-                <th>Fecha</th>
-                <th>Total</th>
-                <th>Estado</th>
-              </tr>
-            </ng-template>
-            <ng-template #body let-order>
-              <tr>
-                <td><strong>#{{ order.id }}</strong></td>
-                <td>{{ order.cliente }}</td>
-                <td>{{ order.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
-                <td><strong>{{ order.total | currency:'CLP':'symbol':'1.0-0':'es-CL' }}</strong></td>
-                <td><p-tag [severity]="getSeverity(order.estado)" [value]="getStatusLabel(order.estado)"></p-tag></td>
-              </tr>
-            </ng-template>
-            <ng-template #emptymessage>
-              <tr><td colspan="5" class="empty-chart-message">No hay pedidos para mostrar.</td></tr>
-            </ng-template>
-          </p-table>
-        </div>
-      }
-    </section>
-  </div>
 </div>
