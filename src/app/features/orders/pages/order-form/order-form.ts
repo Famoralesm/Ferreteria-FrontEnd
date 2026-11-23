@@ -511,6 +511,14 @@ private loadProducts(): void {
 
   }
 
+  get canConfirmPayment(): boolean {
+    const orderStatus = this.form.get('status')?.value;
+    return !!this.id
+      && this.paymentStatus === 'PENDING'
+      && orderStatus !== 'CANCELED'
+      && orderStatus !== 'REJECTED';
+  }
+
   get isInRoute(): boolean {
     return this.form.get('status')?.value === 'IN_ROUTE';
   }
