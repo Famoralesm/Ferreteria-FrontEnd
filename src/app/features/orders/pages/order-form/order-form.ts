@@ -81,6 +81,8 @@ export class OrderForm implements OnInit , OnDestroy {
   paymentReversalReason?: string | null;
   paymentDialogVisible = false;
   paymentSaving = false;
+  paymentTotalAmount = 0;
+  itemsChanged = false;
 
   customers: Customer[] = [];
   customerOptions: CustomerOption[] = [];
@@ -321,6 +323,8 @@ private loadProducts(): void {
 
           });
           this.paymentStatus = order.paymentStatus ?? 'PENDING';
+          this.paymentTotalAmount = order.totalAmount ?? 0;
+          this.itemsChanged = false;
           this.paymentReceivedAt = order.paymentReceivedAt ?? null;
           this.paymentReceivedBy = order.paymentReceivedBy ?? null;
           this.paymentReversedAt = order.paymentReversedAt ?? null;
@@ -516,7 +520,9 @@ private loadProducts(): void {
     return !!this.id
       && this.paymentStatus === 'PENDING'
       && orderStatus !== 'CANCELED'
-      && orderStatus !== 'REJECTED';
+      && orderStatus !== 'REJECTED'
+      && !this.form.dirty
+      && !this.itemsChanged;
   }
 
   get isInRoute(): boolean {
@@ -585,6 +591,7 @@ private loadProducts(): void {
   this.selectedProduct = undefined;
   this.quantity = 1;
   this.itemsTouched = false;
+  this.itemsChanged = true;
 
   this.updateTotal();
 
@@ -604,6 +611,7 @@ removeProduct(index: number): void {
   this.items.splice(index, 1);
 
   this.items = [...this.items];
+  this.itemsChanged = true;
 
   this.updateTotal();
 
