@@ -1,9 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Dashboard } from '../models/dashboard';
+import {
+  Dashboard,
+  DashboardOrderStatus,
+  DashboardProductStatus
+} from '../models/dashboard';
 import { environment } from '../../../environments/environment';
-import { OrderSummary } from '../models/order/order-summary';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
@@ -14,16 +17,20 @@ export class DashboardService {
     return this.http.get<Dashboard>(this.api);
   }
 
-  getLatestOrders(storeId: number): Observable<OrderSummary[]> {
-    return this.http.get<OrderSummary[]>(
-      `${environment.apiUrl}/orders/latest`,
-      { params: { storeId } }
+  getOrdersByStatus(
+    storeId: number,
+    from: string,
+    to: string
+  ): Observable<DashboardOrderStatus> {
+    return this.http.get<DashboardOrderStatus>(
+      `${this.api}/orders-by-status`,
+      { params: { storeId, from, to } }
     );
   }
 
-  getAllOrders(storeId: number): Observable<OrderSummary[]> {
-    return this.http.get<OrderSummary[]>(
-      `${environment.apiUrl}/orders/all`,
+  getProductStatus(storeId: number): Observable<DashboardProductStatus> {
+    return this.http.get<DashboardProductStatus>(
+      `${this.api}/products-status`,
       { params: { storeId } }
     );
   }
