@@ -1,1 +1,66 @@
-<p>order-detail works!</p>
+<div class="page-shell order-detail-page">
+  <div class="page-header">
+    <div class="page-header-content">
+      <span class="page-kicker">PEDIDOS</span>
+      <p>Detalle y seguimiento del pedido</p>
+    </div>
+    <div class="header-actions">
+      <button pButton type="button" severity="secondary" icon="pi pi-arrow-left" label="Volver" (click)="back()"></button>
+      @if (order && order.status !== 'IN_ROUTE' && order.status !== 'DELIVERED' && order.status !== 'CANCELED' && order.status !== 'REJECTED') {
+        <button pButton type="button" severity="warn" icon="pi pi-pencil" label="Editar pedido" (click)="edit()"></button>
+      }
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="page-card">Cargando detalle del pedido...</div>
+  } @else if (errorMessage) {
+    <div class="page-card error-message">{{ errorMessage }}</div>
+  } @else if (order) {
+    <section class="page-card detail-section">
+      <div class="detail-heading">
+        <div><span class="page-kicker">PEDIDO #{{ order.id }}</span><h2>{{ order.customerName }}</h2></div>
+        <p-tag [value]="statusLabel(order.status)" [severity]="order.status === 'DELIVERED' ? 'success' : order.status === 'CANCELED' || order.status === 'REJECTED' ? 'danger' : 'info'"></p-tag>
+      </div>
+      <div class="detail-grid">
+        <div><span>Número interno</span><strong>{{ order.orderNumber }}</strong></div>
+        <div><span>Fecha de creación</span><strong>{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</strong></div>
+        <div><span>Último cambio de estado</span><strong>{{ order.statusChangedAt | date:'dd/MM/yyyy HH:mm' }}</strong></div>
+        <div><span>Fecha de entrega</span><strong>{{ order.deliveryDate ? (order.deliveryDate | date:'dd/MM/yyyy') : 'No informada' }}</strong></div>
+        <div><span>Teléfono</span><strong>{{ order.phone || 'No informado' }}</strong></div>
+        <div><span>Dirección</span><strong>{{ order.address || 'No informada' }}</strong></div>
+        <div><span>Medio de pago</span><strong>{{ order.paymentMethod }}</strong></div>
+        <div><span>Sucursal ID</span><strong>{{ order.storeId }}</strong></div>
+        <div><span>Registrado por</span><strong>{{ order.createdBy?.name || order.createdBy?.email || 'No informado' }}</strong></div>
+      </div>
+      @if (order.wazeLink) {
+        <a [href]="order.wazeLink" target="_blank" rel="noopener noreferrer" class="map-link"><i class="pi pi-map-marker"></i> Abrir dirección en Waze</a>
+      }
+    </section>
+
+    <section class="page-card detail-section">
+      <h3>Productos del pedido</h3>
+      <div class="table-responsive">
+        <table class="detail-table">
+          <thead><tr><th>Producto</th><th>Presentación</th><th>Cantidad</th><th>Factor</th><th>Precio unitario</th><th>Subtotal</th></tr></thead>
+          <tbody>
+            @for (item of order.items; track trackByItem($index, item)) {
+              <tr>
+                <td>{{ item.productName }}</td>
+                <td>{{ item.unitName || 'Unidad base' }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.conversionFactor ?? 1 }}</td>
+                <td>{{ item.unitPrice | currency:'CLP':'symbol':'1.0-0':'es-CL' }}</td>
+                <td>{{ item.totalPrice | currency:'CLP':'symbol':'1.0-0':'es-CL' }}</td>
+              </tr>
+            }
+          </tbody>
+          <tfoot><tr><td colspan="5">TOTAL DEL PEDIDO</td><td>{{ order.totalAmount | currency:'CLP':'symbol':'1.0-0':'es-CL' }}</td></tr></tfoot>
+        </table>
+      </div>
+      @if (order.notes) {
+        <div class="notes"><strong>Observaciones</strong><p>{{ order.notes }}</p></div>
+      }
+    </section>
+  }
+</div>
