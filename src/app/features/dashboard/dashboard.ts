@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StatCard } from '../../shared/components/stat-card/stat-card';
 import { OrderSummary } from '../../core/models/order/order-summary';
-import { Dashboard } from '../../core/models/dashboard';
+import { Dashboard as DashboardData } from '../../core/models/dashboard';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
@@ -32,7 +32,7 @@ interface OrderStatusSummary {
   styleUrl: './dashboard.scss'
 })
 export class Dashboard {
-  readonly dashboard$: Observable<Dashboard>;
+  readonly dashboard$: Observable<DashboardData>;
   readonly orders$: Observable<OrderSummary[]>;
   readonly allOrders$: Observable<OrderSummary[]>;
   readonly orderStatusSummary$: Observable<OrderStatusSummary>;
