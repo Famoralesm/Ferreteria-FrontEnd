@@ -508,3 +508,73 @@ form {
 }
 
 .order-layout > .form-actions { grid-column: 1 / -1; }
+
+
+/* Ajustes de distribución solicitados para la ficha del pedido */
+.order-number-field {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.order-number-field label {
+  white-space: nowrap;
+}
+.order-number-value {
+  white-space: nowrap;
+}
+.product-selector {
+  display: grid;
+  grid-template-columns: 350px 100px minmax(110px, 1fr);
+  align-items: end;
+  gap: 12px;
+  width: 100%;
+}
+.product-selector > .form-field {
+  min-width: 0;
+  margin: 0;
+}
+.product-selector .product-field {
+  width: 350px;
+  max-width: 100%;
+}
+.product-selector .quantity-field {
+  width: 100px;
+}
+.product-selector .quantity-field p-inputnumber,
+.product-selector .quantity-field .p-inputnumber {
+  width: 100%;
+}
+.product-selector .add-product-button {
+  display: flex;
+  align-items: flex-end;
+  min-width: 0;
+  padding-bottom: 0;
+}
+.product-selector .add-product-button button {
+  width: 100%;
+  justify-content: center;
+}
+@media (max-width: 900px) {
+  .product-selector {
+    grid-template-columns: minmax(0, 1fr) 100px;
+  }
+  .product-selector .product-field {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+  .product-selector .add-product-button {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 480px) {
+  .product-selector {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .product-selector .product-field,
+  .product-selector .quantity-field,
+  .product-selector .add-product-button {
+    grid-column: auto;
+    width: 100%;
+  }
+}
