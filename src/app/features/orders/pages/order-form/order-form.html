@@ -206,6 +206,21 @@
           @if (productSelectionError) {
             <small class="field-error">Selecciona un producto antes de agregarlo.</small>
           }
+          @if (selectedProduct) {
+            <div class="selected-product-stock"
+              [class.stock-low-card]="selectedProduct.stock <= (selectedProduct.stockMinimo ?? 0)"
+              [class.stock-ok-card]="selectedProduct.stock > (selectedProduct.stockMinimo ?? 0)">
+              <div>
+                <strong>{{ selectedProduct.name }}</strong>
+                <small>Existencias en la sucursal seleccionada</small>
+                <small>Stock mínimo: {{ selectedProduct.stockMinimo ?? 0 }} unidades</small>
+              </div>
+              <div class="selected-stock-number">
+                {{ selectedProduct.stock }}
+                <small>unidades</small>
+              </div>
+            </div>
+          }
         </div>
         <div class="form-field quantity-field">
           <label for="quantity">Cantidad</label>
