@@ -497,7 +497,7 @@ form {
 .order-number-value { font-size: 1.35rem; line-height: 1.4; font-weight: 800; letter-spacing: .02em; color: var(--text-color, #1f2937); }
 .delivery-payment-error { margin-top: -8px; }
 .order-column-products .form-field { width: 100%; }
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
   .order-layout { grid-template-columns: minmax(240px, 1fr) minmax(240px, 1fr); column-gap: 32px; }
   .order-column-products { grid-column: 1 / -1; }
 }
