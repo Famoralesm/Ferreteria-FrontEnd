@@ -32,7 +32,7 @@
           </div>
           <div class="editor-actions">
             <button pButton type="button" [label]="measureEditingId === null ? 'Agregar unidad' : 'Guardar cambios'"
-              icon="pi pi-check" [disabled]="measureSaving" (click)="saveMeasureUnit()"></button>
+              icon="pi pi-check" [disabled]="measureSaving" [loading]="measureSaving" (click)="saveMeasureUnit()"></button>
             @if (measureEditingId !== null) {
               <button pButton type="button" label="Cancelar" severity="secondary" [outlined]="true" (click)="resetMeasureForm()"></button>
             }
@@ -146,7 +146,7 @@
           <label class="toggle-row"><input type="checkbox" [(ngModel)]="form.purchaseAllowed"><span>Permitir compras con esta presentación</span></label>
           <label class="toggle-row"><input type="checkbox" [(ngModel)]="form.saleAllowed"><span>Permitir ventas con esta presentación</span></label>
           <div class="editor-actions">
-            <button pButton type="button" label="Guardar presentación" icon="pi pi-check" severity="success" [disabled]="saving" (click)="save()"></button>
+            <button pButton type="button" label="Guardar presentación" icon="pi pi-check" severity="success" [disabled]="saving" [loading]="saving" (click)="save()"></button>
             @if (editingId !== null) { <button pButton type="button" label="Cancelar edición" severity="secondary" [outlined]="true" (click)="resetForm()"></button> }
           </div>
         } @else {

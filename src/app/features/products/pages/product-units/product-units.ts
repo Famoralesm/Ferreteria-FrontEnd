@@ -127,17 +127,23 @@ export class ProductUnits implements OnInit, OnDestroy {
     const wasCreating = this.measureEditingId === null;
     operation.subscribe({
       next: saved => {
-        this.measureSaving = false;
-        this.measureUnits = [...this.measureUnits.filter(unit => unit.id !== saved.id), saved]
-          .sort((a, b) => a.name.localeCompare(b.name, 'es'));
-        this.resetMeasureForm();
-        this.measurePage = 0;
-        this.notificationService.success(wasCreating ? 'Unidad de medida creada.' : 'Unidad de medida actualizada.');
+        setTimeout(() => {
+          this.measureSaving = false;
+          this.measureUnits = [...this.measureUnits.filter(unit => unit.id !== saved.id), saved]
+            .sort((a, b) => a.name.localeCompare(b.name, 'es'));
+          this.resetMeasureForm();
+          this.measurePage = 0;
+          this.cdr.detectChanges();
+          this.notificationService.success(wasCreating ? 'Unidad de medida creada.' : 'Unidad de medida actualizada.');
+        });
       },
       error: err => {
-        this.measureSaving = false;
-        console.error('Error guardando unidad de medida:', err);
-        this.notificationService.error(err?.error?.message ?? 'No fue posible guardar la unidad de medida.');
+        setTimeout(() => {
+          this.measureSaving = false;
+          this.cdr.detectChanges();
+          console.error('Error guardando unidad de medida:', err);
+          this.notificationService.error(err?.error?.message ?? 'No fue posible guardar la unidad de medida.');
+        });
       }
     });
   }
@@ -182,14 +188,32 @@ export class ProductUnits implements OnInit, OnDestroy {
     this.selectedProduct = product;
     this.units = [];
     this.resetForm();
-    if (!product) return;
+    if (!product) {
+      this.loading = false;
+      return;
+    }
+    this.loadProductUnits(product.id);
+  }
+
+  private loadProductUnits(productId: number): void {
     this.loading = true;
-    this.productUnitService.findByProduct(product.id).subscribe({
-      next: units => { this.units = units; this.loading = false; },
+    this.productUnitService.findByProduct(productId).subscribe({
+      next: units => {
+        setTimeout(() => {
+          if (this.selectedProduct?.id !== productId) return;
+          this.units = units ?? [];
+          this.loading = false;
+          this.cdr.detectChanges();
+        });
+      },
       error: err => {
-        console.error('Error cargando presentaciones:', err);
-        this.loading = false;
-        this.notificationService.error('No fue posible cargar las presentaciones del producto.');
+        setTimeout(() => {
+          if (this.selectedProduct?.id !== productId) return;
+          this.loading = false;
+          this.cdr.detectChanges();
+          console.error('Error cargando presentaciones:', err);
+          this.notificationService.error('No fue posible cargar las presentaciones del producto.');
+        });
       }
     });
   }
@@ -210,20 +234,29 @@ export class ProductUnits implements OnInit, OnDestroy {
       this.notificationService.warning('Completa código, nombre y un factor de conversión mayor que cero.');
       return;
     }
+    const productId = this.selectedProduct.id;
+    const editingId = this.editingId;
     this.saving = true;
-    const operation = this.editingId === null
-      ? this.productUnitService.create(this.selectedProduct.id, request)
-      : this.productUnitService.update(this.selectedProduct.id, this.editingId, request);
+    const operation = editingId === null
+      ? this.productUnitService.create(productId, request)
+      : this.productUnitService.update(productId, editingId, request);
     operation.subscribe({
       next: () => {
-        this.saving = false;
-        this.notificationService.success(this.editingId === null ? 'Presentación creada.' : 'Presentación actualizada.');
-        this.onProductChange(this.selectedProduct);
+        setTimeout(() => {
+          this.saving = false;
+          this.resetForm();
+          this.cdr.detectChanges();
+          this.notificationService.success(editingId === null ? 'Presentación creada.' : 'Presentación actualizada.');
+          this.loadProductUnits(productId);
+        });
       },
       error: err => {
-        this.saving = false;
-        console.error('Error guardando presentación:', err);
-        this.notificationService.error(err?.error?.message ?? 'No fue posible guardar la presentación.');
+        setTimeout(() => {
+          this.saving = false;
+          this.cdr.detectChanges();
+          console.error('Error guardando presentación:', err);
+          this.notificationService.error(err?.error?.message ?? 'No fue posible guardar la presentación.');
+        });
       }
     });
   }
