@@ -1,0 +1,29 @@
+:host { display: block; min-width: 0; }
+.units-page { padding: 28px; }
+.form-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.form-field label { color: #34495e; font-size: 14px; font-weight: 600; }
+.form-field input, .form-field p-select { width: 100%; box-sizing: border-box; }
+.product-picker { max-width: 520px; }
+.product-option { display: flex; flex-direction: column; gap: 3px; }
+.product-option small, .section-heading p, .form-field small { color: #718096; font-size: 12px; }
+.units-layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.8fr); gap: 28px; margin-top: 30px; align-items: start; }
+.units-list, .unit-editor { min-width: 0; }
+.section-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
+.section-heading h3, .unit-editor h3 { margin: 0 0 6px; color: #243447; font-size: 17px; }
+.section-heading p { margin: 0; }
+.units-count { border-radius: 20px; padding: 5px 11px; background: #eef2f7; font-weight: 700; }
+.units-table-wrap { overflow-x: auto; }
+.units-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.units-table th, .units-table td { padding: 12px 10px; border-bottom: 1px solid #e8edf2; text-align: left; white-space: nowrap; }
+.units-table th { color: #64748b; font-weight: 700; background: #f8fafc; }
+.row-actions { display: flex; gap: 4px; }
+.status { display: inline-block; padding: 4px 9px; border-radius: 20px; color: #166534; background: #dcfce7; font-size: 11px; font-weight: 700; }
+.status-off { color: #64748b; background: #e2e8f0; }
+.unit-editor { display: flex; flex-direction: column; gap: 17px; padding: 20px; border: 1px solid #e5eaf0; border-radius: 12px; background: #fafbfc; }
+.unit-editor .form-field input { padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 7px; font: inherit; background: #fff; }
+.toggle-row { display: flex; align-items: center; gap: 10px; color: #34495e; font-size: 13px; }
+.toggle-row input { width: 17px; height: 17px; }
+.editor-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.empty-state { padding: 22px; color: #718096; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 9px; }
+@media (max-width: 900px) { .units-layout { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .units-page { padding: 16px; } }
