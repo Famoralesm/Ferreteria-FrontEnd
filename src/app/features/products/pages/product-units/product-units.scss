@@ -135,23 +135,38 @@
 }
 
 
-/* Pestañas para separar el catálogo común de las presentaciones por producto. */
-.units-tabs { display: block; min-width: 0; }
-.units-tabs p-tablist { border-bottom: 1px solid #e5eaf0; }
-.units-tabs p-tab { font-size: 14px; font-weight: 600; }
-.units-tabs p-tabpanel { display: block; padding-top: 24px; }
-.measure-catalog { margin-bottom: 0; }
-.presentation-toolbar {
-  display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.8fr);
-  gap: 28px;
-  align-items: start;
-  margin-bottom: 20px;
+/* Pestañas funcionales: solo se renderiza el panel seleccionado. */
+.units-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #e5eaf0;
+  margin-bottom: 24px;
 }
-.presentation-toolbar .product-picker { max-width: 520px; }
-.editor-title { margin: 0; color: #243447; font-size: 17px; line-height: 20px; }
-.units-layout { margin-top: 0; }
+.units-tabs button {
+  appearance: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: #64748b;
+  padding: 12px 16px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.units-tabs button:hover { color: #243447; background: #f8fafc; }
+.units-tabs button.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+.measure-catalog { margin-bottom: 0; }
+.units-layout { margin-top: 20px; }
+.units-layout > .units-list { display: flex; flex-direction: column; gap: 24px; }
+.units-layout > .units-list .section-heading { margin-top: 0; }
+.product-picker { max-width: 520px; }
+.editor-title { margin: 0 0 2px; color: #243447; font-size: 17px; line-height: 20px; }
 .unit-editor { padding-top: 20px; }
 @media (max-width: 900px) {
-  .presentation-toolbar { grid-template-columns: 1fr; gap: 12px; }
+  .units-tabs { overflow-x: auto; }
+  .units-tabs button { white-space: nowrap; }
 }

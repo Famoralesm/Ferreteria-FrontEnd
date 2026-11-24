@@ -7,13 +7,17 @@
   </div>
 
   <div class="page-card units-page">
-    <p-tabs [(value)]="activeTab" class="units-tabs">
-      <p-tablist>
-        <p-tab value="catalog">Catálogo de unidades de medida</p-tab>
-        <p-tab value="presentations">Presentaciones configuradas</p-tab>
-      </p-tablist>
-      <p-tabpanels>
-        <p-tabpanel value="catalog">
+    <div class="units-tabs" role="tablist" aria-label="Secciones de unidades">
+      <button type="button" role="tab" [attr.aria-selected]="activeTab === 'catalog'"
+        [class.active]="activeTab === 'catalog'" (click)="activeTab = 'catalog'">
+        Catálogo de unidades de medida
+      </button>
+      <button type="button" role="tab" [attr.aria-selected]="activeTab === 'presentations'"
+        [class.active]="activeTab === 'presentations'" (click)="activeTab = 'presentations'">
+        Presentaciones configuradas
+      </button>
+    </div>
+    @if (activeTab === 'catalog') {
     <section class="measure-catalog">
       <div class="section-heading">
         <div>
@@ -83,22 +87,18 @@
         </div>
       </div>
     </section>
-        </p-tabpanel>
-        <p-tabpanel value="presentations">
-    <div class="presentation-toolbar">
-      <div class="form-field product-picker">
-      <label for="unitProduct">Producto</label>
-      <p-select inputId="unitProduct" [options]="products" optionLabel="name" [(ngModel)]="selectedProduct"
-        (onChange)="onProductChange($event.value)" [filter]="true" filterBy="name,sku"
-        placeholder="Selecciona un producto" [loading]="productsLoading" [showClear]="true" class="w-full">
-        <ng-template #item let-product><div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div></ng-template>
-      </p-select>
-      </div>
-      <h3 class="editor-title">{{ editingId === null ? 'Nueva presentación' : 'Editar presentación' }}</h3>
-    </div>
-
+    }
+    @if (activeTab === 'presentations') {
     <div class="units-layout">
-      <section class="units-list">
+      <div class="units-list">
+        <div class="form-field product-picker">
+          <label for="unitProduct">Producto</label>
+          <p-select inputId="unitProduct" [options]="products" optionLabel="name" [(ngModel)]="selectedProduct"
+            (onChange)="onProductChange($event.value)" [filter]="true" filterBy="name,sku"
+            placeholder="Selecciona un producto" [loading]="productsLoading" [showClear]="true" class="w-full">
+            <ng-template #item let-product><div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div></ng-template>
+          </p-select>
+        </div>
         @if (selectedProduct) {
           <div class="section-heading">
             <div><h3>Presentaciones configuradas</h3><p>{{ selectedProduct.name }} · Unidad base: {{ selectedProduct.baseUnitName || "Sin definir" }}</p></div>
@@ -131,8 +131,9 @@
         } @else {
           <div class="empty-state">Selecciona un producto para consultar sus presentaciones configuradas.</div>
         }
-      </section>
+      </div>
       <section class="unit-editor">
+        <h3 class="editor-title">{{ editingId === null ? 'Nueva presentación' : 'Editar presentación' }}</h3>
         @if (selectedProduct) {
           <div class="form-field">
             <label for="unitCode">Código *</label>
@@ -162,8 +163,6 @@
         }
       </section>
     </div>
-        </p-tabpanel>
-      </p-tabpanels>
-    </p-tabs>
+    }
   </div>
 </div>
