@@ -267,7 +267,7 @@
   optionLabel="name"
   [(ngModel)]="selectedProduct"
   [ngModelOptions]="{standalone: true}"
-  [disabled]="isInRoute || paymentStatus !== 'PENDING'
+  [disabled]="isInRoute || paymentStatus !== 'PENDING'"
   placeholder="Seleccione un producto"
   class="w-full"
   [filter]="true"
@@ -344,7 +344,7 @@
           </label>
           <p-inputNumber 
             [(ngModel)]="quantity" 
-            [disabled]="isInRoute"
+            [disabled]="isInRoute || paymentStatus !== 'PENDING'"
             mode="decimal" 
             id="quantity"
             [ngModelOptions]="{standalone: true}"
@@ -369,7 +369,7 @@
             label="Agregar"
             icon="pi pi-plus"
             severity="success"
-            [disabled]="isInRoute"
+            [disabled]="isInRoute || paymentStatus !== 'PENDING'"
             (click)="addProduct()">
           </button>
 
@@ -445,7 +445,7 @@
                       severity="danger"
                       rounded
                       text
-                      [disabled]="isInRoute"
+                      [disabled]="isInRoute || paymentStatus !== 'PENDING'"
                       (click)="removeProduct($index)">
                     </button>
                   </td>
