@@ -55,6 +55,11 @@ export class Sidebar {
           if (user.role === Role.ADMIN) {
             items.push(
               {
+                label: 'Presentaciones',
+                icon: 'pi pi-tags',
+                routerLink: ['/products/units']
+              },
+              {
                 label: 'Inventario',
                 icon: 'pi pi-box',
                 routerLink: ['/inventory/initial-stock']
