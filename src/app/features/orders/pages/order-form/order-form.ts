@@ -569,6 +569,11 @@ private loadProducts(): void {
 
   this.productSelectionError = false;
 
+  if (!this.selectedProduct.baseUnitId) {
+    this.notificationService.warning(`Define la unidad base de ${this.selectedProduct.name} en Productos → Presentaciones antes de agregarlo al pedido.`);
+    return;
+  }
+
   if (this.quantity <= 0) {
     this.quantityError = true;
     return;
