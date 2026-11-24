@@ -186,7 +186,7 @@
             [(ngModel)]="selectedProduct" [ngModelOptions]="{standalone: true}"
             [disabled]="isInRoute || paymentStatus !== 'PENDING'"
             placeholder="Seleccione un producto" class="w-full"
-            [filter]="true" filterBy="name,sku">
+            [filter]="true" filterBy="name,sku" filterMatchMode="contains" filterPlaceholder="Buscar por nombre o SKU">
             <ng-template #item let-product>
               <div class="order-product-option">
                 <div class="order-product-main">
