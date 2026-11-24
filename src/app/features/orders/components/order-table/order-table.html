@@ -6,7 +6,7 @@
   </ng-template>
   <ng-template pTemplate="body" let-order>
     <tr>
-      <td>{{ order.id }}</td>
+      <td><strong>{{ order.orderNumber || order.id }}</strong></td>
       <td>{{ order.cliente }}</td>
       <td>{{ order.total | currency:'CLP':'symbol':'1.0-0':'es-CL' }}</td>
       <td><div class="status-badge" [ngClass]="getStatusColor(order)">{{ order.estado }}</div></td>
