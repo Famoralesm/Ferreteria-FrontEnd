@@ -479,3 +479,30 @@ form {
     width: 100%;
   }
 }
+
+
+/* Distribución de la edición del pedido en tres columnas */
+.order-layout {
+  display: grid;
+  grid-template-columns: 300px 300px minmax(0, 1fr);
+  column-gap: 50px;
+  row-gap: 24px;
+  align-items: start;
+  width: 100%;
+}
+.order-column { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.order-column-products { min-width: 0; }
+.order-number-field { display: flex; flex-direction: column; gap: 6px; }
+.order-number-field label { font-weight: 600; font-size: .9rem; }
+.order-number-value { font-size: 1.35rem; line-height: 1.4; font-weight: 800; letter-spacing: .02em; color: var(--text-color, #1f2937); }
+.delivery-payment-error { margin-top: -8px; }
+.order-column-products .form-field { width: 100%; }
+@media (max-width: 1200px) {
+  .order-layout { grid-template-columns: minmax(240px, 1fr) minmax(240px, 1fr); column-gap: 32px; }
+  .order-column-products { grid-column: 1 / -1; }
+}
+@media (max-width: 700px) {
+  .page-card.order-form-card { padding: 24px; }
+  .order-layout { grid-template-columns: 1fr; gap: 20px; }
+  .order-column-products { grid-column: auto; }
+}
