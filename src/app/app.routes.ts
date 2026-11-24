@@ -13,6 +13,7 @@ import { OrderDetail } from './features/orders/pages/order-detail/order-detail';
 import { OrderForm } from './features/orders/pages/order-form/order-form';
 import { ProductList } from './features/products/pages/product-list/product-list';
 import { ProductForm } from './features/products/pages/product-form/product-form';
+import { ProductUnits } from './features/products/pages/product-units/product-units';
 import { CustomerList } from './features/customers/pages/customer-list/customer-list';
 import { CustomerForm } from './features/customers/pages/customer-form/customer-form';
 import { SupplierList } from './features/suppliers/pages/supplier-list/supplier-list';
@@ -60,6 +61,11 @@ export const routes: Routes = [
       {
         path: 'products',
         component: ProductList
+      },
+      {
+        path: 'products/units',
+        component: ProductUnits,
+        canActivate: [roleGuard([Role.ADMIN])]
       },
       {
         path: 'products/new',
