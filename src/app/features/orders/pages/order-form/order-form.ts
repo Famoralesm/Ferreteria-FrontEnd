@@ -81,6 +81,7 @@ export class OrderForm implements OnInit , OnDestroy {
   paymentReversalReason?: string | null;
   paymentDialogVisible = false;
   paymentSaving = false;
+  savingOrder = false;
   paymentTotalAmount = 0;
   itemsChanged = false;
 
@@ -323,6 +324,11 @@ private loadProducts(): void {
 
           });
           this.paymentStatus = order.paymentStatus ?? 'PENDING';
+          if (this.paymentStatus === 'PAID' || this.paymentStatus === 'REVERSED') {
+            this.form.get('paymentMethod')?.disable({ emitEvent: false });
+          } else {
+            this.form.get('paymentMethod')?.enable({ emitEvent: false });
+          }
           this.paymentTotalAmount = order.totalAmount ?? 0;
           this.itemsChanged = false;
           this.paymentReceivedAt = order.paymentReceivedAt ?? null;
@@ -486,6 +492,7 @@ private loadProducts(): void {
     this.orderService.confirmPayment(this.id).subscribe({
       next: order => {
         this.paymentStatus = order.paymentStatus ?? 'PAID';
+        this.form.get('paymentMethod')?.disable({ emitEvent: false });
         this.paymentReceivedAt = order.paymentReceivedAt ?? null;
         this.paymentReceivedBy = order.paymentReceivedBy ?? null;
         this.paymentDialogVisible = false;
@@ -509,10 +516,13 @@ private loadProducts(): void {
     return this.paymentMethods.find(item => item.value === method)?.label ?? 'No seleccionado';
   }
 
-  cancel(): void {
+  exit(): void {
+    if ((this.form.dirty || this.itemsChanged) &&
+        !window.confirm('Hay cambios sin guardar. ¿Seguro que deseas salir sin guardar?')) {
+      return;
+    }
 
     this.router.navigate(['/orders']);
-
   }
 
   get canConfirmPayment(): boolean {
@@ -521,6 +531,7 @@ private loadProducts(): void {
       && this.paymentStatus === 'PENDING'
       && orderStatus !== 'CANCELED'
       && orderStatus !== 'REJECTED'
+      && this.items.length > 0
       && !this.form.dirty
       && !this.itemsChanged;
   }
@@ -817,6 +828,8 @@ saveOrder(): void {
     );
     return;
   }
+  if (this.savingOrder) return;
+
   this.form.markAllAsTouched();
   this.itemsTouched = this.items.length === 0;
 
@@ -861,6 +874,7 @@ saveOrder(): void {
   };
 
   console.log('ENVIANDO PEDIDO:', data);
+  this.savingOrder = true;
 
   if (this.id) {
 
@@ -868,18 +882,27 @@ saveOrder(): void {
       .subscribe({
 
         next: order => {
+          this.savingOrder = false;
+          this.paymentTotalAmount = order.totalAmount ?? this.paymentTotalAmount;
+          this.itemsChanged = false;
+          this.form.patchValue({
+            orderNumber: order.orderNumber,
+            totalAmount: order.totalAmount
+          });
+          this.form.markAsPristine();
 
-          this.notificationService.success(
-            'El pedido fue actualizado correctamente.'
-          );
-
+          this.notificationService.success('El pedido fue actualizado correctamente.');
           this.cdr.detectChanges();
-          this.router.navigate(['/orders']);
 
+          if (exitAfterSave) {
+            this.router.navigate(['/orders']);
+          }
         },
 
         error: err => {
-          console.error('Error actualizando pedido:', err);
+          this.savingOrder = false;
+          this.savingOrder = false;
+          console.error('Error creando pedido:', err);
           console.error('HTTP STATUS:', err.status);
           console.error('RESPUESTA BACKEND:', err.error);
 
@@ -904,14 +927,28 @@ saveOrder(): void {
       .subscribe({
 
         next: order => {
+          this.savingOrder = false;
+          this.id = order.id;
+          this.orderStoreId = selectedStoreId!;
+          this.paymentStatus = order.paymentStatus ?? 'PENDING';
+          this.paymentTotalAmount = order.totalAmount ?? 0;
+          this.itemsChanged = false;
+          this.form.patchValue({
+            orderNumber: order.orderNumber,
+            totalAmount: order.totalAmount,
+            createdAt: order.createdAt,
+            createdBy: order.createdBy?.name ?? order.createdBy?.email ?? ''
+          });
+          this.form.markAsPristine();
 
-          this.notificationService.success(
-            'El pedido fue creado correctamente.'
-          );
-
+          this.notificationService.success('El pedido fue creado correctamente.');
           this.cdr.detectChanges();
-          this.router.navigate(['/orders']);
 
+          if (exitAfterSave) {
+            this.router.navigate(['/orders']);
+          } else {
+            this.router.navigate(['/orders/edit', order.id]);
+          }
         },
 
        
