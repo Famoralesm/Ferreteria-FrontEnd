@@ -596,10 +596,14 @@ form {
   box-sizing: border-box;
 }
 .product-selector .quantity-field p-inputnumber,
-.product-selector .quantity-field .p-inputnumber,
-.product-selector .quantity-field input,
-.product-selector .quantity-field .p-inputnumber-input {
+.product-selector .quantity-field .p-inputnumber {
   display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+:host ::ng-deep .product-selector .quantity-field .p-inputnumber-input {
   width: 100%;
   min-width: 0;
   max-width: 100%;
