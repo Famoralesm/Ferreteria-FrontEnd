@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, asyncScheduler, observeOn } from 'rxjs';
 
 export type NotificationType = 'success' | 'error' | 'info' | 'warning';
 
@@ -17,7 +17,7 @@ export class NotificationService {
     new BehaviorSubject<AppNotification | null>(null);
 
   readonly notification$ =
-    this.notificationSubject.asObservable();
+    this.notificationSubject.asObservable().pipe(observeOn(asyncScheduler));
 
   private timer?: ReturnType<typeof setTimeout>;
 
