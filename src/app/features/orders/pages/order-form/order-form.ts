@@ -542,8 +542,8 @@ private loadProducts(): void {
 
   addProduct(): void {
 
-  if (this.isInRoute) {
-    this.notificationService.warning('Un pedido en ruta no permite agregar productos.');
+  if (this.isInRoute || this.paymentStatus !== 'PENDING') {
+    this.notificationService.warning('Este pedido no permite modificar sus productos por su estado actual.');
     return;
   }
 
@@ -610,8 +610,8 @@ private loadProducts(): void {
 }
 removeProduct(index: number): void {
 
-  if (this.isInRoute) {
-    this.notificationService.warning('Un pedido en ruta no permite eliminar productos.');
+  if (this.isInRoute || this.paymentStatus !== 'PENDING') {
+    this.notificationService.warning('Este pedido no permite modificar sus productos por su estado actual.');
     return;
   }
 
@@ -883,6 +883,15 @@ saveOrder(exitAfterSave = false): void {
 
         next: order => {
           this.savingOrder = false;
+          this.paymentStatus = order.paymentStatus ?? this.paymentStatus;
+          this.paymentReceivedAt = order.paymentReceivedAt ?? this.paymentReceivedAt;
+          this.paymentReceivedBy = order.paymentReceivedBy ?? this.paymentReceivedBy;
+          this.paymentReversedAt = order.paymentReversedAt ?? this.paymentReversedAt;
+          this.paymentReversedBy = order.paymentReversedBy ?? this.paymentReversedBy;
+          this.paymentReversalReason = order.paymentReversalReason ?? this.paymentReversalReason;
+          if (this.paymentStatus === 'PAID' || this.paymentStatus === 'REVERSED') {
+            this.form.get('paymentMethod')?.disable({ emitEvent: false });
+          }
           this.paymentTotalAmount = order.totalAmount ?? this.paymentTotalAmount;
           this.itemsChanged = false;
           this.form.patchValue({
