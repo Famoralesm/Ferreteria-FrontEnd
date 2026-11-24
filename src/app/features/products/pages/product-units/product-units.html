@@ -1,31 +1,78 @@
 <div class="page-shell">
   <div class="page-header">
     <div class="page-header-content">
-      <span class="page-kicker">PRESENTACIONES DE PRODUCTOS</span>
-      <p>Configura unidades de medida y formatos de compra y venta por producto</p>
+      <span class="page-kicker">PRESENTACIONES Y UNIDADES DE MEDIDA</span>
+      <p>Administra el catálogo común de unidades y las presentaciones comerciales de cada producto.</p>
     </div>
   </div>
 
   <div class="page-card units-page">
+    <section class="measure-catalog">
+      <div class="section-heading">
+        <div>
+          <h3>Catálogo de unidades de medida</h3>
+          <p>Unidades reutilizables para definir la unidad base de los productos.</p>
+        </div>
+        <span class="units-count">{{ measureUnits.length }}</span>
+      </div>
+
+      <div class="measure-editor">
+        <div class="form-field">
+          <label for="measureCode">Código *</label>
+          <input id="measureCode" type="text" maxlength="30" [(ngModel)]="measureForm.code" placeholder="Ej: LITRO">
+        </div>
+        <div class="form-field">
+          <label for="measureName">Nombre *</label>
+          <input id="measureName" type="text" maxlength="80" [(ngModel)]="measureForm.name" placeholder="Ej: Litro">
+        </div>
+        <div class="form-field">
+          <label for="measureSymbol">Símbolo *</label>
+          <input id="measureSymbol" type="text" maxlength="12" [(ngModel)]="measureForm.symbol" placeholder="Ej: L">
+        </div>
+        <div class="editor-actions">
+          <button pButton type="button" [label]="measureEditingId === null ? 'Agregar unidad' : 'Guardar cambios'"
+            icon="pi pi-check" [disabled]="measureSaving" (click)="saveMeasureUnit()"></button>
+          @if (measureEditingId !== null) {
+            <button pButton type="button" label="Cancelar" severity="secondary" [outlined]="true" (click)="resetMeasureForm()"></button>
+          }
+        </div>
+      </div>
+
+      @if (measureLoading) {
+        <p class="empty-state">Cargando catálogo...</p>
+      } @else if (measureUnits.length === 0) {
+        <p class="empty-state">Todavía no hay unidades registradas. Agrega la primera unidad arriba.</p>
+      } @else {
+        <div class="units-table-wrap">
+          <table class="units-table">
+            <thead><tr><th>Código</th><th>Nombre</th><th>Símbolo</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody>
+              @for (unit of measureUnits; track unit.id) {
+                <tr>
+                  <td><strong>{{ unit.code }}</strong></td><td>{{ unit.name }}</td><td>{{ unit.symbol }}</td>
+                  <td><span class="status" [class.status-off]="!unit.active">{{ unit.active ? 'Activa' : 'Inactiva' }}</span></td>
+                  <td class="row-actions">
+                    <button pButton type="button" icon="pi pi-pencil" severity="secondary" [text]="true" (click)="editMeasureUnit(unit)" aria-label="Editar unidad"></button>
+                    <button pButton type="button" [icon]="unit.active ? 'pi pi-ban' : 'pi pi-check'"
+                      [severity]="unit.active ? 'danger' : 'success'" [text]="true"
+                      (click)="toggleMeasureUnit(unit)" [attr.aria-label]="unit.active ? 'Desactivar unidad' : 'Activar unidad'"></button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+
+    <div class="catalog-divider"></div>
+
     <div class="form-field product-picker">
       <label for="unitProduct">Producto</label>
-      <p-select
-        inputId="unitProduct"
-        [options]="products"
-        optionLabel="name"
-        [(ngModel)]="selectedProduct"
-        (onChange)="onProductChange($event.value)"
-        [filter]="true"
-        filterBy="name,sku"
-        placeholder="Selecciona un producto"
-        [showClear]="true"
-        class="w-full">
-        <ng-template #item let-product>
-          <div class="product-option">
-            <strong>{{ product.name }}</strong>
-            <small>{{ product.sku }}</small>
-          </div>
-        </ng-template>
+      <p-select inputId="unitProduct" [options]="products" optionLabel="name" [(ngModel)]="selectedProduct"
+        (onChange)="onProductChange($event.value)" [filter]="true" filterBy="name,sku"
+        placeholder="Selecciona un producto" [showClear]="true" class="w-full">
+        <ng-template #item let-product><div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div></ng-template>
       </p-select>
     </div>
 
@@ -33,13 +80,9 @@
       <section class="units-list">
         @if (selectedProduct) {
           <div class="section-heading">
-            <div>
-              <h3>Presentaciones configuradas</h3>
-              <p>{{ selectedProduct.name }} · Unidad base: {{ selectedProduct.unit || 'Sin unidad definida' }}</p>
-            </div>
+            <div><h3>Presentaciones configuradas</h3><p>{{ selectedProduct.name }} · Unidad base pendiente de vincular</p></div>
             <span class="units-count">{{ units.length }}</span>
           </div>
-
           @if (loading) {
             <p class="empty-state">Cargando presentaciones...</p>
           } @else if (units.length === 0) {
@@ -47,25 +90,12 @@
           } @else {
             <div class="units-table-wrap">
               <table class="units-table">
-                <thead>
-                  <tr>
-                    <th>Código</th>
-                    <th>Presentación</th>
-                    <th>Factor</th>
-                    <th>Compra</th>
-                    <th>Venta</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Código</th><th>Presentación</th><th>Factor</th><th>Compra</th><th>Venta</th><th>Estado</th><th>Acciones</th></tr></thead>
                 <tbody>
                   @for (unit of units; track unit.id) {
                     <tr>
-                      <td><strong>{{ unit.code }}</strong></td>
-                      <td>{{ unit.name }}</td>
-                      <td>{{ unit.conversionFactor }}</td>
-                      <td>{{ unit.purchaseAllowed ? 'Sí' : 'No' }}</td>
-                      <td>{{ unit.saleAllowed ? 'Sí' : 'No' }}</td>
+                      <td><strong>{{ unit.code }}</strong></td><td>{{ unit.name }}</td><td>{{ unit.conversionFactor }}</td>
+                      <td>{{ unit.purchaseAllowed ? 'Sí' : 'No' }}</td><td>{{ unit.saleAllowed ? 'Sí' : 'No' }}</td>
                       <td><span class="status" [class.status-off]="!unit.active">{{ unit.active ? 'Activa' : 'Inactiva' }}</span></td>
                       <td class="row-actions">
                         <button pButton type="button" icon="pi pi-pencil" severity="secondary" [text]="true" (click)="edit(unit)" aria-label="Editar"></button>
@@ -81,42 +111,20 @@
           <div class="empty-state">Selecciona un producto para consultar sus presentaciones configuradas.</div>
         }
       </section>
-
       <section class="unit-editor">
         @if (selectedProduct) {
           <h3>{{ editingId === null ? 'Nueva presentación' : 'Editar presentación' }}</h3>
-          <div class="form-field">
-            <label for="unitCode">Código *</label>
-            <input id="unitCode" type="text" maxlength="30" [(ngModel)]="form.code" placeholder="Ej: CAJA">
-          </div>
-          <div class="form-field">
-            <label for="unitName">Nombre *</label>
-            <input id="unitName" type="text" maxlength="80" [(ngModel)]="form.name" placeholder="Ej: Caja de 100 unidades">
-          </div>
-          <div class="form-field">
-            <label for="conversionFactor">Factor de conversión *</label>
-            <input id="conversionFactor" type="number" min="0.0001" step="0.0001" [(ngModel)]="form.conversionFactor">
-            <small>Equivalencia en unidades base. Ejemplo: 1 caja = 100 unidades → factor 100.</small>
-          </div>
-          <label class="toggle-row">
-            <input type="checkbox" [(ngModel)]="form.purchaseAllowed">
-            <span>Permitir compras con esta presentación</span>
-          </label>
-          <label class="toggle-row">
-            <input type="checkbox" [(ngModel)]="form.saleAllowed">
-            <span>Permitir ventas con esta presentación</span>
-          </label>
+          <div class="form-field"><label for="unitCode">Código *</label><input id="unitCode" type="text" maxlength="30" [(ngModel)]="form.code" placeholder="Ej: CAJA"></div>
+          <div class="form-field"><label for="unitName">Nombre *</label><input id="unitName" type="text" maxlength="80" [(ngModel)]="form.name" placeholder="Ej: Caja de 100 unidades"></div>
+          <div class="form-field"><label for="conversionFactor">Factor de conversión *</label><input id="conversionFactor" type="number" min="0.0001" step="0.0001" [(ngModel)]="form.conversionFactor"><small>Equivalencia en unidades base. Ejemplo: 1 caja = 100 unidades → factor 100.</small></div>
+          <label class="toggle-row"><input type="checkbox" [(ngModel)]="form.purchaseAllowed"><span>Permitir compras con esta presentación</span></label>
+          <label class="toggle-row"><input type="checkbox" [(ngModel)]="form.saleAllowed"><span>Permitir ventas con esta presentación</span></label>
           <div class="editor-actions">
-            <button pButton type="button" label="Guardar" icon="pi pi-check" severity="success" [disabled]="saving" (click)="save()"></button>
-            @if (editingId !== null) {
-              <button pButton type="button" label="Cancelar edición" severity="secondary" [outlined]="true" (click)="resetForm()"></button>
-            }
+            <button pButton type="button" label="Guardar presentación" icon="pi pi-check" severity="success" [disabled]="saving" (click)="save()"></button>
+            @if (editingId !== null) { <button pButton type="button" label="Cancelar edición" severity="secondary" [outlined]="true" (click)="resetForm()"></button> }
           </div>
         } @else {
-          <div class="empty-editor-state">
-            <h3>Administrar presentaciones</h3>
-            <p>Al seleccionar un producto, aquí podrás agregar o modificar sus unidades y formatos de compra/venta.</p>
-          </div>
+          <div class="empty-editor-state"><h3>Administrar presentaciones</h3><p>Selecciona un producto para agregar o modificar sus formatos de compra y venta.</p></div>
         }
       </section>
     </div>

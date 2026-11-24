@@ -5,8 +5,10 @@ import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { Product } from '../../../../core/models/product/product';
 import { ProductUnit, ProductUnitRequest } from '../../../../core/models/product/product-unit';
+import { UnitOfMeasure, UnitOfMeasureRequest } from '../../../../core/models/product/unit-of-measure';
 import { ProductService } from '../../../../core/services/product.service';
 import { ProductUnitService } from '../../../../core/services/product-unit.service';
+import { UnitOfMeasureService } from '../../../../core/services/unit-of-measure.service';
 import { StoreService } from '../../../../core/services/store.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 
@@ -24,17 +26,24 @@ export class ProductUnits implements OnInit {
   loading = false;
   saving = false;
   editingId: number | null = null;
-
   form: ProductUnitRequest = this.emptyForm();
+
+  measureUnits: UnitOfMeasure[] = [];
+  measureLoading = false;
+  measureSaving = false;
+  measureEditingId: number | null = null;
+  measureForm: UnitOfMeasureRequest = this.emptyMeasureForm();
 
   constructor(
     private productService: ProductService,
     private productUnitService: ProductUnitService,
+    private unitOfMeasureService: UnitOfMeasureService,
     private storeService: StoreService,
     private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
+    this.loadMeasureUnits();
     const storeId = this.storeService.selectedStoreId;
     if (storeId === null) {
       this.notificationService.warning('Selecciona una sucursal para administrar las presentaciones.');
@@ -49,6 +58,72 @@ export class ProductUnits implements OnInit {
     });
   }
 
+  loadMeasureUnits(): void {
+    this.measureLoading = true;
+    this.unitOfMeasureService.findAll().subscribe({
+      next: units => { this.measureUnits = units; this.measureLoading = false; },
+      error: err => {
+        console.error('Error cargando unidades de medida:', err);
+        this.measureLoading = false;
+        this.notificationService.error('No fue posible cargar el catálogo de unidades.');
+      }
+    });
+  }
+
+  saveMeasureUnit(): void {
+    const request: UnitOfMeasureRequest = {
+      code: this.measureForm.code.trim().toUpperCase(),
+      name: this.measureForm.name.trim(),
+      symbol: this.measureForm.symbol.trim()
+    };
+    if (!request.code || !request.name || !request.symbol) {
+      this.notificationService.warning('Completa código, nombre y símbolo.');
+      return;
+    }
+    this.measureSaving = true;
+    const operation = this.measureEditingId === null
+      ? this.unitOfMeasureService.create(request)
+      : this.unitOfMeasureService.update(this.measureEditingId, request);
+    operation.subscribe({
+      next: () => {
+        this.measureSaving = false;
+        this.notificationService.success(this.measureEditingId === null ? 'Unidad de medida creada.' : 'Unidad de medida actualizada.');
+        this.resetMeasureForm();
+        this.loadMeasureUnits();
+      },
+      error: err => {
+        this.measureSaving = false;
+        console.error('Error guardando unidad de medida:', err);
+        this.notificationService.error(err?.error?.message ?? 'No fue posible guardar la unidad de medida.');
+      }
+    });
+  }
+
+  editMeasureUnit(unit: UnitOfMeasure): void {
+    this.measureEditingId = unit.id;
+    this.measureForm = { code: unit.code, name: unit.name, symbol: unit.symbol };
+  }
+
+  toggleMeasureUnit(unit: UnitOfMeasure): void {
+    const action = unit.active ? 'desactivar' : 'activar';
+    if (!confirm(`¿Deseas ${action} la unidad "${unit.name}"?`)) return;
+    this.unitOfMeasureService.setActive(unit.id, !unit.active).subscribe({
+      next: updated => {
+        unit.active = updated.active;
+        this.notificationService.success(`Unidad de medida ${unit.active ? 'activada' : 'desactivada'}.`);
+      },
+      error: err => {
+        console.error('Error cambiando estado de unidad:', err);
+        this.notificationService.error(err?.error?.message ?? 'No fue posible cambiar el estado de la unidad.');
+      }
+    });
+  }
+
+  resetMeasureForm(): void {
+    this.measureEditingId = null;
+    this.measureForm = this.emptyMeasureForm();
+  }
+
   onProductChange(product: Product | null): void {
     this.selectedProduct = product;
     this.units = [];
@@ -56,10 +131,7 @@ export class ProductUnits implements OnInit {
     if (!product) return;
     this.loading = true;
     this.productUnitService.findByProduct(product.id).subscribe({
-      next: units => {
-        this.units = units;
-        this.loading = false;
-      },
+      next: units => { this.units = units; this.loading = false; },
       error: err => {
         console.error('Error cargando presentaciones:', err);
         this.loading = false;
@@ -97,21 +169,15 @@ export class ProductUnits implements OnInit {
       error: err => {
         this.saving = false;
         console.error('Error guardando presentación:', err);
-        const message = err?.error?.message ?? 'No fue posible guardar la presentación.';
-        this.notificationService.error(message);
+        this.notificationService.error(err?.error?.message ?? 'No fue posible guardar la presentación.');
       }
     });
   }
 
   edit(unit: ProductUnit): void {
     this.editingId = unit.id;
-    this.form = {
-      code: unit.code,
-      name: unit.name,
-      conversionFactor: unit.conversionFactor,
-      purchaseAllowed: unit.purchaseAllowed,
-      saleAllowed: unit.saleAllowed
-    };
+    this.form = { code: unit.code, name: unit.name, conversionFactor: unit.conversionFactor,
+      purchaseAllowed: unit.purchaseAllowed, saleAllowed: unit.saleAllowed };
   }
 
   toggleActive(unit: ProductUnit): void {
@@ -130,18 +196,9 @@ export class ProductUnits implements OnInit {
     });
   }
 
-  resetForm(): void {
-    this.editingId = null;
-    this.form = this.emptyForm();
-  }
-
+  resetForm(): void { this.editingId = null; this.form = this.emptyForm(); }
   private emptyForm(): ProductUnitRequest {
-    return {
-      code: '',
-      name: '',
-      conversionFactor: 1,
-      purchaseAllowed: true,
-      saleAllowed: true
-    };
+    return { code: '', name: '', conversionFactor: 1, purchaseAllowed: true, saleAllowed: true };
   }
+  private emptyMeasureForm(): UnitOfMeasureRequest { return { code: '', name: '', symbol: '' }; }
 }
