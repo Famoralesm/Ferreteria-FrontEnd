@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
 
 import {
+  AppNotification as NotificationData,
   NotificationService
 } from '../../../core/services/notification.service';
 
@@ -16,11 +18,13 @@ import {
 })
 export class AppNotification {
 
-  readonly notification$ = this.notificationService.notification$;
+  readonly notification$: Observable<NotificationData | null>;
 
   constructor(
     private notificationService: NotificationService
-  ) {}
+  ) {
+    this.notification$ = this.notificationService.notification$;
+  }
 
   close(): void {
     this.notificationService.clear();
