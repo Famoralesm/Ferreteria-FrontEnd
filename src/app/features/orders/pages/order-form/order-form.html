@@ -23,164 +23,137 @@
     <div class="page-card order-form-card">
 
       <form [formGroup]="form" class="order-layout">
-<div class="order-column order-column-primary">@if (id) { <div class="order-number-field"><label>Número de pedido</label><div class="order-number-value">{{ form.get('orderNumber')?.value || '—' }}</div></div> }<div class="form-field customer-search-field">
-          <label for="customerSearch">
-            Nombre del cliente *
-          </label>
-
-          <p-select
-            inputId="customerSearch"
-            [options]="customerOptions"
-            optionLabel="nombre"
-            [(ngModel)]="selectedCustomerOption"
-            [ngModelOptions]="{ standalone: true }"
-            [filter]="true"
-            filterBy="nombre,rut"
-            [showClear]="true"
-            [disabled]="!!id"
-            placeholder="Buscar cliente por nombre o RUT"
-            class="w-full"
-            (onChange)="onCustomerSelected($event.value)">
-
-            <ng-template #item let-customer>
-              <div class="customer-option">
-                <strong>{{ customer.nombre }}</strong>
-
-                @if (customer.rut) {
-                  <small>{{ customer.rut }}</small>
-                }
-              </div>
-            </ng-template>
-
-          </p-select>
-          <app-field-error [control]="form.get('customerName')" [messages]="{ required: 'Selecciona un cliente.' }" />
-        </div><div class="form-field address-field">
-
-          <label for="address">
-            Dirección
-          </label>
-
-
-          <div class="address-input">
-
-            <input
-              id="address"
-              pInputText
-              formControlName="address"              
-              placeholder="Pegue una ubicación de Google Maps o escriba una dirección"
-              [readonly]="!!id || !isUnknownCustomerSelected"
-              (paste)="onAddressPaste($event)"
-              (input)="onAddressChange()"
-              >
-          </div>
-          <app-field-error [control]="form.get('address')" [messages]="{ required: 'La dirección es obligatoria.' }" />
-
-        </div><div class="form-field payment-method-field">
-
-          <label for="paymentMethod">
-            Método de pago *
-          </label>
-
-          <p-select
-            id="paymentMethod"
-            [options]="paymentMethods"
-            optionLabel="label"
-            optionValue="value"
-            formControlName="paymentMethod"
-            placeholder="Seleccione método de pago"
-            class="w-full">
-          </p-select>
-
-          <div class="payment-state-row">
-            @if (paymentStatus === 'PENDING') {
-              <label class="payment-check">
-                <input
-                  type="checkbox"
-                  [checked]="false"
-                  [disabled]="!canConfirmPayment"
-                  (change)="openPaymentConfirmation()">
-                <span>Pago recibido</span>
-              </label>
-              <span class="payment-state-badge payment-pending">PENDIENTE</span>
-              @if (!id) {
-                <small class="payment-hint">Guarda el pedido para confirmar el pago.</small>
-              } @else if (items.length === 0) {
-                <small class="payment-hint">Agrega al menos un producto para confirmar el pago.</small>
-              } @else if (form.dirty || itemsChanged) {
-                <small class="payment-hint">Guarda los cambios del pedido antes de confirmar el pago.</small>
-              }
-            } @else if (paymentStatus === 'PAID') {
-              <label class="payment-check">
-                <input type="checkbox" [checked]="true" disabled>
-                <span>Pago recibido</span>
-              </label>
-              <span class="payment-state-badge payment-paid">PAGADO</span>
-              <small class="payment-audit">
-                Confirmado por {{ paymentReceivedBy?.name || paymentReceivedBy?.email || 'usuario' }}
-                @if (paymentReceivedAt) {
-                  · {{ paymentReceivedAt | date:'dd/MM/yyyy HH:mm' }}
-                }
-              </small>
-            } @else {
-              <span class="payment-state-badge payment-reversed">REVERSADO</span>
-              <small class="payment-audit">
-                Pago reversado por {{ paymentReversedBy?.name || paymentReversedBy?.email || 'usuario' }}
-                @if (paymentReversedAt) {
-                  · {{ paymentReversedAt | date:'dd/MM/yyyy HH:mm' }}
-                }
-              </small>
-            }
-          </div>
-
-          <app-field-error [control]="form.get('paymentMethod')" [messages]="{ required: 'Selecciona un método de pago.' }" />
-        </div>@if (id) { <div class="form-field"><label for="createdBy">
-        Creado por
-      </label>
-
-      <input
-        id="createdBy"
-        pInputText
-        formControlName="createdBy"
-        readonly></div> }</div>
-<div class="order-column order-column-secondary"><div class="form-field">
-
-          <label for="phone">
-            Teléfono
-          </label>
-
-          <input
-            id="phone"
-            pInputText
-            formControlName="phone"
-            [readonly]="!!id || !isUnknownCustomerSelected"            
-            placeholder="Teléfono de contacto"
-            >
-
-        </div><div class="form-field">
-
-          <label for="status">
-            Estado
-          </label>
-
-          <p-select
-            id="status"
-            [options]="orderStatuses"
-            optionLabel="label"
-            optionValue="value"
-            formControlName="status"
-            placeholder="Seleccione estado"
-            class="w-full">
-          </p-select>
-
-        </div>@if (deliveryPaymentError) { <small class="field-error delivery-payment-error">Para marcar el pedido como Entregado, primero debes registrar el pago como recibido.</small> }<div class="form-field"><label for="deliveryDate">Fecha de entrega *</label><input id="deliveryDate" type="date" pInputText formControlName="deliveryDate"><app-field-error [control]="form.get('deliveryDate')" [messages]="{ required: 'La fecha de entrega es obligatoria.' }" /></div><div class="form-field"><label for="notes">Observaciones</label><textarea id="notes" pInputText rows="5" formControlName="notes"></textarea></div>@if (id) { <div class="form-field"><label for="createdAt">
-        Fecha de creación
-      </label>
-
-      <input
-        id="createdAt"
-        pInputText
-        formControlName="createdAt"
-        readonly></div> }</div>
+<div class="order-column order-column-primary">
+  @if (id) {
+    <div class="order-number-field">
+      <label>Número de pedido</label>
+      <div class="order-number-value">{{ form.get('orderNumber')?.value || '—' }}</div>
+    </div>
+  }
+  <div class="form-field customer-search-field">
+    <label for="customerSearch">Nombre del cliente *</label>
+    <p-select
+      inputId="customerSearch"
+      [options]="customerOptions"
+      optionLabel="nombre"
+      [(ngModel)]="selectedCustomerOption"
+      [ngModelOptions]="{ standalone: true }"
+      [filter]="true"
+      filterBy="nombre,rut"
+      [showClear]="true"
+      [disabled]="!!id"
+      placeholder="Buscar cliente por nombre o RUT"
+      class="w-full"
+      (onChange)="onCustomerSelected($event.value)">
+      <ng-template #item let-customer>
+        <div class="customer-option">
+          <strong>{{ customer.nombre }}</strong>
+          @if (customer.rut) { <small>{{ customer.rut }}</small> }
+        </div>
+      </ng-template>
+    </p-select>
+    <app-field-error [control]="form.get('customerName')" [messages]="{ required: 'Selecciona un cliente.' }" />
+  </div>
+  <div class="form-field address-field">
+    <label for="address">Dirección</label>
+    <div class="address-input">
+      <input id="address" pInputText formControlName="address"
+        placeholder="Pegue una ubicación de Google Maps o escriba una dirección"
+        [readonly]="!!id || !isUnknownCustomerSelected"
+        (paste)="onAddressPaste($event)" (input)="onAddressChange()">
+    </div>
+    <app-field-error [control]="form.get('address')" [messages]="{ required: 'La dirección es obligatoria.' }" />
+  </div>
+  <div class="form-field">
+    <label for="city">Ciudad</label>
+    <input id="city" pInputText formControlName="city" readonly placeholder="Ciudad del cliente">
+  </div>
+  <div class="form-field">
+    <label for="commune">Comuna</label>
+    <input id="commune" pInputText formControlName="commune" readonly placeholder="Comuna del cliente">
+  </div>
+  <div class="form-field">
+    <label for="phone">Teléfono</label>
+    <input id="phone" pInputText formControlName="phone"
+      [readonly]="!!id || !isUnknownCustomerSelected" placeholder="Teléfono de contacto">
+  </div>
+  @if (id) {
+    <div class="form-field">
+      <label for="createdBy">Creado por</label>
+      <input id="createdBy" pInputText formControlName="createdBy" readonly>
+    </div>
+  }
+</div>
+<div class="order-column order-column-secondary">
+  <div class="form-field">
+    <label for="status">Estado</label>
+    <p-select id="status" [options]="orderStatuses" optionLabel="label"
+      optionValue="value" formControlName="status"
+      placeholder="Seleccione estado" class="w-full">
+    </p-select>
+  </div>
+  @if (deliveryPaymentError) {
+    <small class="field-error delivery-payment-error">
+      Para marcar el pedido como Entregado, primero debes registrar el pago como recibido.
+    </small>
+  }
+  <div class="form-field">
+    <label for="deliveryDate">Fecha de entrega *</label>
+    <input id="deliveryDate" type="date" pInputText formControlName="deliveryDate">
+    <app-field-error [control]="form.get('deliveryDate')" [messages]="{ required: 'La fecha de entrega es obligatoria.' }" />
+  </div>
+  <div class="form-field payment-method-field">
+    <label for="paymentMethod">Método de pago *</label>
+    <p-select id="paymentMethod" [options]="paymentMethods" optionLabel="label"
+      optionValue="value" formControlName="paymentMethod"
+      placeholder="Seleccione método de pago" class="w-full">
+    </p-select>
+    <div class="payment-state-row">
+      @if (paymentStatus === 'PENDING') {
+        <label class="payment-check">
+          <input type="checkbox" [checked]="false" [disabled]="!canConfirmPayment"
+            (change)="openPaymentConfirmation()">
+          <span>Pago recibido</span>
+        </label>
+        <span class="payment-state-badge payment-pending">PENDIENTE</span>
+        @if (!id) {
+          <small class="payment-hint">Guarda el pedido para confirmar el pago.</small>
+        } @else if (items.length === 0) {
+          <small class="payment-hint">Agrega al menos un producto para confirmar el pago.</small>
+        } @else if (form.dirty || itemsChanged) {
+          <small class="payment-hint">Guarda los cambios del pedido antes de confirmar el pago.</small>
+        }
+      } @else if (paymentStatus === 'PAID') {
+        <label class="payment-check">
+          <input type="checkbox" [checked]="true" disabled>
+          <span>Pago recibido</span>
+        </label>
+        <span class="payment-state-badge payment-paid">PAGADO</span>
+        <small class="payment-audit">
+          Confirmado por {{ paymentReceivedBy?.name || paymentReceivedBy?.email || 'usuario' }}
+          @if (paymentReceivedAt) { · {{ paymentReceivedAt | date:'dd/MM/yyyy HH:mm' }} }
+        </small>
+      } @else {
+        <span class="payment-state-badge payment-reversed">REVERSADO</span>
+        <small class="payment-audit">
+          Pago reversado por {{ paymentReversedBy?.name || paymentReversedBy?.email || 'usuario' }}
+          @if (paymentReversedAt) { · {{ paymentReversedAt | date:'dd/MM/yyyy HH:mm' }} }
+        </small>
+      }
+    </div>
+    <app-field-error [control]="form.get('paymentMethod')" [messages]="{ required: 'Selecciona un método de pago.' }" />
+  </div>
+  <div class="form-field">
+    <label for="notes">Observaciones</label>
+    <textarea id="notes" pInputText rows="5" formControlName="notes"></textarea>
+  </div>
+  @if (id) {
+    <div class="form-field">
+      <label for="createdAt">Fecha de creación</label>
+      <input id="createdAt" pInputText formControlName="createdAt" readonly>
+    </div>
+  }
+</div>
 <div class="order-column order-column-products"><div class="form-field">
 
     <section class="order-items-section">
@@ -207,125 +180,48 @@
       }
 
       <div class="product-selector">
-
-        <div class="form-field">
-
-          <label for="product">
-            Producto<br>
-          </label>
-          
-<p-select
-  id="product"
-  [options]="products"
-  optionLabel="name"
-  [(ngModel)]="selectedProduct"
-  [ngModelOptions]="{standalone: true}"
-  [disabled]="isInRoute || paymentStatus !== 'PENDING'"
-  placeholder="Seleccione un producto"
-  class="w-full"
-  [filter]="true"
-  filterBy="name,sku">
-
-  <ng-template #item let-product>
-
-    <div class="order-product-option">
-
-      <div class="order-product-main">
-        <strong>{{ product.name }}</strong>
-        <small>{{ product.sku }}</small>
-      </div>
-
-      <div class="order-product-stock">
-        <strong
-          [class.stock-low]="product.stock <= (product.stockMinimo ?? 0)"
-          [class.stock-ok]="product.stock > (product.stockMinimo ?? 0)">
-          {{ product.stock }}
-        </strong>
-
-        <small>
-          {{ product.stock <= (product.stockMinimo ?? 0)
-              ? 'Stock bajo'
-              : 'Disponible' }}
-        </small>
-      </div>
-
-    </div>
-
-  </ng-template>
-  <ng-template #selectedItem let-product>
-
-    @if (product) {
-      <div>
-        {{ product.name }} — Stock: {{ product.stock }}
-      </div>
-    }
-
-  </ng-template>
-
-</p-select>
-@if (productSelectionError) {
-  <small class="field-error">Selecciona un producto antes de agregarlo.</small>
-}
-@if (selectedProduct) {
-
-  <div class="selected-product-stock"
-       [class.stock-low-card]="selectedProduct.stock <= (selectedProduct.stockMinimo ?? 0)"
-       [class.stock-ok-card]="selectedProduct.stock > (selectedProduct.stockMinimo ?? 0)">
-
-    <div>
-      <strong>{{ selectedProduct.name }}</strong>
-      <small>Existencias en la sucursal seleccionada</small>
-      <small>Stock mínimo: {{ selectedProduct.stockMinimo ?? 0 }} unidades</small>
-    </div>
-
-    <div class="selected-stock-number">
-      {{ selectedProduct.stock }}
-      <small>unidades</small>
-    </div>
-
-  </div>
-
-}
-
-        </div>
-
-        <br>
-        <div class="form-field quantity-field">
-
-          <label for="quantity">
-            Cantidad <br>
-          </label>
-          <p-inputNumber 
-            [(ngModel)]="quantity" 
+        <div class="form-field product-field">
+          <label for="product">Producto</label>
+          <p-select id="product" [options]="products" optionLabel="name"
+            [(ngModel)]="selectedProduct" [ngModelOptions]="{standalone: true}"
             [disabled]="isInRoute || paymentStatus !== 'PENDING'"
-            mode="decimal" 
-            id="quantity"
-            [ngModelOptions]="{standalone: true}"
-            [showButtons]="true" 
-            inputId="minmax-buttons" 
-            [min]="0" 
-            [max]="100" />
+            placeholder="Seleccione un producto" class="w-full"
+            [filter]="true" filterBy="name,sku">
+            <ng-template #item let-product>
+              <div class="order-product-option">
+                <div class="order-product-main">
+                  <strong>{{ product.name }}</strong><small>{{ product.sku }}</small>
+                </div>
+                <div class="order-product-stock">
+                  <strong [class.stock-low]="product.stock <= (product.stockMinimo ?? 0)"
+                    [class.stock-ok]="product.stock > (product.stockMinimo ?? 0)">{{ product.stock }}</strong>
+                  <small>{{ product.stock <= (product.stockMinimo ?? 0) ? 'Stock bajo' : 'Disponible' }}</small>
+                </div>
+              </div>
+            </ng-template>
+            <ng-template #selectedItem let-product>
+              @if (product) { <div>{{ product.name }} — Stock: {{ product.stock }}</div> }
+            </ng-template>
+          </p-select>
+          @if (productSelectionError) {
+            <small class="field-error">Selecciona un producto antes de agregarlo.</small>
+          }
+        </div>
+        <div class="form-field quantity-field">
+          <label for="quantity">Cantidad</label>
+          <p-inputNumber [(ngModel)]="quantity"
+            [disabled]="isInRoute || paymentStatus !== 'PENDING'"
+            mode="decimal" id="quantity" [ngModelOptions]="{standalone: true}"
+            [showButtons]="true" inputId="minmax-buttons" [min]="0" [max]="100" />
           @if (quantityError) {
             <small class="field-error">La cantidad debe ser mayor que cero.</small>
           }
-
         </div>
-
-          <br>
-
-
         <div class="add-product-button">
-
-          <button
-            pButton
-            type="button"
-            label="Agregar"
-            icon="pi pi-plus"
-            severity="success"
-            [disabled]="isInRoute || paymentStatus !== 'PENDING'"
+          <button pButton type="button" label="Agregar" icon="pi pi-plus"
+            severity="success" [disabled]="isInRoute || paymentStatus !== 'PENDING'"
             (click)="addProduct()">
           </button>
-
         </div>
         @if (itemsTouched && items.length === 0) {
           <small class="field-error">Agrega al menos un producto al pedido.</small>
