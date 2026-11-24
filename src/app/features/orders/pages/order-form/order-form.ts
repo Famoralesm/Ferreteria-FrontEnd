@@ -817,7 +817,7 @@ onAddressChange(): void {
 
 }
 
-saveOrder(): void {
+saveOrder(exitAfterSave = false): void {
 
   if (
     this.id &&
@@ -901,8 +901,7 @@ saveOrder(): void {
 
         error: err => {
           this.savingOrder = false;
-          this.savingOrder = false;
-          console.error('Error creando pedido:', err);
+          console.error('Error actualizando pedido:', err);
           console.error('HTTP STATUS:', err.status);
           console.error('RESPUESTA BACKEND:', err.error);
 
@@ -931,6 +930,9 @@ saveOrder(): void {
           this.id = order.id;
           this.orderStoreId = selectedStoreId!;
           this.paymentStatus = order.paymentStatus ?? 'PENDING';
+          if (this.paymentStatus === 'PAID' || this.paymentStatus === 'REVERSED') {
+            this.form.get('paymentMethod')?.disable({ emitEvent: false });
+          }
           this.paymentTotalAmount = order.totalAmount ?? 0;
           this.itemsChanged = false;
           this.form.patchValue({
@@ -953,7 +955,8 @@ saveOrder(): void {
 
        
         error: err => {
-          console.error('Error actualizando pedido:', err);
+          this.savingOrder = false;
+          console.error('Error creando pedido:', err);
           console.error('HTTP STATUS:', err.status);
           console.error('RESPUESTA BACKEND:', err.error);
 
