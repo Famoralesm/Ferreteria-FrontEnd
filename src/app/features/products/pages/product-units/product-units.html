@@ -48,7 +48,7 @@
               <table class="units-table">
                 <thead><tr><th>Código</th><th>Nombre</th><th>Símbolo</th><th>Estado</th><th>Acciones</th></tr></thead>
                 <tbody>
-                  @for (unit of measureUnits; track unit.id) {
+                  @for (unit of paginatedMeasureUnits; track unit.id) {
                     <tr>
                       <td><strong>{{ unit.code }}</strong></td><td>{{ unit.name }}</td><td>{{ unit.symbol }}</td>
                       <td><span class="status" [class.status-off]="!unit.active">{{ unit.active ? 'Activa' : 'Inactiva' }}</span></td>
@@ -63,6 +63,15 @@
                 </tbody>
               </table>
             </div>
+            @if (measurePageCount > 1) {
+              <div class="measure-pagination">
+                <button pButton type="button" icon="pi pi-chevron-left" severity="secondary" [text]="true"
+                  [disabled]="measurePage === 0" (click)="changeMeasurePage(measurePage - 1)" aria-label="Página anterior"></button>
+                <span>Página {{ measurePage + 1 }} de {{ measurePageCount }}</span>
+                <button pButton type="button" icon="pi pi-chevron-right" severity="secondary" [text]="true"
+                  [disabled]="measurePage >= measurePageCount - 1" (click)="changeMeasurePage(measurePage + 1)" aria-label="Página siguiente"></button>
+              </div>
+            }
           }
         </div>
       </div>
@@ -117,9 +126,23 @@
       <section class="unit-editor">
         @if (selectedProduct) {
           <h3>{{ editingId === null ? 'Nueva presentación' : 'Editar presentación' }}</h3>
-          <div class="form-field"><label for="unitCode">Código *</label><input id="unitCode" type="text" maxlength="30" [(ngModel)]="form.code" placeholder="Ej: CAJA"></div>
-          <div class="form-field"><label for="unitName">Nombre *</label><input id="unitName" type="text" maxlength="80" [(ngModel)]="form.name" placeholder="Ej: Caja de 100 unidades"></div>
-          <div class="form-field"><label for="conversionFactor">Factor de conversión *</label><input id="conversionFactor" type="number" min="0.0001" step="0.0001" [(ngModel)]="form.conversionFactor"><small>Equivalencia en unidades base. Ejemplo: 1 caja = 100 unidades → factor 100.</small></div>
+          <div class="form-field">
+            <label for="unitCode">Código *</label>
+            <p-select inputId="unitCode" [options]="activeMeasureUnits" optionLabel="code" optionValue="code"
+              [(ngModel)]="form.code" (onChange)="onPresentationCodeChange($event.value)"
+              [filter]="true" filterBy="code,name" placeholder="Selecciona un código" class="w-full">
+              <ng-template #item let-unit><div class="product-option"><strong>{{ unit.code }}</strong><small>{{ unit.name }} ({{ unit.symbol }})</small></div></ng-template>
+            </p-select>
+          </div>
+          <div class="form-field">
+            <label for="unitName">Descripción de la presentación *</label>
+            <input id="unitName" type="text" maxlength="80" [(ngModel)]="form.name" placeholder="Ej: Caja de 100 unidades">
+          </div>
+          <div class="form-field">
+            <label for="conversionFactor">Equivalencia en {{ selectedProduct.baseUnitName || 'unidad base' }} *</label>
+            <input id="conversionFactor" type="number" min="0.0001" step="0.0001" [(ngModel)]="form.conversionFactor">
+            <small>Indica cuántas unidades base contiene esta presentación. Ejemplo: 1 caja = 100 unidades → 100.</small>
+          </div>
           <label class="toggle-row"><input type="checkbox" [(ngModel)]="form.purchaseAllowed"><span>Permitir compras con esta presentación</span></label>
           <label class="toggle-row"><input type="checkbox" [(ngModel)]="form.saleAllowed"><span>Permitir ventas con esta presentación</span></label>
           <div class="editor-actions">

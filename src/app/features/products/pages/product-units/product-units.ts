@@ -38,6 +38,21 @@ export class ProductUnits implements OnInit, OnDestroy {
   measureSaving = false;
   measureEditingId: number | null = null;
   measureForm: UnitOfMeasureRequest = this.emptyMeasureForm();
+  measurePage = 0;
+  readonly measurePageSize = 4;
+
+  get activeMeasureUnits(): UnitOfMeasure[] {
+    return this.measureUnits.filter(unit => unit.active);
+  }
+
+  get paginatedMeasureUnits(): UnitOfMeasure[] {
+    const start = this.measurePage * this.measurePageSize;
+    return this.measureUnits.slice(start, start + this.measurePageSize);
+  }
+
+  get measurePageCount(): number {
+    return Math.ceil(this.measureUnits.length / this.measurePageSize);
+  }
 
   constructor(
     private productService: ProductService,
@@ -115,9 +130,9 @@ export class ProductUnits implements OnInit, OnDestroy {
         this.measureSaving = false;
         this.measureUnits = [...this.measureUnits.filter(unit => unit.id !== saved.id), saved]
           .sort((a, b) => a.name.localeCompare(b.name, 'es'));
-        this.cdr.detectChanges();
-        this.notificationService.success(wasCreating ? 'Unidad de medida creada.' : 'Unidad de medida actualizada.');
         this.resetMeasureForm();
+        this.measurePage = Math.min(this.measurePage, Math.max(0, this.measurePageCount - 1));
+        this.notificationService.success(wasCreating ? 'Unidad de medida creada.' : 'Unidad de medida actualizada.');
       },
       error: err => {
         this.measureSaving = false;
@@ -125,6 +140,17 @@ export class ProductUnits implements OnInit, OnDestroy {
         this.notificationService.error(err?.error?.message ?? 'No fue posible guardar la unidad de medida.');
       }
     });
+  }
+
+  changeMeasurePage(page: number): void {
+    if (page < 0 || page >= this.measurePageCount) return;
+    this.measurePage = page;
+  }
+
+  onPresentationCodeChange(code: string | null): void {
+    if (!code) return;
+    const selectedUnit = this.activeMeasureUnits.find(unit => unit.code === code);
+    if (selectedUnit) this.form.name = selectedUnit.name;
   }
 
   editMeasureUnit(unit: UnitOfMeasure): void {
