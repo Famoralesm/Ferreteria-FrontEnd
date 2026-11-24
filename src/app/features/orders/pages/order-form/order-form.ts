@@ -1034,6 +1034,9 @@ saveOrder(exitAfterSave = false): void {
       ];
       this.syncSelectedCustomer();
 
+      // PrimeNG p-select debe recibir las opciones antes de la siguiente verificación.
+      this.cdr.detectChanges();
+
     },
 
     error: err => {
