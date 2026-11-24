@@ -1,8 +1,8 @@
 <div class="page-shell">
   <div class="page-header">
     <div class="page-header-content">
-      <span class="page-kicker">PRODUCTOS</span>
-      <p>Administración de unidades y presentaciones de venta/compra</p>
+      <span class="page-kicker">PRESENTACIONES DE PRODUCTOS</span>
+      <p>Configura unidades de medida y formatos de compra y venta por producto</p>
     </div>
   </div>
 
@@ -29,9 +29,9 @@
       </p-select>
     </div>
 
-    @if (selectedProduct) {
-      <div class="units-layout">
-        <section class="units-list">
+    <div class="units-layout">
+      <section class="units-list">
+        @if (selectedProduct) {
           <div class="section-heading">
             <div>
               <h3>Presentaciones configuradas</h3>
@@ -77,9 +77,13 @@
               </table>
             </div>
           }
-        </section>
+        } @else {
+          <div class="empty-state">Selecciona un producto para consultar sus presentaciones configuradas.</div>
+        }
+      </section>
 
-        <section class="unit-editor">
+      <section class="unit-editor">
+        @if (selectedProduct) {
           <h3>{{ editingId === null ? 'Nueva presentación' : 'Editar presentación' }}</h3>
           <div class="form-field">
             <label for="unitCode">Código *</label>
@@ -108,10 +112,13 @@
               <button pButton type="button" label="Cancelar edición" severity="secondary" [outlined]="true" (click)="resetForm()"></button>
             }
           </div>
-        </section>
-      </div>
-    } @else {
-      <p class="empty-state">Selecciona un producto para consultar y administrar sus presentaciones.</p>
-    }
+        } @else {
+          <div class="empty-editor-state">
+            <h3>Administrar presentaciones</h3>
+            <p>Al seleccionar un producto, aquí podrás agregar o modificar sus unidades y formatos de compra/venta.</p>
+          </div>
+        }
+      </section>
+    </div>
   </div>
 </div>
