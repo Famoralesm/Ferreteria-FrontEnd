@@ -22,27 +22,8 @@
 
     <div class="page-card order-form-card">
 
-      <form
-        [formGroup]="form"
-        class="form-grid">
-
-        @if (id) { 
-          <label for="orderNumber">
-            Número de pedido
-          </label>
-
-          <input
-            id="orderNumber"
-            pInputText
-            formControlName="orderNumber"
-            readonly>
-        }
-    
-
-
-        
-        
-        <div class="form-field customer-search-field">
+      <form [formGroup]="form" class="order-layout">
+<div class="order-column order-column-primary">@if (id) { <div class="order-number-field"><label>Número de pedido</label><div class="order-number-value">{{ form.get('orderNumber')?.value || '—' }}</div></div> }<div class="form-field customer-search-field">
           <label for="customerSearch">
             Nombre del cliente *
           </label>
@@ -73,31 +54,7 @@
 
           </p-select>
           <app-field-error [control]="form.get('customerName')" [messages]="{ required: 'Selecciona un cliente.' }" />
-        </div>
-
-
-
-        <div class="form-field">
-
-          <label for="phone">
-            Teléfono
-          </label>
-
-          <input
-            id="phone"
-            pInputText
-            formControlName="phone"
-            [readonly]="!!id || !isUnknownCustomerSelected"            
-            placeholder="Teléfono de contacto"
-            >
-
-        </div>
-        
-          <!-- ========================= -->
-          <!-- DIRECCIÓN -->
-          <!-- ========================= -->
-
-        <div class="form-field address-field">
+        </div><div class="form-field address-field">
 
           <label for="address">
             Dirección
@@ -118,14 +75,7 @@
           </div>
           <app-field-error [control]="form.get('address')" [messages]="{ required: 'La dirección es obligatoria.' }" />
 
-        </div>
-
-
-          <!-- ========================= -->
-          <!-- MÉTODO DE PAGO -->
-          <!-- ========================= -->
-
-        <div class="form-field payment-method-field">
+        </div><div class="form-field payment-method-field">
 
           <label for="paymentMethod">
             Método de pago *
@@ -183,14 +133,30 @@
           </div>
 
           <app-field-error [control]="form.get('paymentMethod')" [messages]="{ required: 'Selecciona un método de pago.' }" />
-        </div>
+        </div>@if (id) { <div class="form-field"><label for="createdBy">
+        Creado por
+      </label>
 
+      <input
+        id="createdBy"
+        pInputText
+        formControlName="createdBy"
+        readonly></div> }</div>
+<div class="order-column order-column-secondary"><div class="form-field">
 
-        <!-- ========================= -->
-        <!-- ESTADO -->
-        <!-- ========================= -->
+          <label for="phone">
+            Teléfono
+          </label>
 
-        <div class="form-field">
+          <input
+            id="phone"
+            pInputText
+            formControlName="phone"
+            [readonly]="!!id || !isUnknownCustomerSelected"            
+            placeholder="Teléfono de contacto"
+            >
+
+        </div><div class="form-field">
 
           <label for="status">
             Estado
@@ -206,29 +172,16 @@
             class="w-full">
           </p-select>
 
-        </div>
-          <div class="status-info">
+        </div>@if (deliveryPaymentError) { <small class="field-error delivery-payment-error">Para marcar el pedido como Entregado, primero debes registrar el pago como recibido.</small> }<div class="form-field"><label for="deliveryDate">Fecha de entrega *</label><input id="deliveryDate" type="date" pInputText formControlName="deliveryDate"><app-field-error [control]="form.get('deliveryDate')" [messages]="{ required: 'La fecha de entrega es obligatoria.' }" /></div><div class="form-field"><label for="notes">Observaciones</label><textarea id="notes" pInputText rows="5" formControlName="notes"></textarea></div>@if (id) { <div class="form-field"><label for="createdAt">
+        Fecha de creación
+      </label>
 
-            <div class="status-label">
-              Estado actual
-            </div>
-
-            <div class="status-value">
-              {{ getStatusLabel(form.get('status')?.value) }}
-            </div>
-
-            <div class="status-time">
-              <i class="pi pi-clock"></i>
-              <div class="status-timer">{{ elapsedTime }}</div>
-            </div>
-        
-      </div>
-
-    <!-- ========================= -->
-    <!-- PRODUCTOS -->
-    <!-- ========================= -->
-
-  <div class="form-field">
+      <input
+        id="createdAt"
+        pInputText
+        formControlName="createdAt"
+        readonly></div> }</div>
+<div class="order-column order-column-products"><div class="form-field">
 
     <section class="order-items-section">
 
@@ -477,88 +430,7 @@
 
     </section>
 
-  </div>
-
-
-     <!-- ========================= -->
-      <!-- OBSERVACIONES -->
-      <!-- ========================= -->
-
-
-      <div class="form-field">    
-
-        <label for="deliveryDate">
-          Fecha de entrega *
-        </label>
-
-        <input
-          id="deliveryDate"
-          type="date"
-          pInputText
-          formControlName="deliveryDate">
-        <app-field-error [control]="form.get('deliveryDate')" [messages]="{ required: 'La fecha de entrega es obligatoria.' }" />
-
-        <label for="notes">
-          Observaciones
-        </label>
-
-        <textarea
-          id="notes"
-          pInputText
-          rows="5"
-          formControlName="notes">
-        </textarea>
-
-      
-       @if (id) {
-
-      <label for="createdBy">
-        Creado por
-      </label>
-
-      <input
-        id="createdBy"
-        pInputText
-        formControlName="createdBy"
-        readonly>
-
-    
-
-      <label for="createdAt">
-        Fecha de creación
-      </label>
-
-      <input
-        id="createdAt"
-        pInputText
-        formControlName="createdAt"
-        readonly>
-
-
-
-      <label for="updated_at">
-        Última actualización
-      </label>
-
-      <input
-        id="updated_at"
-        pInputText
-        formControlName="updated_at"
-        readonly>
-
-    
-
-  }
-  </div>
-
-  
-
-  <div class="form-field"></div>
-
-  <!-- ========================= -->
-  <!-- ACCIONES -->
-  <!-- ========================= -->
-
+  </div></div>
         @if (paymentDialogVisible) {
           <div class="payment-dialog-backdrop" role="presentation">
             <section class="payment-dialog" role="dialog" aria-modal="true" aria-labelledby="payment-dialog-title">
@@ -634,5 +506,6 @@
     </button>
 
   </div>
+
 
 </form>
