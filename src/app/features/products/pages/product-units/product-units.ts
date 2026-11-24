@@ -131,7 +131,7 @@ export class ProductUnits implements OnInit, OnDestroy {
         this.measureUnits = [...this.measureUnits.filter(unit => unit.id !== saved.id), saved]
           .sort((a, b) => a.name.localeCompare(b.name, 'es'));
         this.resetMeasureForm();
-        this.measurePage = Math.min(this.measurePage, Math.max(0, this.measurePageCount - 1));
+        this.measurePage = 0;
         this.notificationService.success(wasCreating ? 'Unidad de medida creada.' : 'Unidad de medida actualizada.');
       },
       error: err => {
