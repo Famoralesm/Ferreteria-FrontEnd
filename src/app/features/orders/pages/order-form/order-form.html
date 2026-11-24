@@ -154,6 +154,8 @@
               <span class="payment-state-badge payment-pending">PENDIENTE</span>
               @if (!id) {
                 <small class="payment-hint">Guarda el pedido para confirmar el pago.</small>
+              } @else if (items.length === 0) {
+                <small class="payment-hint">Agrega al menos un producto para confirmar el pago.</small>
               } @else if (form.dirty || itemsChanged) {
                 <small class="payment-hint">Guarda los cambios del pedido antes de confirmar el pago.</small>
               }
@@ -265,7 +267,7 @@
   optionLabel="name"
   [(ngModel)]="selectedProduct"
   [ngModelOptions]="{standalone: true}"
-  [disabled]="isInRoute"
+  [disabled]="isInRoute || paymentStatus !== 'PENDING'
   placeholder="Seleccione un producto"
   class="w-full"
   [filter]="true"
