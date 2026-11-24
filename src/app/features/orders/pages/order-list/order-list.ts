@@ -68,7 +68,7 @@ export class OrderList {
     return orders.filter(order => {
       const date = new Date(order.fecha);
       const formattedDate = Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString('es-CL');
-      const fields = [order.id, order.cliente, order.fecha, formattedDate, order.total, order.estado];
+      const fields = [order.orderNumber, order.id, order.cliente, order.fecha, formattedDate, order.total, order.estado];
       return fields.some(value => this.normalize(value).includes(term));
     });
   }
