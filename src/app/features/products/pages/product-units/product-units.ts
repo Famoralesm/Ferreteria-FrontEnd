@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { Product } from '../../../../core/models/product/product';
+import { Store } from '../../../../core/models/store/store';
 import { ProductUnit, ProductUnitRequest } from '../../../../core/models/product/product-unit';
 import { UnitOfMeasure, UnitOfMeasureRequest } from '../../../../core/models/product/unit-of-measure';
 import { ProductService } from '../../../../core/services/product.service';
@@ -51,7 +52,7 @@ export class ProductUnits implements OnInit, OnDestroy {
     this.loadMeasureUnits();
     this.storeService.selectedStore$
       .pipe(
-        filter(store => store !== null),
+        filter((store): store is Store => store !== null),
         takeUntil(this.destroy$)
       )
       .subscribe(store => this.loadProducts(store.id));

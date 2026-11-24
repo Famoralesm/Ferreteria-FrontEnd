@@ -14,10 +14,6 @@ export interface Product {
   category?: string | null;
   brand?: string | null;
   unit?: string | null;
-  baseUnitId?: number | null;
-  baseUnitCode?: string | null;
-  baseUnitName?: string | null;
-  baseUnitSymbol?: string | null;
 
   createdAt?: string;
   updatedAt?: string;
