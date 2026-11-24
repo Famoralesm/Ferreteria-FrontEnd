@@ -525,6 +525,10 @@ private loadProducts(): void {
     this.router.navigate(['/orders']);
   }
 
+  get deliveryPaymentError(): boolean {
+    return this.form.get('status')?.value === 'DELIVERED' && this.paymentStatus !== 'PAID';
+  }
+
   get canConfirmPayment(): boolean {
     const orderStatus = this.form.get('status')?.value;
     return !!this.id
