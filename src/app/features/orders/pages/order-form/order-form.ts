@@ -293,7 +293,13 @@ private loadProducts(): void {
 
         next: order => {
 
-          const selectedStoreId = this.storeService.selectedStoreId;
+          if (this.form.get('status')?.value === 'DELIVERED' && this.paymentStatus !== 'PAID') {
+    this.notificationService.error('No se puede guardar un pedido como entregado sin confirmar el pago.');
+    this.cdr.detectChanges();
+    return;
+  }
+
+  const selectedStoreId = this.storeService.selectedStoreId;
           this.orderStoreId = order.storeId;
           if (order.storeId !== selectedStoreId) {
             this.notificationService.error(
