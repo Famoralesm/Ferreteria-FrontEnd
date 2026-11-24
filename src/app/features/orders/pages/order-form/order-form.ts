@@ -196,6 +196,8 @@ export class OrderForm implements OnInit , OnDestroy {
       customerName: ['',Validators.required],
       phone: [''],
       address: ['',Validators.required],
+      city: [{ value: '', disabled: true }],
+      commune: [{ value: '', disabled: true }],
       latitude: [null],
       longitude: [null],
       deliveryDate: ['',Validators.required],
@@ -1052,7 +1054,9 @@ onCustomerSelected(option: CustomerOption | null): void {
     this.form.patchValue({
       customerName: '',
       phone: '',
-      address: ''
+      address: '',
+      city: '',
+      commune: ''
     });
     return;
   }
@@ -1062,7 +1066,9 @@ onCustomerSelected(option: CustomerOption | null): void {
     this.form.patchValue({
       customerName: 'Cliente desconocido',
       phone: '',
-      address: ''
+      address: '',
+      city: '',
+      commune: ''
     });
 
     return;
@@ -1072,7 +1078,9 @@ onCustomerSelected(option: CustomerOption | null): void {
   this.form.patchValue({
     customerName: option.nombre,
     phone: option.telefono ?? '',
-    address: option.direccion ?? ''
+    address: option.direccion ?? '',
+    city: option.ciudad?.nombre ?? '',
+    commune: option.comuna?.nombre ?? ''
   });
 
   this.updateMapLinks();
@@ -1112,6 +1120,10 @@ private syncSelectedCustomer(): void {
     ];
 
     this.selectedCustomerOption = customer;
+    this.form.patchValue({
+      city: customer.ciudad?.nombre ?? '',
+      commune: customer.comuna?.nombre ?? ''
+    });
     return;
   }
 
@@ -1141,6 +1153,7 @@ private syncSelectedCustomer(): void {
     normalizedName === 'cliente desconocido'
       ? this.customerOptions[this.customerOptions.length - 1]
       : historicalCustomer;
+  this.form.patchValue({ city: '', commune: '' });
 }
 
 
