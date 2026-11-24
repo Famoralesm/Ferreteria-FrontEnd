@@ -309,17 +309,13 @@
 
         </div>
 
-        <div class="form-field">
+        <div class="form-field order-total-field">
 
-          <label for="totalAmount">
-            Total
-          </label>
+          <label for="totalAmount">Total</label>
 
-          <input
-            id="totalAmount"
-            pInputText
-            formControlName="totalAmount"
-            readonly>
+          <div id="totalAmount" class="order-total-value">
+            {{ form.get('totalAmount')?.value | currency:'CLP':'symbol':'1.0-0':'es-CL' }}
+          </div>
 
         </div>
       }
