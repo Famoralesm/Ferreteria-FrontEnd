@@ -41,6 +41,22 @@ export class ProductUnits implements OnInit, OnDestroy {
   measureForm: UnitOfMeasureRequest = this.emptyMeasureForm();
   measurePage = 0;
   readonly measurePageSize = 4;
+  presentationPage = 0;
+  readonly presentationPageSize = 4;
+
+  get paginatedPresentations(): ProductUnit[] {
+    const start = this.presentationPage * this.presentationPageSize;
+    return this.units.slice(start, start + this.presentationPageSize);
+  }
+
+  get presentationPageCount(): number {
+    return Math.ceil(this.units.length / this.presentationPageSize);
+  }
+
+  changePresentationPage(page: number): void {
+    if (page < 0 || page >= this.presentationPageCount) return;
+    this.presentationPage = page;
+  }
 
   get activeMeasureUnits(): UnitOfMeasure[] {
     return this.measureUnits.filter(unit => unit.active);
@@ -165,6 +181,22 @@ export class ProductUnits implements OnInit, OnDestroy {
     this.measureForm = { code: unit.code, name: unit.name, symbol: unit.symbol };
   }
 
+  deleteMeasureUnit(unit: UnitOfMeasure): void {
+    if (!confirm(`¿Eliminar definitivamente la unidad "${unit.name}"? Esta acción no se puede deshacer.`)) return;
+    this.unitOfMeasureService.delete(unit.id).subscribe({
+      next: () => {
+        this.measureUnits = this.measureUnits.filter(item => item.id !== unit.id);
+        if (this.measureEditingId === unit.id) this.resetMeasureForm();
+        this.measurePage = Math.min(this.measurePage, Math.max(0, this.measurePageCount - 1));
+        this.notificationService.success('Unidad de medida eliminada.');
+      },
+      error: err => {
+        console.error('Error eliminando unidad de medida:', err);
+        this.notificationService.error(err?.error?.message ?? 'No fue posible eliminar la unidad de medida.');
+      }
+    });
+  }
+
   toggleMeasureUnit(unit: UnitOfMeasure): void {
     const action = unit.active ? 'desactivar' : 'activar';
     if (!confirm(`¿Deseas ${action} la unidad "${unit.name}"?`)) return;
@@ -203,6 +235,7 @@ export class ProductUnits implements OnInit, OnDestroy {
         setTimeout(() => {
           if (this.selectedProduct?.id !== productId) return;
           this.units = units ?? [];
+          this.presentationPage = 0;
           this.loading = false;
           this.cdr.detectChanges();
         });
@@ -215,6 +248,24 @@ export class ProductUnits implements OnInit, OnDestroy {
           console.error('Error cargando presentaciones:', err);
           this.notificationService.error('No fue posible cargar las presentaciones del producto.');
         });
+      }
+    });
+  }
+
+  deletePresentation(unit: ProductUnit): void {
+    if (!this.selectedProduct) return;
+    if (!confirm(`¿Eliminar definitivamente la presentación "${unit.name}"? Esta acción no se puede deshacer.`)) return;
+    const productId = this.selectedProduct.id;
+    this.productUnitService.delete(productId, unit.id).subscribe({
+      next: () => {
+        this.units = this.units.filter(item => item.id !== unit.id);
+        if (this.editingId === unit.id) this.resetForm();
+        this.presentationPage = Math.min(this.presentationPage, Math.max(0, this.presentationPageCount - 1));
+        this.notificationService.success('Presentación eliminada.');
+      },
+      error: err => {
+        console.error('Error eliminando presentación:', err);
+        this.notificationService.error(err?.error?.message ?? 'No fue posible eliminar la presentación.');
       }
     });
   }

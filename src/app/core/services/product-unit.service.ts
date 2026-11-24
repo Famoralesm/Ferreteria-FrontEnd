@@ -22,6 +22,10 @@ export class ProductUnitService {
     return this.http.put<ProductUnit>(`${this.api}/${productId}/units/${unitId}`, request);
   }
 
+  delete(productId: number, unitId: number): Observable<void> {
+    return this.http.delete<void>(`${this.api}/${productId}/units/${unitId}`);
+  }
+
   setActive(productId: number, unitId: number, active: boolean): Observable<void> {
     const action = active ? 'activate' : 'deactivate';
     return this.http.patch<void>(`${this.api}/${productId}/units/${unitId}/${action}`, {});

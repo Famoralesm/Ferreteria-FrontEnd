@@ -68,6 +68,8 @@
                         <button pButton type="button" [icon]="unit.active ? 'pi pi-ban' : 'pi pi-check'"
                           [severity]="unit.active ? 'danger' : 'success'" [text]="true"
                           (click)="toggleMeasureUnit(unit)" [attr.aria-label]="unit.active ? 'Desactivar unidad' : 'Activar unidad'"></button>
+                        <button pButton type="button" icon="pi pi-trash" severity="danger" [text]="true"
+                          (click)="deleteMeasureUnit(unit)" aria-label="Eliminar unidad"></button>
                       </td>
                     </tr>
                   }
@@ -113,7 +115,7 @@
               <table class="units-table">
                 <thead><tr><th>Código</th><th>Presentación</th><th>Factor</th><th>Compra</th><th>Venta</th><th>Estado</th><th>Acciones</th></tr></thead>
                 <tbody>
-                  @for (unit of units; track unit.id) {
+                  @for (unit of paginatedPresentations; track unit.id) {
                     <tr>
                       <td><strong>{{ unit.code }}</strong></td><td>{{ unit.name }}</td><td>{{ unit.conversionFactor }}</td>
                       <td>{{ unit.purchaseAllowed ? 'Sí' : 'No' }}</td><td>{{ unit.saleAllowed ? 'Sí' : 'No' }}</td>
@@ -121,12 +123,22 @@
                       <td class="row-actions">
                         <button pButton type="button" icon="pi pi-pencil" severity="secondary" [text]="true" (click)="edit(unit)" aria-label="Editar"></button>
                         <button pButton type="button" [icon]="unit.active ? 'pi pi-ban' : 'pi pi-check'" [severity]="unit.active ? 'danger' : 'success'" [text]="true" (click)="toggleActive(unit)" [attr.aria-label]="unit.active ? 'Desactivar' : 'Activar'"></button>
+                        <button pButton type="button" icon="pi pi-trash" severity="danger" [text]="true" (click)="deletePresentation(unit)" aria-label="Eliminar presentación"></button>
                       </td>
                     </tr>
                   }
                 </tbody>
               </table>
             </div>
+            @if (presentationPageCount > 1) {
+              <div class="measure-pagination">
+                <button pButton type="button" icon="pi pi-chevron-left" severity="secondary" [text]="true"
+                  [disabled]="presentationPage === 0" (click)="changePresentationPage(presentationPage - 1)" aria-label="Página anterior"></button>
+                <span>Página {{ presentationPage + 1 }} de {{ presentationPageCount }}</span>
+                <button pButton type="button" icon="pi pi-chevron-right" severity="secondary" [text]="true"
+                  [disabled]="presentationPage >= presentationPageCount - 1" (click)="changePresentationPage(presentationPage + 1)" aria-label="Página siguiente"></button>
+              </div>
+            }
           }
         } @else {
           <div class="empty-state">Selecciona un producto para consultar sus presentaciones configuradas.</div>

@@ -22,6 +22,10 @@ export class UnitOfMeasureService {
     return this.http.put<UnitOfMeasure>(`${this.api}/${id}`, request);
   }
 
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.api}/${id}`);
+  }
+
   setActive(id: number, active: boolean): Observable<UnitOfMeasure> {
     return this.http.patch<UnitOfMeasure>(`${this.api}/${id}/active?active=${active}`, {});
   }
