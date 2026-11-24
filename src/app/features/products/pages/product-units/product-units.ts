@@ -33,6 +33,8 @@ export class ProductUnits implements OnInit {
   measureSaving = false;
   measureEditingId: number | null = null;
   measureForm: UnitOfMeasureRequest = this.emptyMeasureForm();
+  selectedBaseUnitId: number | null = null;
+  savingBaseUnit = false;
 
   constructor(
     private productService: ProductService,
@@ -126,6 +128,7 @@ export class ProductUnits implements OnInit {
 
   onProductChange(product: Product | null): void {
     this.selectedProduct = product;
+    this.selectedBaseUnitId = product?.baseUnitId ?? null;
     this.units = [];
     this.resetForm();
     if (!product) return;
@@ -138,6 +141,31 @@ export class ProductUnits implements OnInit {
         this.notificationService.error('No fue posible cargar las presentaciones del producto.');
       }
     });
+  }
+
+  saveBaseUnit(): void {
+    if (!this.selectedProduct || this.selectedBaseUnitId === null) {
+      this.notificationService.warning('Selecciona una unidad base.');
+      return;
+    }
+    this.savingBaseUnit = true;
+    this.productService.setBaseUnit(this.selectedProduct.id, this.selectedBaseUnitId).subscribe({
+      next: updated => {
+        this.selectedProduct = updated;
+        this.products = this.products.map(item => item.id === updated.id ? updated : item);
+        this.savingBaseUnit = false;
+        this.notificationService.success('Unidad base actualizada.');
+      },
+      error: err => {
+        this.savingBaseUnit = false;
+        console.error('Error asignando unidad base:', err);
+        this.notificationService.error(err?.error?.message ?? 'No fue posible asignar la unidad base.');
+      }
+    });
+  }
+
+  get activeMeasureUnits(): UnitOfMeasure[] {
+    return this.measureUnits.filter(unit => unit.active);
   }
 
   save(): void {
