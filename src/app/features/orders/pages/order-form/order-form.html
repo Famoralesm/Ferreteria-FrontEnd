@@ -208,11 +208,12 @@
           }
         </div>
         <div class="form-field quantity-field">
-          <label for="quantity">Cantidad</label>
+          <label for="quantity">Cantidad{{ selectedProduct?.baseUnitSymbol ? ' (' + selectedProduct.baseUnitSymbol + ')' : '' }}</label>
           <p-inputNumber [(ngModel)]="quantity"
             [disabled]="isInRoute || paymentStatus !== 'PENDING'"
             mode="decimal" id="quantity" [ngModelOptions]="{standalone: true}"
-            [showButtons]="true" inputId="minmax-buttons" [min]="0" [max]="100" />
+            [showButtons]="true" inputId="minmax-buttons" [min]="selectedProduct?.minimumSaleQuantity ?? 0.0001"
+            [step]="selectedProduct?.saleQuantityIncrement ?? 1" [minFractionDigits]="0" [maxFractionDigits]="4" [max]="100" />
           @if (quantityError) {
             <small class="field-error">La cantidad debe ser mayor que cero.</small>
           }

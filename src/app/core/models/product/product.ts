@@ -7,6 +7,8 @@ export interface Product {
   price: number;
   wholesalePrice?: number | null;
   wholesaleMinQuantity?: number | null;
+  minimumSaleQuantity?: number;
+  saleQuantityIncrement?: number;
 
   stock: number;
   stockMinimo?: number;

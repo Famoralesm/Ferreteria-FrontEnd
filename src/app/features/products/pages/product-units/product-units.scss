@@ -66,6 +66,17 @@
   .units-layout { grid-template-columns: 1fr; min-height: 0; }
   .units-list, .unit-editor { min-height: 260px; }
 }
+.base-unit-value {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 9px 12px;
+  border: 1px solid #dbe4ee;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+.base-unit-value small { color: #718096; font-size: 12px; }
+
 @media (max-width: 600px) { .units-page { padding: 16px; } }
 
 /* Catálogo: formulario compacto a la izquierda y listado a la derecha. */

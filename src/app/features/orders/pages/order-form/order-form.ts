@@ -580,8 +580,17 @@ private loadProducts(): void {
     item => item.productId === this.selectedProduct!.id
   );
 
+  const resultingQuantity = (existing?.quantity ?? 0) + this.quantity;
+  const minimum = this.selectedProduct.minimumSaleQuantity ?? 1;
+  const increment = this.selectedProduct.saleQuantityIncrement ?? 1;
+  const steps = (resultingQuantity - minimum) / increment;
+  if (resultingQuantity < minimum || !Number.isFinite(steps) || Math.abs(steps - Math.round(steps)) > 0.000001) {
+    this.notificationService.warning(`La cantidad debe ser al menos ${minimum} ${this.selectedProduct.baseUnitSymbol ?? 'unidades'} y avanzar en incrementos de ${increment}.`);
+    return;
+  }
+
   if (existing) {
-    existing.quantity += this.quantity;
+    existing.quantity = resultingQuantity;
     this.applyItemPricing(existing, this.selectedProduct);
     if (existing.wholesaleApplied) {
       this.notificationService.success(
