@@ -7,6 +7,13 @@
   </div>
 
   <div class="page-card units-page">
+    <p-tabs [(value)]="activeTab" class="units-tabs">
+      <p-tablist>
+        <p-tab value="catalog">Catálogo de unidades de medida</p-tab>
+        <p-tab value="presentations">Presentaciones configuradas</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="catalog">
     <section class="measure-catalog">
       <div class="section-heading">
         <div>
@@ -76,16 +83,18 @@
         </div>
       </div>
     </section>
-
-    <div class="catalog-divider"></div>
-
-    <div class="form-field product-picker">
+        </p-tabpanel>
+        <p-tabpanel value="presentations">
+    <div class="presentation-toolbar">
+      <div class="form-field product-picker">
       <label for="unitProduct">Producto</label>
       <p-select inputId="unitProduct" [options]="products" optionLabel="name" [(ngModel)]="selectedProduct"
         (onChange)="onProductChange($event.value)" [filter]="true" filterBy="name,sku"
         placeholder="Selecciona un producto" [loading]="productsLoading" [showClear]="true" class="w-full">
         <ng-template #item let-product><div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div></ng-template>
       </p-select>
+      </div>
+      <h3 class="editor-title">{{ editingId === null ? 'Nueva presentación' : 'Editar presentación' }}</h3>
     </div>
 
     <div class="units-layout">
@@ -125,7 +134,6 @@
       </section>
       <section class="unit-editor">
         @if (selectedProduct) {
-          <h3>{{ editingId === null ? 'Nueva presentación' : 'Editar presentación' }}</h3>
           <div class="form-field">
             <label for="unitCode">Código *</label>
             <p-select inputId="unitCode" [options]="activeMeasureUnits" optionLabel="code" optionValue="code"
@@ -154,5 +162,8 @@
         }
       </section>
     </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
   </div>
 </div>

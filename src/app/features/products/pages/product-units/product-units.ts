@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
+import { TabsModule } from 'primeng/tabs';
 import { Product } from '../../../../core/models/product/product';
 import { Store } from '../../../../core/models/store/store';
 import { ProductUnit, ProductUnitRequest } from '../../../../core/models/product/product-unit';
@@ -18,11 +19,12 @@ import { NotificationService } from '../../../../core/services/notification.serv
 @Component({
   selector: 'app-product-units',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, SelectModule, InputTextModule],
+  imports: [CommonModule, FormsModule, ButtonModule, SelectModule, InputTextModule, TabsModule],
   templateUrl: './product-units.html',
   styleUrl: './product-units.scss'
 })
 export class ProductUnits implements OnInit, OnDestroy {
+  activeTab = 'catalog';
   products: Product[] = [];
   productsLoading = false;
   private readonly destroy$ = new Subject<void>();

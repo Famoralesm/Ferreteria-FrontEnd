@@ -133,3 +133,25 @@
 .catalog-divider {
   margin: 12px 0 0;
 }
+
+
+/* Pestañas para separar el catálogo común de las presentaciones por producto. */
+.units-tabs { display: block; min-width: 0; }
+.units-tabs p-tablist { border-bottom: 1px solid #e5eaf0; }
+.units-tabs p-tab { font-size: 14px; font-weight: 600; }
+.units-tabs p-tabpanel { display: block; padding-top: 24px; }
+.measure-catalog { margin-bottom: 0; }
+.presentation-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.8fr);
+  gap: 28px;
+  align-items: start;
+  margin-bottom: 20px;
+}
+.presentation-toolbar .product-picker { max-width: 520px; }
+.editor-title { margin: 0; color: #243447; font-size: 17px; line-height: 20px; }
+.units-layout { margin-top: 0; }
+.unit-editor { padding-top: 20px; }
+@media (max-width: 900px) {
+  .presentation-toolbar { grid-template-columns: 1fr; gap: 12px; }
+}
