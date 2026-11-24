@@ -102,6 +102,22 @@
           </p-select>
         </div>
         @if (selectedProduct) {
+          <div class="form-field base-unit-picker">
+            <label>Unidad base del producto</label>
+            @if (selectedProduct.baseUnitId) {
+              <div class="base-unit-value">
+                <strong>{{ selectedProduct.baseUnitName }}</strong>
+                <small>{{ selectedProduct.baseUnitSymbol }} · Definida para este producto</small>
+              </div>
+            } @else {
+              <p-select inputId="baseUnit" [options]="activeMeasureUnits" optionLabel="name" optionValue="id"
+                [ngModel]="null" (ngModelChange)="onBaseUnitChange($event)"
+                placeholder="Selecciona la unidad base" [filter]="true" filterBy="name,code" class="w-full">
+                <ng-template #item let-unit><div class="product-option"><strong>{{ unit.name }}</strong><small>{{ unit.code }} · {{ unit.symbol }}</small></div></ng-template>
+              </p-select>
+              <small>Define primero la unidad en la que se medirán el stock, los precios y las reglas de venta.</small>
+            }
+          </div>
           <div class="section-heading">
             <div><h3>Presentaciones configuradas</h3><p>{{ selectedProduct.name }} · Unidad base: {{ selectedProduct.baseUnitName || "Sin definir" }}</p></div>
             <span class="units-count">{{ units.length }}</span>

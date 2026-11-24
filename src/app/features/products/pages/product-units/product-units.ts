@@ -217,6 +217,22 @@ export class ProductUnits implements OnInit, OnDestroy {
     this.measureForm = this.emptyMeasureForm();
   }
 
+  onBaseUnitChange(unitOfMeasureId: number | null): void {
+    if (!this.selectedProduct || !unitOfMeasureId || this.selectedProduct.baseUnitId) return;
+    const productId = this.selectedProduct.id;
+    this.productService.setBaseUnit(productId, unitOfMeasureId).subscribe({
+      next: saved => {
+        this.selectedProduct = { ...this.selectedProduct!, ...saved };
+        this.products = this.products.map(product => product.id === saved.id ? { ...product, ...saved } : product);
+        this.notificationService.success(`Unidad base definida: ${saved.baseUnitName} (${saved.baseUnitSymbol}).`);
+      },
+      error: err => {
+        console.error('Error asignando unidad base:', err);
+        this.notificationService.error(err?.error?.message ?? 'No fue posible definir la unidad base.');
+      }
+    });
+  }
+
   onProductChange(product: Product | null): void {
     this.selectedProduct = product;
     this.units = [];

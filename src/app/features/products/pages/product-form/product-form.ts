@@ -118,36 +118,6 @@ export class ProductForm implements OnInit {
   ];
 
 
-  units = [
-
-    {
-      label: 'Unidad',
-      value: 'UNIDAD'
-    },
-
-    {
-      label: 'Metro',
-      value: 'METRO'
-    },
-
-    {
-      label: 'Caja',
-      value: 'CAJA'
-    },
-
-    {
-      label: 'Bolsa',
-      value: 'BOLSA'
-    },
-
-    {
-      label: 'Galón',
-      value: 'GALON'
-    }
-
-  ];
-
-
   constructor(
 
     private notificationService: NotificationService
@@ -189,10 +159,6 @@ export class ProductForm implements OnInit {
         '', Validators.required
       ],
 
-      unit: [
-        'UNIDAD', Validators.required
-      ],
-
       createdAt: [
         {
           value: '',
@@ -209,7 +175,9 @@ export class ProductForm implements OnInit {
 
       wholesalePrice: [null, Validators.min(0)],
       
-      wholesaleMinQuantity: [null, Validators.min(1)],
+      minimumSaleQuantity: [1, [Validators.required, Validators.min(0.0001)]],
+      saleQuantityIncrement: [1, [Validators.required, Validators.min(0.0001)]],
+      wholesaleMinQuantity: [null, Validators.min(0.0001)],
 
     });
 
@@ -291,11 +259,12 @@ ngOnDestroy(): void {
           active: product.active,
           category: product.category,
           brand: product.brand,
-          unit: product.unit,
           createdAt: product.createdAt,
           updatedAt: product.updatedAt,
           wholesalePrice: product.wholesalePrice,
-          wholesaleMinQuantity: product.wholesaleMinQuantity
+          wholesaleMinQuantity: product.wholesaleMinQuantity,
+          minimumSaleQuantity: product.minimumSaleQuantity ?? 1,
+          saleQuantityIncrement: product.saleQuantityIncrement ?? 1
         });
 
         this.form.markAsPristine();
@@ -331,9 +300,10 @@ ngOnDestroy(): void {
     active: value.active,
     category: value.category,
     brand: value.brand,
-    unit: value.unit,
     wholesalePrice: value.wholesalePrice,
-    wholesaleMinQuantity: value.wholesaleMinQuantity
+    wholesaleMinQuantity: value.wholesaleMinQuantity,
+    minimumSaleQuantity: value.minimumSaleQuantity,
+    saleQuantityIncrement: value.saleQuantityIncrement
   };
 
   const formValue = this.form.getRawValue();
@@ -348,7 +318,8 @@ const updateRequest: UpdateProductRequest = {
   active: formValue.active ?? true,
   category: formValue.category,
   brand: formValue.brand,
-  unit: formValue.unit
+  minimumSaleQuantity: formValue.minimumSaleQuantity,
+  saleQuantityIncrement: formValue.saleQuantityIncrement
 };
 
   const finish = () => {

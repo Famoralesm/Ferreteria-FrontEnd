@@ -89,12 +89,32 @@
               <small>Precio unitario que se aplicará al alcanzar la cantidad mayorista.</small>
             </div>
 
+            <div class="form-field">
+              <label for="minimumSaleQuantity">Cantidad mínima de venta (unidad base)</label>
+              <p-inputNumber id="minimumSaleQuantity" formControlName="minimumSaleQuantity"
+                [min]="0.0001" [minFractionDigits]="0" [maxFractionDigits]="4"
+                [useGrouping]="false" class="w-full">
+              </p-inputNumber>
+              <small>Mínimo que se puede vender, expresado en la unidad base configurada en Presentaciones.</small>
+            </div>
+
+            <div class="form-field">
+              <label for="saleQuantityIncrement">Incremento de venta (unidad base)</label>
+              <p-inputNumber id="saleQuantityIncrement" formControlName="saleQuantityIncrement"
+                [min]="0.0001" [minFractionDigits]="0" [maxFractionDigits]="4"
+                [useGrouping]="false" class="w-full">
+              </p-inputNumber>
+              <small>Ejemplo: mínimo 0,5 e incremento 0,5 permite 0,5; 1; 1,5; 2, etc.</small>
+            </div>
+
             <div class="form-field wholesale-field">
-              <label for="wholesaleMinQuantity">Desde cuántas unidades</label>
+              <label for="wholesaleMinQuantity">Umbral mayorista (unidad base)</label>
               <p-inputNumber
                 id="wholesaleMinQuantity"
                 formControlName="wholesaleMinQuantity"
-                [min]="1"
+                [min]="0.0001"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="4"
                 [showClear]="true"
                 [useGrouping]="false"
                 class="w-full">
@@ -148,18 +168,9 @@
               <app-field-error [control]="form.get('brand')" [messages]="{ required: 'La marca es obligatoria.' }" />
             </div>
 
-            <div class="form-field">
-              <label for="unit">Unidad <span>*</span></label>
-              <p-select
-                id="unit"
-                [options]="units"
-                optionLabel="label"
-                optionValue="value"
-                formControlName="unit"
-                placeholder="Seleccione unidad"
-                class="w-full">
-              </p-select>
-              <app-field-error [control]="form.get('unit')" [messages]="{ required: 'La unidad es obligatoria.' }" />
+            <div class="form-field base-unit-help">
+              <label>Unidad base</label>
+              <small>Se configura en Productos → Presentaciones. Las cantidades mínimas, incrementos y umbral mayorista de esta ficha se expresan en esa unidad base.</small>
             </div>
             <div class="active-field">
             <p-checkbox
