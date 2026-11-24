@@ -1,14 +1,7 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs';
 
 import {
-  AppNotification as NotificationData,
   NotificationService
 } from '../../../core/services/notification.service';
 
@@ -21,34 +14,16 @@ import {
   templateUrl: './app-notification.html',
   styleUrl: './app-notification.scss'
 })
-export class AppNotification implements OnInit, OnDestroy {
+export class AppNotification {
 
-  notification: NotificationData | null = null;
-
-  private subscription?: Subscription;
+  readonly notification$ = this.notificationService.notification$;
 
   constructor(
     private notificationService: NotificationService
   ) {}
 
-  ngOnInit(): void {
-
-    this.subscription = this.notificationService
-      .notification$
-      .subscribe(notification => {
-
-        this.notification = notification;
-
-      });
-
-  }
-
   close(): void {
     this.notificationService.clear();
-  }
-
-  ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
   }
 
 }

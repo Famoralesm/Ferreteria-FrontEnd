@@ -1,5 +1,5 @@
 <div
-  *ngIf="notification as item"
+  *ngIf="notification$ | async as item"
   class="app-notification"
   [ngClass]="'app-notification--' + item.type"
   role="status"
