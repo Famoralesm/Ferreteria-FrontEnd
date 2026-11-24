@@ -76,26 +76,11 @@
       </p-select>
     </div>
 
-    @if (selectedProduct) {
-      <section class="base-unit-panel">
-        <div class="form-field">
-          <label for="baseUnit">Unidad base del producto</label>
-          <p-select inputId="baseUnit" [options]="activeMeasureUnits" optionLabel="name" optionValue="id"
-            [(ngModel)]="selectedBaseUnitId" placeholder="Selecciona la unidad base" class="w-full">
-            <ng-template #item let-unit><span>{{ unit.name }} ({{ unit.symbol }}) · {{ unit.code }}</span></ng-template>
-          </p-select>
-          <small>Los factores de conversión de las presentaciones se expresarán en esta unidad.</small>
-        </div>
-        <button pButton type="button" label="Guardar unidad base" icon="pi pi-check"
-          [disabled]="savingBaseUnit || selectedBaseUnitId === null" (click)="saveBaseUnit()"></button>
-      </section>
-    }
-
     <div class="units-layout">
       <section class="units-list">
         @if (selectedProduct) {
           <div class="section-heading">
-            <div><h3>Presentaciones configuradas</h3><p>{{ selectedProduct.name }} · Unidad base: {{ selectedProduct.baseUnitName || 'Sin definir' }}</p></div>
+            <div><h3>Presentaciones configuradas</h3><p>{{ selectedProduct.name }} · Unidad base pendiente de vincular</p></div>
             <span class="units-count">{{ units.length }}</span>
           </div>
           @if (loading) {

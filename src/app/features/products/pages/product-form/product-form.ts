@@ -118,6 +118,36 @@ export class ProductForm implements OnInit {
   ];
 
 
+  units = [
+
+    {
+      label: 'Unidad',
+      value: 'UNIDAD'
+    },
+
+    {
+      label: 'Metro',
+      value: 'METRO'
+    },
+
+    {
+      label: 'Caja',
+      value: 'CAJA'
+    },
+
+    {
+      label: 'Bolsa',
+      value: 'BOLSA'
+    },
+
+    {
+      label: 'Galón',
+      value: 'GALON'
+    }
+
+  ];
+
+
   constructor(
 
     private notificationService: NotificationService
@@ -157,6 +187,10 @@ export class ProductForm implements OnInit {
 
       brand: [
         '', Validators.required
+      ],
+
+      unit: [
+        'UNIDAD', Validators.required
       ],
 
       createdAt: [
@@ -257,6 +291,7 @@ ngOnDestroy(): void {
           active: product.active,
           category: product.category,
           brand: product.brand,
+          unit: product.unit,
           createdAt: product.createdAt,
           updatedAt: product.updatedAt,
           wholesalePrice: product.wholesalePrice,
@@ -296,6 +331,7 @@ ngOnDestroy(): void {
     active: value.active,
     category: value.category,
     brand: value.brand,
+    unit: value.unit,
     wholesalePrice: value.wholesalePrice,
     wholesaleMinQuantity: value.wholesaleMinQuantity
   };

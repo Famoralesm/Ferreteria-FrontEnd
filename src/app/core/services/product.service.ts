@@ -78,10 +78,6 @@ findById(id: number, sucursalId: number): Observable<Product> {
     );
   }
 
-  setBaseUnit(id: number, unitOfMeasureId: number): Observable<Product> {
-    return this.http.patch<Product>(`${this.api}/${id}/base-unit`, { unitOfMeasureId });
-  }
-
   deleteImage(id: number): Observable<Product> {
     return this.http.delete<Product>(
       `${this.api}/${id}/image`

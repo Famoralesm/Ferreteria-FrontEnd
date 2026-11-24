@@ -148,6 +148,19 @@
               <app-field-error [control]="form.get('brand')" [messages]="{ required: 'La marca es obligatoria.' }" />
             </div>
 
+            <div class="form-field">
+              <label for="unit">Unidad <span>*</span></label>
+              <p-select
+                id="unit"
+                [options]="units"
+                optionLabel="label"
+                optionValue="value"
+                formControlName="unit"
+                placeholder="Seleccione unidad"
+                class="w-full">
+              </p-select>
+              <app-field-error [control]="form.get('unit')" [messages]="{ required: 'La unidad es obligatoria.' }" />
+            </div>
             <div class="active-field">
             <p-checkbox
               formControlName="active"
