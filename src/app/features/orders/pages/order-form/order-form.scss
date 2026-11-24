@@ -578,3 +578,44 @@ form {
     width: 100%;
   }
 }
+
+/* Correcciones de validación y selector de productos */
+.product-selector {
+  grid-template-columns: 350px 100px 120px;
+  justify-content: start;
+  align-items: end;
+}
+.product-selector .product-field {
+  width: 350px;
+  min-width: 0;
+}
+.product-selector .add-product-button {
+  width: 120px;
+  justify-self: start;
+}
+.product-selector .add-product-button button {
+  width: 120px;
+  max-width: 120px;
+}
+@media (max-width: 900px) {
+  .product-selector {
+    grid-template-columns: minmax(0, 1fr) 100px;
+  }
+  .product-selector .product-field {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+  .product-selector .add-product-button {
+    grid-column: 1 / -1;
+    width: 120px;
+  }
+}
+@media (max-width: 480px) {
+  .product-selector .add-product-button {
+    width: 100%;
+  }
+  .product-selector .add-product-button button {
+    width: 100%;
+    max-width: 100%;
+  }
+}
