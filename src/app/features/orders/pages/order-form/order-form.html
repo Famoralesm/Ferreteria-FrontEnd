@@ -137,7 +137,6 @@
             optionLabel="label"
             optionValue="value"
             formControlName="paymentMethod"
-            [disabled]="paymentStatus !== 'PENDING'"
             placeholder="Seleccione método de pago"
             class="w-full">
           </p-select>
@@ -607,16 +606,29 @@
       label="Guardar"
       icon="pi pi-check"
       severity="success"
-      (click)="saveOrder()">
+      [disabled]="savingOrder"
+      [loading]="savingOrder"
+      (click)="saveOrder(false)">
     </button>
 
     <button
       pButton
       type="button"
-      label="Cancelar"
+      label="Guardar y salir"
+      icon="pi pi-save"
+      severity="info"
+      [disabled]="savingOrder"
+      (click)="saveOrder(true)">
+    </button>
+
+    <button
+      pButton
+      type="button"
+      label="Salir"
       icon="pi pi-times"
       severity="secondary"
-      (click)="cancel()">
+      [disabled]="savingOrder"
+      (click)="exit()">
     </button>
 
   </div>
