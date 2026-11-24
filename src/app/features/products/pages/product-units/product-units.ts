@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject, filter, takeUntil } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
+import { InputTextModule } from 'primeng/inputtext';
 import { Product } from '../../../../core/models/product/product';
 import { ProductUnit, ProductUnitRequest } from '../../../../core/models/product/product-unit';
 import { UnitOfMeasure, UnitOfMeasureRequest } from '../../../../core/models/product/unit-of-measure';
@@ -15,12 +17,14 @@ import { NotificationService } from '../../../../core/services/notification.serv
 @Component({
   selector: 'app-product-units',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, SelectModule],
+  imports: [CommonModule, FormsModule, ButtonModule, SelectModule, InputTextModule],
   templateUrl: './product-units.html',
   styleUrl: './product-units.scss'
 })
-export class ProductUnits implements OnInit {
+export class ProductUnits implements OnInit, OnDestroy {
   products: Product[] = [];
+  productsLoading = false;
+  private readonly destroy$ = new Subject<void>();
   selectedProduct: Product | null = null;
   units: ProductUnit[] = [];
   loading = false;
@@ -39,23 +43,43 @@ export class ProductUnits implements OnInit {
     private productUnitService: ProductUnitService,
     private unitOfMeasureService: UnitOfMeasureService,
     private storeService: StoreService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.loadMeasureUnits();
-    const storeId = this.storeService.selectedStoreId;
-    if (storeId === null) {
-      this.notificationService.warning('Selecciona una sucursal para administrar las presentaciones.');
-      return;
-    }
-    this.productService.findAll(storeId).subscribe({
-      next: products => this.products = products,
-      error: err => {
-        console.error('Error cargando productos:', err);
-        this.notificationService.error('No fue posible cargar los productos.');
-      }
-    });
+    this.storeService.selectedStore$
+      .pipe(
+        filter(store => store !== null),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(store => this.loadProducts(store.id));
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadProducts(storeId: number): void {
+    this.productsLoading = true;
+    this.productService.findAll(storeId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: products => {
+          this.products = products ?? [];
+          this.productsLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: err => {
+          console.error('Error cargando productos de la sucursal:', err);
+          this.products = [];
+          this.productsLoading = false;
+          this.cdr.detectChanges();
+          this.notificationService.error('No fue posible cargar los productos de la sucursal seleccionada.');
+        }
+      });
   }
 
   loadMeasureUnits(): void {
@@ -84,12 +108,15 @@ export class ProductUnits implements OnInit {
     const operation = this.measureEditingId === null
       ? this.unitOfMeasureService.create(request)
       : this.unitOfMeasureService.update(this.measureEditingId, request);
+    const wasCreating = this.measureEditingId === null;
     operation.subscribe({
-      next: () => {
+      next: saved => {
         this.measureSaving = false;
-        this.notificationService.success(this.measureEditingId === null ? 'Unidad de medida creada.' : 'Unidad de medida actualizada.');
+        this.measureUnits = [...this.measureUnits.filter(unit => unit.id !== saved.id), saved]
+          .sort((a, b) => a.name.localeCompare(b.name, 'es'));
+        this.cdr.detectChanges();
+        this.notificationService.success(wasCreating ? 'Unidad de medida creada.' : 'Unidad de medida actualizada.');
         this.resetMeasureForm();
-        this.loadMeasureUnits();
       },
       error: err => {
         this.measureSaving = false;

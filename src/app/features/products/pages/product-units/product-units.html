@@ -16,28 +16,56 @@
         <span class="units-count">{{ measureUnits.length }}</span>
       </div>
 
-      <div class="measure-editor">
-        <div class="form-field">
-          <label for="measureCode">Código *</label>
-          <input id="measureCode" type="text" maxlength="30" [(ngModel)]="measureForm.code" placeholder="Ej: LITRO">
+      <div class="measure-catalog-grid">
+        <div class="measure-editor">
+          <div class="form-field">
+            <label for="measureCode">Código *</label>
+            <input id="measureCode" pInputText type="text" maxlength="30" [(ngModel)]="measureForm.code" placeholder="Ej: LITRO">
+          </div>
+          <div class="form-field">
+            <label for="measureName">Nombre *</label>
+            <input id="measureName" pInputText type="text" maxlength="80" [(ngModel)]="measureForm.name" placeholder="Ej: Litro">
+          </div>
+          <div class="form-field">
+            <label for="measureSymbol">Símbolo *</label>
+            <input id="measureSymbol" pInputText type="text" maxlength="12" [(ngModel)]="measureForm.symbol" placeholder="Ej: L">
+          </div>
+          <div class="editor-actions">
+            <button pButton type="button" [label]="measureEditingId === null ? 'Agregar unidad' : 'Guardar cambios'"
+              icon="pi pi-check" [disabled]="measureSaving" (click)="saveMeasureUnit()"></button>
+            @if (measureEditingId !== null) {
+              <button pButton type="button" label="Cancelar" severity="secondary" [outlined]="true" (click)="resetMeasureForm()"></button>
+            }
+          </div>
         </div>
-        <div class="form-field">
-          <label for="measureName">Nombre *</label>
-          <input id="measureName" type="text" maxlength="80" [(ngModel)]="measureForm.name" placeholder="Ej: Litro">
-        </div>
-        <div class="form-field">
-          <label for="measureSymbol">Símbolo *</label>
-          <input id="measureSymbol" type="text" maxlength="12" [(ngModel)]="measureForm.symbol" placeholder="Ej: L">
-        </div>
-        <div class="editor-actions">
-          <button pButton type="button" [label]="measureEditingId === null ? 'Agregar unidad' : 'Guardar cambios'"
-            icon="pi pi-check" [disabled]="measureSaving" (click)="saveMeasureUnit()"></button>
-          @if (measureEditingId !== null) {
-            <button pButton type="button" label="Cancelar" severity="secondary" [outlined]="true" (click)="resetMeasureForm()"></button>
+        <div class="measure-list">
+          @if (measureLoading) {
+            <p class="empty-state">Cargando catálogo...</p>
+          } @else if (measureUnits.length === 0) {
+            <p class="empty-state">Todavía no hay unidades registradas.</p>
+          } @else {
+            <div class="units-table-wrap">
+              <table class="units-table">
+                <thead><tr><th>Código</th><th>Nombre</th><th>Símbolo</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody>
+                  @for (unit of measureUnits; track unit.id) {
+                    <tr>
+                      <td><strong>{{ unit.code }}</strong></td><td>{{ unit.name }}</td><td>{{ unit.symbol }}</td>
+                      <td><span class="status" [class.status-off]="!unit.active">{{ unit.active ? 'Activa' : 'Inactiva' }}</span></td>
+                      <td class="row-actions">
+                        <button pButton type="button" icon="pi pi-pencil" severity="secondary" [text]="true" (click)="editMeasureUnit(unit)" aria-label="Editar unidad"></button>
+                        <button pButton type="button" [icon]="unit.active ? 'pi pi-ban' : 'pi pi-check'"
+                          [severity]="unit.active ? 'danger' : 'success'" [text]="true"
+                          (click)="toggleMeasureUnit(unit)" [attr.aria-label]="unit.active ? 'Desactivar unidad' : 'Activar unidad'"></button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
           }
         </div>
       </div>
-
       @if (measureLoading) {
         <p class="empty-state">Cargando catálogo...</p>
       } @else if (measureUnits.length === 0) {
@@ -71,7 +99,7 @@
       <label for="unitProduct">Producto</label>
       <p-select inputId="unitProduct" [options]="products" optionLabel="name" [(ngModel)]="selectedProduct"
         (onChange)="onProductChange($event.value)" [filter]="true" filterBy="name,sku"
-        placeholder="Selecciona un producto" [showClear]="true" class="w-full">
+        placeholder="Selecciona un producto" [loading]="productsLoading" [showClear]="true" class="w-full">
         <ng-template #item let-product><div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div></ng-template>
       </p-select>
     </div>
@@ -80,7 +108,7 @@
       <section class="units-list">
         @if (selectedProduct) {
           <div class="section-heading">
-            <div><h3>Presentaciones configuradas</h3><p>{{ selectedProduct.name }} · Unidad base pendiente de vincular</p></div>
+            <div><h3>Presentaciones configuradas</h3><p>{{ selectedProduct.name }} · Unidad base: {{ selectedProduct.baseUnitName || "Sin definir" }}</p></div>
             <span class="units-count">{{ units.length }}</span>
           </div>
           @if (loading) {
