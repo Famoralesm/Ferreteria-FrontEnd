@@ -506,3 +506,5 @@ form {
   .order-layout { grid-template-columns: 1fr; gap: 20px; }
   .order-column-products { grid-column: auto; }
 }
+
+.order-layout > .form-actions { grid-column: 1 / -1; }
