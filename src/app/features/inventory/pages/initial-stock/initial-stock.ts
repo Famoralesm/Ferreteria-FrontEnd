@@ -26,6 +26,11 @@ export class InitialStock implements OnInit, OnDestroy {
   rows: InitialStockRow[] = [];
   loading = false;
   searchTerm = '';
+  movementProductId: number | null = null;
+  movementType: 'ENTRY' | 'ADJUSTMENT' = 'ENTRY';
+  movementQuantity: number | null = null;
+  movementReason = '';
+  savingMovement = false;
   private readonly savingIds = new Set<number>();
   private readonly destroy$ = new Subject<void>();
 
@@ -66,6 +71,54 @@ export class InitialStock implements OnInit, OnDestroy {
     this.inventoryService.initializeStock({ productoId: row.productoId, sucursalId: this.selectedStore.id, stock: row.stockInicialDraft, stockMinimo: row.stockMinimoDraft, motivo: 'Conteo físico de apertura' }).subscribe({
       next: updated => { this.updateRow(updated); this.savingIds.delete(row.productoId); this.notificationService.success('Inventario inicial registrado para ' + row.nombreProducto + '.'); this.cdr.markForCheck(); },
       error: error => { this.savingIds.delete(row.productoId); this.notificationService.error(error?.error?.message ?? 'No fue posible registrar el inventario inicial.'); this.cdr.markForCheck(); }
+    });
+  }
+
+  registerManualMovement(): void {
+    if (!this.selectedStore || this.savingMovement) return;
+    const productId = Number(this.movementProductId);
+    const quantity = Number(this.movementQuantity);
+    const reason = this.movementReason.trim();
+    if (!productId || !Number.isFinite(quantity) || !reason) {
+      this.notificationService.warning('Selecciona un producto, ingresa una cantidad y explica el motivo del movimiento.');
+      return;
+    }
+    if (this.movementType === 'ENTRY' && quantity <= 0) {
+      this.notificationService.warning('La cantidad del ingreso debe ser mayor que cero.');
+      return;
+    }
+    if (this.movementType === 'ADJUSTMENT' && quantity === 0) {
+      this.notificationService.warning('La diferencia del ajuste no puede ser cero. Usa un valor positivo o negativo.');
+      return;
+    }
+    this.savingMovement = true;
+    const request = { productoId: productId, sucursalId: this.selectedStore.id, cantidad: quantity, motivo: reason };
+    const operation = this.movementType === 'ENTRY'
+      ? this.inventoryService.registerEntry(request)
+      : this.inventoryService.registerAdjustment(request);
+    operation.subscribe({
+      next: movement => {
+        this.inventoryService.getStocks(this.selectedStore!.id).subscribe({
+          next: stocks => {
+            this.rows = (stocks ?? []).map(stock => ({ ...stock, stockInicialDraft: Number(stock.stock ?? 0), stockMinimoDraft: Number(stock.stockMinimo ?? 0) }));
+            this.savingMovement = false;
+            this.movementQuantity = null;
+            this.movementReason = '';
+            this.notificationService.success(`Movimiento registrado. Nuevo stock: ${movement.stockNuevo}.`);
+            this.cdr.markForCheck();
+          },
+          error: () => {
+            this.savingMovement = false;
+            this.notificationService.warning('El movimiento se registró, pero no fue posible actualizar el listado. Recarga la pantalla para consultar el stock.');
+            this.cdr.markForCheck();
+          }
+        });
+      },
+      error: error => {
+        this.savingMovement = false;
+        this.notificationService.error(error?.error?.message ?? 'No fue posible registrar el movimiento manual.');
+        this.cdr.markForCheck();
+      }
     });
   }
 

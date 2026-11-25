@@ -301,4 +301,19 @@
 
   </div>
 
+
+@if (showBrandDialog) {
+  <div class="brand-dialog-backdrop" role="presentation" (click)="showBrandDialog = false">
+    <section class="brand-dialog" role="dialog" aria-modal="true" aria-labelledby="brandDialogTitle" (click)="$event.stopPropagation()">
+      <h3 id="brandDialogTitle">Agregar marca</h3>
+      <label for="newBrandName">Nombre de la marca</label>
+      <input id="newBrandName" pInputText [value]="newBrandName" (input)="newBrandName = $any($event.target).value" placeholder="Ej: Bosch" />
+      <div class="editor-actions">
+        <button pButton type="button" label="Cancelar" severity="secondary" [outlined]="true" (click)="showBrandDialog = false"></button>
+        <button pButton type="button" label="Guardar marca" icon="pi pi-check" [loading]="savingBrand" [disabled]="savingBrand" (click)="createBrand()"></button>
+      </div>
+    </section>
+  </div>
+}
+
 </div>

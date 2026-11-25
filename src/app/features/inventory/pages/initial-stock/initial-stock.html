@@ -3,6 +3,39 @@
   @if (selectedStore) { <div class="inventory-store-label">Sucursal seleccionada: <strong>{{ selectedStore.nombre }}</strong></div> }
   <div class="page-card inventory-help"><div class="help-icon"><i class="pi pi-info-circle"></i></div><div><strong>¿Cómo registrar el inventario inicial?</strong><p>Ingresa la cantidad que tienes físicamente y define el stock mínimo de cada producto. No necesitas registrar una factura ni una compra. El sistema dejará un movimiento de apertura y bloqueará un segundo registro inicial para el mismo producto y sucursal.</p></div></div>
   <div class="inventory-toolbar"><div class="inventory-search"><i class="pi pi-search"></i><input pInputText type="text" [(ngModel)]="searchTerm" placeholder="Buscar por SKU, producto o marca" aria-label="Buscar productos"></div><div class="page-info"><i class="pi pi-box"></i><span>Total de productos: <strong>{{ rows.length }}</strong></span></div></div>
+
+  <div class="page-card inventory-help">
+    <div class="help-icon"><i class="pi pi-sliders-h"></i></div>
+    <div class="manual-movement-form">
+      <strong>Movimientos manuales de inventario</strong>
+      <p>Registra ingresos de mercadería sin factura o ajustes por diferencias, pérdidas y daños. Todo movimiento queda asociado al usuario, sucursal, fecha y motivo.</p>
+      <div class="manual-movement-fields">
+        <label>Producto
+          <select [(ngModel)]="movementProductId">
+            <option [ngValue]="null">Selecciona un producto</option>
+            @for (row of rows; track row.productoId) {
+              <option [ngValue]="row.productoId">{{ row.nombreProducto }} ({{ row.sku }})</option>
+            }
+          </select>
+        </label>
+        <label>Tipo de movimiento
+          <select [(ngModel)]="movementType">
+            <option value="ENTRY">Ingreso manual</option>
+            <option value="ADJUSTMENT">Ajuste de inventario (+/-)</option>
+          </select>
+        </label>
+        <label>{{ movementType === 'ENTRY' ? 'Cantidad a ingresar' : 'Diferencia (+/-)' }} en unidad base
+          <input type="number" step="0.0001" [(ngModel)]="movementQuantity" [placeholder]="movementType === 'ENTRY' ? 'Ej: 25' : 'Ej: -2 o 5'">
+        </label>
+        <label class="movement-reason">Motivo / observación
+          <input type="text" maxlength="250" [(ngModel)]="movementReason" placeholder="Ej: Mercadería recibida sin factura">
+        </label>
+      </div>
+      <div class="editor-actions">
+        <button pButton type="button" label="Registrar movimiento" icon="pi pi-check" [loading]="savingMovement" [disabled]="savingMovement" (click)="registerManualMovement()"></button>
+      </div>
+    </div>
+  </div>
   <div class="page-card">
     <p-table [value]="filteredRows" [loading]="loading" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]" [tableStyle]="{ 'min-width': '72rem' }" responsiveLayout="scroll">
       <ng-template #header><tr><th>SKU</th><th>Producto</th><th>Stock actual</th><th>Stock inicial físico</th><th>Stock mínimo</th><th>Estado</th><th class="actions-column">Acción</th></tr></ng-template>
