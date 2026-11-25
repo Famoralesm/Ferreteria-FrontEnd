@@ -166,10 +166,13 @@
           <button
             pButton
             type="button"
-            icon="pi pi-trash"
-            severity="danger"
-            rounded
-            (click)="$event.stopPropagation(); delete.emit(product.id)">
+            [icon]="product.active ? 'pi pi-power-off' : 'pi pi-refresh'"
+            [severity]="product.active ? 'danger' : 'success'"
+            [rounded]="true"
+            [text]="true"
+            [pTooltip]="product.active ? 'Desactivar producto' : 'Activar producto'"
+            [attr.aria-label]="product.active ? 'Desactivar producto' : 'Activar producto'"
+            (click)="$event.stopPropagation(); toggleStatus.emit({ id: product.id, active: !product.active })">
           </button>
 
         </div>
