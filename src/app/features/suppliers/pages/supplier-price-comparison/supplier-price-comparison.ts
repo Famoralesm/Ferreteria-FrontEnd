@@ -41,6 +41,7 @@ export class SupplierPriceComparison implements OnInit {
   saving = false;
   loadingOptions = false;
   editingOfferId: number | null = null;
+  activePresentationTab = 'ALL';
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -100,13 +101,44 @@ export class SupplierPriceComparison implements OnInit {
     });
   }
 
+  get presentationTabs(): { key: string; label: string }[] {
+    const unique = new Map<string, string>();
+    for (const offer of this.comparisons) {
+      const key = offer.presentacionId != null ? String(offer.presentacionId) : 'LEGACY';
+      const label = offer.nombrePresentacion || 'Presentación anterior';
+      if (!unique.has(key)) unique.set(key, label);
+    }
+    return Array.from(unique, ([key, label]) => ({ key, label }));
+  }
+
   get sortedComparisons(): ProductSupplier[] {
     return [...this.comparisons].sort((a, b) =>
-      Number(a.precioUnidadBase ?? a.precioCompra) - Number(b.precioUnidadBase ?? b.precioCompra));
+      this.equivalentBasePrice(a) - this.equivalentBasePrice(b)
+      || a.nombreProveedor.localeCompare(b.nombreProveedor, 'es'));
+  }
+
+  get visibleComparisons(): ProductSupplier[] {
+    if (this.activePresentationTab === 'ALL') return this.sortedComparisons;
+    return this.sortedComparisons.filter(item => {
+      const key = item.presentacionId != null ? String(item.presentacionId) : 'LEGACY';
+      return key === this.activePresentationTab;
+    });
   }
 
   get bestOfferId(): number | null {
     return this.sortedComparisons.length ? this.sortedComparisons[0].id : null;
+  }
+
+  equivalentBasePrice(item: ProductSupplier): number {
+    const savedPrice = Number(item.precioUnidadBase);
+    if (Number.isFinite(savedPrice) && savedPrice >= 0) return savedPrice;
+    const purchasePrice = Number(item.precioCompra);
+    const factor = Number(item.factorConversion || 1);
+    return factor > 0 ? purchasePrice / factor : purchasePrice;
+  }
+
+  selectPresentationTab(key: string): void {
+    this.activePresentationTab = key;
   }
 
   get availableSuppliers(): Supplier[] {
