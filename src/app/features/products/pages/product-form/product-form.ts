@@ -204,7 +204,7 @@ ngOnInit(): void {
   }
 
   this.id = Number(paramId);
-  this.readOnlyMode = this.route.snapshot.routeConfig?.path === 'view/:id' || this.route.snapshot.routeConfig?.path === ':id';
+  this.readOnlyMode = this.route.snapshot.routeConfig?.path === 'products/view/:id' || this.route.snapshot.routeConfig?.path === 'products/:id';
 
   let previousStore: Store | null = null;
 
