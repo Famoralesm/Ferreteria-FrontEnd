@@ -105,6 +105,10 @@ export class SupplierPriceComparison implements OnInit {
       Number(a.precioUnidadBase ?? a.precioCompra) - Number(b.precioUnidadBase ?? b.precioCompra));
   }
 
+  get bestOfferId(): number | null {
+    return this.sortedComparisons.length ? this.sortedComparisons[0].id : null;
+  }
+
   get availableSuppliers(): Supplier[] {
     // Un proveedor puede ofrecer el mismo producto en varias presentaciones o marcas.
     return this.suppliers.filter(item => item.activo);
