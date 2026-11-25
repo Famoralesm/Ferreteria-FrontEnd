@@ -31,11 +31,11 @@
       <p>Registra ingresos de mercadería sin factura o ajustes por diferencias, pérdidas y daños. Todo movimiento queda asociado al usuario, sucursal, fecha y motivo.</p>
       <div class="manual-movement-fields">
         <label>Producto
-          <p-select [options]="rows" optionLabel="nombreProducto" optionValue="productoId" [ngModel]="movementProductId"
-            (ngModelChange)="onMovementProductChange($event)" [filter]="true" filterBy="nombreProducto,sku"
+          <p-select [options]="historyProducts" optionLabel="name" optionValue="id" [ngModel]="movementProductId"
+            (ngModelChange)="onMovementProductChange($event)" [filter]="true" filterBy="name,sku"
             [showClear]="true" placeholder="Buscar y seleccionar producto" class="w-full">
-            <ng-template #item let-product><div class="movement-product-option"><strong>{{ product.nombreProducto }}</strong><small>{{ product.sku }}</small></div></ng-template>
-            <ng-template #selectedItem let-product>{{ product?.nombreProducto }}</ng-template>
+            <ng-template #item let-product><div class="movement-product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }} · {{ product.active ? 'Activo' : 'Inactivo — solo historial' }}</small></div></ng-template>
+            <ng-template #selectedItem let-product>{{ product?.name }}</ng-template>
           </p-select>
         </label>
         <label>Tipo de movimiento
@@ -49,7 +49,8 @@
         </label>
       </div>
       <div class="editor-actions">
-        <button pButton type="button" label="Registrar movimiento" icon="pi pi-check" [loading]="savingMovement" [disabled]="savingMovement" (click)="registerManualMovement()"></button>
+        @if (selectedMovementProduct && !selectedMovementProduct.active) { <small class="hint">Producto inactivo: el historial sigue disponible, pero no se permiten nuevos movimientos.</small> }
+        <button pButton type="button" label="Registrar movimiento" icon="pi pi-check" [loading]="savingMovement" [disabled]="savingMovement || (selectedMovementProduct && !selectedMovementProduct.active)" (click)="registerManualMovement()"></button>
       </div>
     </div>
   </div>
