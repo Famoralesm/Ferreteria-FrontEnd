@@ -59,7 +59,7 @@
     @if (estimatedBasePrice !== null) {
       <div class="equivalent-price-preview">
         <span>Precio equivalente estimado</span>
-        <strong>{{ estimatedBasePrice | currency:'CLP':'symbol-narrow':'1.2-4':'es-CL' }} / {{ baseUnitName }}</strong>
+        <strong>Aprox. {{ estimatedBasePrice | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }} / {{ baseUnitName }}</strong>
         <small>Precio de presentación ÷ factor de conversión</small>
       </div>
     }
@@ -82,7 +82,17 @@
       <div><h3>Comparación de ofertas</h3><small>Ordenadas por menor precio equivalente en unidad base</small></div>
       <span>{{ comparisons.length }} oferta(s)</span>
     </div>
-    <p-table [value]="sortedComparisons" [loading]="loading" [tableStyle]="{ 'min-width': '72rem' }" responsiveLayout="scroll">
+    @if (presentationTabs.length > 0) {
+      <div class="presentation-tabs" role="tablist" aria-label="Filtrar ofertas por presentación">
+        <button type="button" role="tab" [attr.aria-selected]="activePresentationTab === 'ALL'"
+          [class.active]="activePresentationTab === 'ALL'" (click)="selectPresentationTab('ALL')">Todas</button>
+        @for (tab of presentationTabs; track tab.key) {
+          <button type="button" role="tab" [attr.aria-selected]="activePresentationTab === tab.key"
+            [class.active]="activePresentationTab === tab.key" (click)="selectPresentationTab(tab.key)">{{ tab.label }}</button>
+        }
+      </div>
+    }
+    <p-table [value]="visibleComparisons" [loading]="loading" [tableStyle]="{ 'min-width': '72rem' }" responsiveLayout="scroll">
       <ng-template #header>
         <tr><th>Proveedor</th><th>Marca</th><th>Presentación</th><th>Precio presentación</th><th>Equivalente / {{ baseUnitName }}</th><th>Contacto</th><th>Preferida</th><th class="actions-column">Acciones</th></tr>
       </ng-template>
@@ -91,8 +101,8 @@
           <td><strong>{{ item.nombreProveedor }}</strong></td>
           <td>{{ item.nombreMarca || 'Sin marca registrada' }}</td>
           <td>{{ item.nombrePresentacion || 'Unidad base (oferta anterior)' }}<small class="offer-factor">{{ item.factorConversion || 1 }} {{ baseUnitName }}</small></td>
-          <td>{{ item.precioCompra | currency:'CLP':'symbol-narrow':'1.0-2':'es-CL' }}</td>
-          <td><strong>{{ (item.precioUnidadBase ?? item.precioCompra) | currency:'CLP':'symbol-narrow':'1.2-4':'es-CL' }}</strong></td>
+          <td>{{ item.precioCompra | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</td>
+          <td><strong>Aprox. {{ equivalentBasePrice(item) | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong></td>
           <td>{{ item.telefonoProveedor || item.emailProveedor || '—' }}</td>
           <td><span>{{ item.seleccionado ? 'Oferta preferida' : 'Alternativa' }}</span>@if (item.id === bestOfferId) { <small class="best-price-label">Menor costo equivalente</small> }</td>
           <td class="actions-column">
