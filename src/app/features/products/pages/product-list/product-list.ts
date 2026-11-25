@@ -117,7 +117,7 @@ export class ProductList implements OnInit, OnDestroy {
   }
 
   view(id: number): void {
-    this.router.navigate(['/products', id]);
+    this.router.navigate(['/products/view', id]);
   }
 
   delete(id: number): void {
