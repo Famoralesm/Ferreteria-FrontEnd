@@ -88,3 +88,13 @@
 .movement-history-heading p { margin: 5px 0 0; color: #64748b; }
 .movement-positive { color: #247342; font-weight: 600; }
 .movement-negative { color: #b42318; font-weight: 600; }
+
+
+.inactive-product-warning {
+  display: block;
+  margin-top: 9px;
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+}
