@@ -205,6 +205,7 @@ ngOnInit(): void {
 
   this.id = Number(paramId);
   this.readOnlyMode = this.route.snapshot.routeConfig?.path === 'products/view/:id' || this.route.snapshot.routeConfig?.path === 'products/:id';
+  if (this.readOnlyMode) this.form.disable({ emitEvent: false });
 
   let previousStore: Store | null = null;
 
