@@ -268,16 +268,26 @@ export class ProductUnits implements OnInit, OnDestroy {
     }
     this.productService.setBaseUnit(productId, unitOfMeasureId, preserveExistingValues).subscribe({
       next: saved => {
-        this.selectedProduct = { ...this.selectedProduct!, ...saved };
-        this.products = this.products.map(product => product.id === saved.id ? { ...product, ...saved } : product);
-        this.changingBaseUnit = false;
-        this.notificationService.success(`Unidad base ${preserveExistingValues ? 'corregida' : 'definida'}: ${saved.baseUnitName} (${saved.baseUnitSymbol}).`);
-        this.loadProductUnits(productId);
+        // La respuesta cambia las ramas @if del selector de unidad base.
+        // Diferimos la actualización para no modificar la vista durante el mismo
+        // ciclo de detección iniciado por PrimeNG.
+        setTimeout(() => {
+          if (this.selectedProduct?.id !== productId) return;
+          this.selectedProduct = { ...this.selectedProduct, ...saved };
+          this.products = this.products.map(product => product.id === saved.id ? { ...product, ...saved } : product);
+          this.changingBaseUnit = false;
+          this.notificationService.success(`Unidad base ${preserveExistingValues ? 'corregida' : 'definida'}: ${saved.baseUnitName} (${saved.baseUnitSymbol}).`);
+          this.loadProductUnits(productId);
+          this.cdr.detectChanges();
+        });
       },
       error: err => {
-        console.error('Error asignando unidad base:', err);
-        this.changingBaseUnit = false;
-        this.notificationService.error(err?.error?.message ?? 'No fue posible definir la unidad base.');
+        setTimeout(() => {
+          console.error('Error asignando unidad base:', err);
+          this.changingBaseUnit = false;
+          this.notificationService.error(err?.error?.message ?? 'No fue posible definir la unidad base.');
+          this.cdr.detectChanges();
+        });
       }
     });
   }
