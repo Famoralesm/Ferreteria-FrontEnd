@@ -62,6 +62,8 @@ export class ProductForm implements OnInit {
   currentStock = 0;
   currentStockMinimo = 0;
   currentStoreName = '';
+  baseUnitName: string | null = null;
+  baseUnitSymbol: string | null = null;
   private route = inject(
     ActivatedRoute
   );
@@ -248,6 +250,8 @@ ngOnDestroy(): void {
         this.currentStock = product.stock ?? 0;
         this.currentStock = product.stock ?? 0;
         this.currentStockMinimo = product.stockMinimo ?? 0;
+        this.baseUnitName = product.baseUnitName ?? null;
+        this.baseUnitSymbol = product.baseUnitSymbol ?? null;
 
         this.currentImageUrl = product.imageUrl ?? null;
 

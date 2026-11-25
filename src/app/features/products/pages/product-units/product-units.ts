@@ -28,6 +28,7 @@ export class ProductUnits implements OnInit, OnDestroy {
   productsLoading = false;
   private readonly destroy$ = new Subject<void>();
   selectedProduct: Product | null = null;
+  changingBaseUnit = false;
   units: ProductUnit[] = [];
   loading = false;
   saving = false;
@@ -217,24 +218,48 @@ export class ProductUnits implements OnInit, OnDestroy {
     this.measureForm = this.emptyMeasureForm();
   }
 
+  beginBaseUnitChange(): void {
+    if (!this.selectedProduct?.baseUnitId) return;
+    this.changingBaseUnit = true;
+  }
+
+  cancelBaseUnitChange(): void {
+    this.changingBaseUnit = false;
+  }
+
   onBaseUnitChange(unitOfMeasureId: number | null): void {
-    if (!this.selectedProduct || !unitOfMeasureId || this.selectedProduct.baseUnitId) return;
+    if (!this.selectedProduct || !unitOfMeasureId) return;
     const productId = this.selectedProduct.id;
-    this.productService.setBaseUnit(productId, unitOfMeasureId).subscribe({
+    const preserveExistingValues = !!this.selectedProduct.baseUnitId;
+    if (preserveExistingValues && !window.confirm(
+      'Vas a corregir la unidad base. Se conservarán exactamente los valores numéricos actuales de stock, stock mínimo, precios, mínimo de venta, incremento, umbral mayorista y factores de presentación. Solo continúa si esos valores YA están expresados en la nueva unidad. Las cantidades e importes históricos no se recalcularán; solo se actualizará la etiqueta de las líneas históricas vendidas en unidad base. ¿Deseas continuar?'
+    )) {
+      this.changingBaseUnit = false;
+      return;
+    }
+    this.productService.setBaseUnit(productId, unitOfMeasureId, preserveExistingValues).subscribe({
       next: saved => {
         this.selectedProduct = { ...this.selectedProduct!, ...saved };
         this.products = this.products.map(product => product.id === saved.id ? { ...product, ...saved } : product);
-        this.notificationService.success(`Unidad base definida: ${saved.baseUnitName} (${saved.baseUnitSymbol}).`);
+        this.changingBaseUnit = false;
+        this.notificationService.success(`Unidad base ${preserveExistingValues ? 'corregida' : 'definida'}: ${saved.baseUnitName} (${saved.baseUnitSymbol}).`);
+        this.loadProductUnits(productId);
       },
       error: err => {
         console.error('Error asignando unidad base:', err);
+        this.changingBaseUnit = false;
         this.notificationService.error(err?.error?.message ?? 'No fue posible definir la unidad base.');
       }
     });
   }
 
+  isBasePresentation(unit: ProductUnit): boolean {
+    return !!this.selectedProduct?.baseUnitCode && unit.code === this.selectedProduct.baseUnitCode;
+  }
+
   onProductChange(product: Product | null): void {
     this.selectedProduct = product;
+    this.changingBaseUnit = false;
     this.units = [];
     this.resetForm();
     if (!product) {

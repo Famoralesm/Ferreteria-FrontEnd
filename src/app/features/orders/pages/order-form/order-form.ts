@@ -9,6 +9,7 @@ import { interval, Subscription } from 'rxjs';
 import { OrderService } from '../../../../core/services/order.service';
 import { ProductService } from '../../../../core/services/product.service';
 import { Product } from '../../../../core/models/product/product';
+import { ProductUnitService } from '../../../../core/services/product-unit.service';
 import { CommonModule } from '@angular/common';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ORDER_STATUSES,OrderStatus } from '../../../../core/models/order/order-status';
@@ -28,6 +29,8 @@ type UnknownCustomerOption = {
 };
 
 type CustomerOption = Customer | UnknownCustomerOption;
+
+type SaleUnitOption = { id: number | null; code: string; name: string; conversionFactor: number; isBase: boolean; };
 
 @Component({
   selector: 'app-order-form',
@@ -56,12 +59,19 @@ export class OrderForm implements OnInit , OnDestroy {
   products: Product[] = []; 
   searchResults: Product[] = [];
   selectedProduct?: Product;
+  saleUnitOptions: SaleUnitOption[] = [];
+  selectedSaleUnit: SaleUnitOption | null = null;
+  productUnitsLoading = false;
   quantity = 1;
   items: {
   productId: number | null;
   unitId?: number | null;
   productName: string;
   quantity: number;
+  unitName: string;
+  conversionFactor: number;
+  quantityInBaseUnit: number;
+  baseUnitSymbol: string;
   unitPrice: number;
   total: number;
   stockAvailable: number;
@@ -95,6 +105,7 @@ export class OrderForm implements OnInit , OnDestroy {
   private customerService = inject(CustomerService);
   private storeService = inject(StoreService);
   private productService = inject(ProductService);
+  private productUnitService = inject(ProductUnitService);
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private orderService = inject(OrderService);
@@ -351,11 +362,16 @@ private loadProducts(): void {
               p => p.id === item.productId
             );
 
+            const conversionFactor = item.conversionFactor ?? 1;
             return {
               productId: item.productId,
               unitId: item.unitId ?? null,
               productName: item.productName,
               quantity: item.quantity,
+              unitName: item.unitName ?? product?.baseUnitName ?? 'Unidad base',
+              conversionFactor,
+              quantityInBaseUnit: item.quantityInBaseUnit ?? item.quantity * conversionFactor,
+              baseUnitSymbol: product?.baseUnitSymbol ?? '',
               unitPrice: item.unitPrice,
               total: item.totalPrice,
               stockAvailable: product?.stock ?? 0,
@@ -363,7 +379,7 @@ private loadProducts(): void {
               regularUnitPrice: product?.price ?? item.unitPrice,
               wholesalePrice: product?.wholesalePrice ?? null,
               wholesaleMinQuantity: product?.wholesaleMinQuantity ?? 0,
-              wholesaleApplied: false
+              wholesaleApplied: item.wholesaleApplied ?? false
             };
           });
           this.refreshItemsStock();
@@ -552,89 +568,149 @@ private loadProducts(): void {
     return this.form.get('status')?.value === 'IN_ROUTE';
   }
 
-  addProduct(): void {
+  onProductSelected(product: Product | null | undefined): void {
+    this.selectedProduct = product ?? undefined;
+    this.saleUnitOptions = [];
+    this.selectedSaleUnit = null;
+    this.quantity = 1;
+    if (!product) return;
 
-  if (this.isInRoute || this.paymentStatus !== 'PENDING') {
-    this.notificationService.warning('Este pedido no permite modificar sus productos por su estado actual.');
-    return;
-  }
-
-  console.log('Producto seleccionado:', this.selectedProduct);
-  console.log('Cantidad:', this.quantity);
-
-  if (!this.selectedProduct) {
-    this.productSelectionError = true;
-    return;
-  }
-
-  this.productSelectionError = false;
-
-  if (!this.selectedProduct.baseUnitId) {
-    this.notificationService.warning(`Define la unidad base de ${this.selectedProduct.name} en Productos → Presentaciones antes de agregarlo al pedido.`);
-    return;
-  }
-
-  if (this.quantity <= 0) {
-    this.quantityError = true;
-    return;
-  }
-
-  this.quantityError = false;
-
-  const existing = this.items.find(
-    item => item.productId === this.selectedProduct!.id
-  );
-
-  const resultingQuantity = (existing?.quantity ?? 0) + this.quantity;
-  const minimum = this.selectedProduct.minimumSaleQuantity ?? 1;
-  const increment = this.selectedProduct.saleQuantityIncrement ?? 1;
-  const steps = (resultingQuantity - minimum) / increment;
-  if (resultingQuantity < minimum || !Number.isFinite(steps) || Math.abs(steps - Math.round(steps)) > 0.000001) {
-    this.notificationService.warning(`La cantidad debe ser al menos ${minimum} ${this.selectedProduct.baseUnitSymbol ?? 'unidades'} y avanzar en incrementos de ${increment}.`);
-    return;
-  }
-
-  if (existing) {
-    existing.quantity = resultingQuantity;
-    this.applyItemPricing(existing, this.selectedProduct);
-    if (existing.wholesaleApplied) {
-      this.notificationService.success(
-        `Precio mayorista aplicado a ${existing.productName}: ${existing.wholesaleMinQuantity} unidades o más.`
-      );
-    }
-  } else {
-    const newItem = {
-      productId: this.selectedProduct.id,
-      productName: this.selectedProduct.name,
-      quantity: this.quantity,
-      unitPrice: this.selectedProduct.price,
-      total: this.selectedProduct.price * this.quantity,
-      stockAvailable: this.selectedProduct.stock,
-      stockMinimo: this.selectedProduct.stockMinimo ?? 0,
-      regularUnitPrice: this.selectedProduct.price,
-      wholesalePrice: this.selectedProduct.wholesalePrice ?? null,
-      wholesaleMinQuantity: this.selectedProduct.wholesaleMinQuantity ?? 0,
-      wholesaleApplied: false
+    const baseOption: SaleUnitOption = {
+      id: null,
+      code: 'BASE',
+      name: (product.baseUnitName ?? 'Unidad base') + ' (unidad base)',
+      conversionFactor: 1,
+      isBase: true
     };
-    this.applyItemPricing(newItem, this.selectedProduct);
-    this.items.push(newItem);
-    if (newItem.wholesaleApplied) {
-      this.notificationService.success(
-        `Precio mayorista aplicado a ${newItem.productName}: ${newItem.wholesaleMinQuantity} unidades o más.`
-      );
-    }
+    this.saleUnitOptions = [baseOption];
+    this.selectedSaleUnit = baseOption;
+    if (!product.baseUnitId) return;
+
+    this.productUnitsLoading = true;
+    this.productUnitService.findByProduct(product.id).subscribe({
+      next: units => {
+        const commercialOptions = (units ?? [])
+          .filter(unit => unit.active && unit.saleAllowed && unit.code !== product.baseUnitCode)
+          .map(unit => ({
+            id: unit.id,
+            code: unit.code,
+            name: unit.name,
+            conversionFactor: unit.conversionFactor,
+            isBase: false
+          }));
+        this.saleUnitOptions = [baseOption, ...commercialOptions];
+        this.productUnitsLoading = false;
+        this.quantity = this.quantityMinimum;
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.productUnitsLoading = false;
+        console.error('Error cargando presentaciones para venta:', error);
+        this.notificationService.error('No fue posible cargar las presentaciones de venta del producto.');
+        this.cdr.detectChanges();
+      }
+    });
   }
 
-  this.selectedProduct = undefined;
-  this.quantity = 1;
-  this.itemsTouched = false;
-  this.itemsChanged = true;
+  onSaleUnitChange(option: SaleUnitOption | null): void {
+    this.selectedSaleUnit = option;
+    this.quantity = this.quantityMinimum;
+  }
 
-  this.updateTotal();
+  get selectedConversionFactor(): number {
+    return this.selectedSaleUnit?.conversionFactor ?? 1;
+  }
 
-  console.log('Items:', this.items);
-}
-removeProduct(index: number): void {
+  get quantityMinimum(): number {
+    return (this.selectedProduct?.minimumSaleQuantity ?? 1) / this.selectedConversionFactor;
+  }
+
+  get quantityIncrement(): number {
+    return (this.selectedProduct?.saleQuantityIncrement ?? 1) / this.selectedConversionFactor;
+  }
+
+  addProduct(): void {
+    if (this.isInRoute || this.paymentStatus !== 'PENDING') {
+      this.notificationService.warning('Este pedido no permite modificar sus productos por su estado actual.');
+      return;
+    }
+    if (!this.selectedProduct) {
+      this.productSelectionError = true;
+      return;
+    }
+    this.productSelectionError = false;
+
+    if (!this.selectedProduct.baseUnitId) {
+      this.notificationService.warning('Define la unidad base de ' + this.selectedProduct.name + ' en Productos → Presentaciones antes de agregarlo al pedido.');
+      return;
+    }
+    if (!this.selectedSaleUnit || this.quantity <= 0) {
+      this.quantityError = true;
+      return;
+    }
+    this.quantityError = false;
+
+    const product = this.selectedProduct;
+    const factor = this.selectedConversionFactor;
+    const requestedBaseQuantity = this.quantity * factor;
+    const currentBaseQuantity = this.items
+      .filter(item => item.productId === product.id)
+      .reduce((sum, item) => sum + item.quantity * item.conversionFactor, 0);
+    const resultingBaseQuantity = currentBaseQuantity + requestedBaseQuantity;
+    const minimum = product.minimumSaleQuantity ?? 1;
+    const increment = product.saleQuantityIncrement ?? 1;
+    const steps = (resultingBaseQuantity - minimum) / increment;
+
+    if (resultingBaseQuantity < minimum
+        || !Number.isFinite(steps)
+        || Math.abs(steps - Math.round(steps)) > 0.000001) {
+      this.notificationService.warning(
+        'La cantidad total debe ser al menos ' + minimum + ' ' + (product.baseUnitSymbol ?? 'unidades')
+        + ' y avanzar en incrementos de ' + increment + '.'
+      );
+      return;
+    }
+
+    const unitId = this.selectedSaleUnit.isBase ? null : this.selectedSaleUnit.id;
+    const existing = this.items.find(item =>
+      item.productId === product.id && (item.unitId ?? null) === unitId
+    );
+
+    if (existing) {
+      existing.quantity += this.quantity;
+      existing.quantityInBaseUnit = existing.quantity * existing.conversionFactor;
+    } else {
+      this.items.push({
+        productId: product.id,
+        unitId,
+        productName: product.name,
+        quantity: this.quantity,
+        unitName: this.selectedSaleUnit.isBase ? (product.baseUnitName ?? 'Unidad base') : this.selectedSaleUnit.name,
+        conversionFactor: factor,
+        quantityInBaseUnit: requestedBaseQuantity,
+        baseUnitSymbol: product.baseUnitSymbol ?? '',
+        unitPrice: product.price,
+        total: product.price * requestedBaseQuantity,
+        stockAvailable: product.stock,
+        stockMinimo: product.stockMinimo ?? 0,
+        regularUnitPrice: product.price,
+        wholesalePrice: product.wholesalePrice ?? null,
+        wholesaleMinQuantity: product.wholesaleMinQuantity ?? 0,
+        wholesaleApplied: false
+      });
+    }
+
+    this.recalculateProductPricing(product.id);
+    this.selectedProduct = undefined;
+    this.selectedSaleUnit = null;
+    this.saleUnitOptions = [];
+    this.quantity = 1;
+    this.itemsTouched = false;
+    this.itemsChanged = true;
+    this.updateTotal();
+  }
+
+  removeProduct(index: number): void {
 
   if (this.isInRoute || this.paymentStatus !== 'PENDING') {
     this.notificationService.warning('Este pedido no permite modificar sus productos por su estado actual.');
@@ -645,9 +721,11 @@ removeProduct(index: number): void {
     return;
   }
 
+  const removedProductId = this.items[index].productId;
   this.items.splice(index, 1);
 
   this.items = [...this.items];
+  if (removedProductId !== null) this.recalculateProductPricing(removedProductId);
   this.itemsChanged = true;
 
   this.updateTotal();
@@ -1183,18 +1261,32 @@ get isUnknownCustomerSelected(): boolean {
 }
 
 
-private applyItemPricing(item: any, product: Product): void {
-  item.regularUnitPrice = product.price;
-  item.wholesalePrice = product.wholesalePrice ?? null;
-  item.wholesaleMinQuantity = product.wholesaleMinQuantity ?? 0;
-  item.wholesaleApplied = item.wholesalePrice != null
-    && item.wholesalePrice > 0
-    && item.wholesaleMinQuantity > 0
-    && item.quantity >= item.wholesaleMinQuantity;
-  item.unitPrice = item.wholesaleApplied
-    ? item.wholesalePrice!
-    : item.regularUnitPrice;
-  item.total = item.unitPrice * item.quantity;
+private recalculateProductPricing(productId: number): void {
+  const product = this.products.find(item => item.id === productId);
+  if (!product) return;
+
+  const productItems = this.items.filter(item => item.productId === productId);
+  const totalInBaseUnit = productItems.reduce(
+    (sum, item) => sum + item.quantity * item.conversionFactor,
+    0
+  );
+  const wholesaleMin = product.wholesaleMinQuantity ?? 0;
+  const wholesaleApplied = !!product.wholesalePrice
+    && product.wholesalePrice > 0
+    && wholesaleMin > 0
+    && totalInBaseUnit >= wholesaleMin;
+  const unitPrice = wholesaleApplied ? product.wholesalePrice! : product.price;
+
+  productItems.forEach(item => {
+    item.regularUnitPrice = product.price;
+    item.wholesalePrice = product.wholesalePrice ?? null;
+    item.wholesaleMinQuantity = wholesaleMin;
+    item.wholesaleApplied = wholesaleApplied;
+    item.unitPrice = unitPrice;
+    item.quantityInBaseUnit = item.quantity * item.conversionFactor;
+    item.baseUnitSymbol = product.baseUnitSymbol ?? '';
+    item.total = unitPrice * item.quantityInBaseUnit;
+  });
 }
 
 private refreshItemsStock(): void {
@@ -1202,14 +1294,13 @@ private refreshItemsStock(): void {
     const product = this.products.find(p => p.id === item.productId);
     if (!product) return item;
 
-    this.applyItemPricing(item, product);
     return {
       ...item,
       stockAvailable: product.stock ?? 0,
-      stockMinimo: product.stockMinimo ?? 0
+      stockMinimo: product.stockMinimo ?? 0,
+      baseUnitSymbol: product.baseUnitSymbol ?? item.baseUnitSymbol
     };
   });
-  this.updateTotal();
 }
   
 }

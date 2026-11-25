@@ -104,18 +104,26 @@
         @if (selectedProduct) {
           <div class="form-field base-unit-picker">
             <label>Unidad base del producto</label>
-            @if (selectedProduct.baseUnitId) {
+            @if (selectedProduct.baseUnitId && !changingBaseUnit) {
               <div class="base-unit-value">
                 <strong>{{ selectedProduct.baseUnitName }}</strong>
                 <small>{{ selectedProduct.baseUnitSymbol }} · Definida para este producto</small>
               </div>
-            } @else {
+              <button pButton type="button" label="Cambiar unidad base" icon="pi pi-sync"
+                severity="secondary" [outlined]="true" (click)="beginBaseUnitChange()"></button>
+            }
+            @if (!selectedProduct.baseUnitId || changingBaseUnit) {
               <p-select inputId="baseUnit" [options]="activeMeasureUnits" optionLabel="name" optionValue="id"
                 [ngModel]="null" (ngModelChange)="onBaseUnitChange($event)"
                 placeholder="Selecciona la unidad base" [filter]="true" filterBy="name,code" class="w-full">
                 <ng-template #item let-unit><div class="product-option"><strong>{{ unit.name }}</strong><small>{{ unit.code }} · {{ unit.symbol }}</small></div></ng-template>
               </p-select>
-              <small>Define primero la unidad en la que se medirán el stock, los precios y las reglas de venta.</small>
+              @if (changingBaseUnit) {
+                <small>La corrección conservará los valores numéricos actuales. Verifica que stock, precios, reglas y factores ya estén expresados en la nueva unidad.</small>
+                <button pButton type="button" label="Cancelar cambio" severity="secondary" [outlined]="true" (click)="cancelBaseUnitChange()"></button>
+              } @else {
+                <small>Define la unidad en la que se medirán el stock, los precios y las reglas de venta.</small>
+              }
             }
           </div>
           <div class="section-heading">
@@ -137,9 +145,13 @@
                       <td>{{ unit.purchaseAllowed ? 'Sí' : 'No' }}</td><td>{{ unit.saleAllowed ? 'Sí' : 'No' }}</td>
                       <td><span class="status" [class.status-off]="!unit.active">{{ unit.active ? 'Activa' : 'Inactiva' }}</span></td>
                       <td class="row-actions">
-                        <button pButton type="button" icon="pi pi-pencil" severity="secondary" [text]="true" (click)="edit(unit)" aria-label="Editar"></button>
-                        <button pButton type="button" [icon]="unit.active ? 'pi pi-ban' : 'pi pi-check'" [severity]="unit.active ? 'danger' : 'success'" [text]="true" (click)="toggleActive(unit)" [attr.aria-label]="unit.active ? 'Desactivar' : 'Activar'"></button>
-                        <button pButton type="button" icon="pi pi-trash" severity="danger" [text]="true" (click)="deletePresentation(unit)" aria-label="Eliminar presentación"></button>
+                        @if (!isBasePresentation(unit)) {
+                          <button pButton type="button" icon="pi pi-pencil" severity="secondary" [text]="true" (click)="edit(unit)" aria-label="Editar"></button>
+                          <button pButton type="button" [icon]="unit.active ? 'pi pi-ban' : 'pi pi-check'" [severity]="unit.active ? 'danger' : 'success'" [text]="true" (click)="toggleActive(unit)" [attr.aria-label]="unit.active ? 'Desactivar' : 'Activar'"></button>
+                          <button pButton type="button" icon="pi pi-trash" severity="danger" [text]="true" (click)="deletePresentation(unit)" aria-label="Eliminar presentación"></button>
+                        } @else {
+                          <span class="status">Unidad base</span>
+                        }
                       </td>
                     </tr>
                   }

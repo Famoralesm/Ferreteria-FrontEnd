@@ -62,7 +62,7 @@
             </div>
             
             <div class="form-field">
-              <label for="price">Precio <span>*</span></label>
+              <label for="price">Precio por {{ baseUnitName || "unidad base" }} <span>*</span></label>
               <p-inputNumber
                 id="price"
                 formControlName="price"
@@ -72,10 +72,11 @@
                 [min]="0"
                 class="w-full">
               </p-inputNumber>
+              <small>Valor por {{ baseUnitName || "unidad base pendiente de configurar" }}{{ baseUnitSymbol ? " (" + baseUnitSymbol + ")" : "" }}.</small>
               <app-field-error [control]="form.get('price')" [messages]="{ required: 'El precio es obligatorio.', min: 'El precio no puede ser negativo.' }" />
             </div>
             <div class="form-field wholesale-field">
-              <label for="wholesalePrice">Precio mayorista</label>
+              <label for="wholesalePrice">Precio mayorista por {{ baseUnitName || "unidad base" }}</label>
               <p-inputNumber
                 id="wholesalePrice"
                 formControlName="wholesalePrice"
@@ -90,7 +91,7 @@
             </div>
 
             <div class="form-field">
-              <label for="minimumSaleQuantity">Cantidad mínima de venta (unidad base)</label>
+              <label for="minimumSaleQuantity">Cantidad mínima de venta ({{ baseUnitName || "unidad base" }})</label>
               <p-inputNumber id="minimumSaleQuantity" formControlName="minimumSaleQuantity"
                 [min]="0.0001" [minFractionDigits]="0" [maxFractionDigits]="4"
                 [useGrouping]="false" class="w-full">
@@ -99,7 +100,7 @@
             </div>
 
             <div class="form-field">
-              <label for="saleQuantityIncrement">Incremento de venta (unidad base)</label>
+              <label for="saleQuantityIncrement">Incremento de venta ({{ baseUnitName || "unidad base" }})</label>
               <p-inputNumber id="saleQuantityIncrement" formControlName="saleQuantityIncrement"
                 [min]="0.0001" [minFractionDigits]="0" [maxFractionDigits]="4"
                 [useGrouping]="false" class="w-full">
@@ -108,7 +109,7 @@
             </div>
 
             <div class="form-field wholesale-field">
-              <label for="wholesaleMinQuantity">Umbral mayorista (unidad base)</label>
+              <label for="wholesaleMinQuantity">Umbral mayorista ({{ baseUnitName || "unidad base" }})</label>
               <p-inputNumber
                 id="wholesaleMinQuantity"
                 formControlName="wholesaleMinQuantity"
@@ -170,7 +171,7 @@
 
             <div class="form-field base-unit-help">
               <label>Unidad base</label>
-              <small>Se configura en Productos → Presentaciones. Las cantidades mínimas, incrementos y umbral mayorista de esta ficha se expresan en esa unidad base.</small>
+              <small>Unidad base: {{ baseUnitName || "pendiente de configurar en Productos → Presentaciones" }}{{ baseUnitSymbol ? " (" + baseUnitSymbol + ")" : "" }}. El precio, el mínimo, el incremento y el umbral mayorista se expresan en esta unidad.</small>
             </div>
             <div class="active-field">
             <p-checkbox
@@ -197,7 +198,7 @@
 
               <div class="stock-info-main">
                 <strong>{{ currentStock }}</strong>
-                <small>unidades</small>
+                <small>{{ baseUnitName || "unidad base" }}</small>
               </div>
 
               <small
@@ -208,7 +209,7 @@
               </small>
 
               <small class="stock-info-help">
-                Stock mínimo de esta sucursal: <strong>{{ currentStockMinimo }} unidades</strong>.
+                Stock mínimo de esta sucursal: <strong>{{ currentStockMinimo }} {{ baseUnitSymbol || baseUnitName || "unidades" }}</strong>.
               </small>
               <small class="stock-info-help">
                 El stock actual se controla por sucursal y no se modifica desde esta ficha.

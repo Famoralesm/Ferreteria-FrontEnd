@@ -186,7 +186,8 @@
             [(ngModel)]="selectedProduct" [ngModelOptions]="{standalone: true}"
             [disabled]="isInRoute || paymentStatus !== 'PENDING'"
             placeholder="Seleccione un producto" class="w-full"
-            [filter]="true" filterBy="name,sku" filterMatchMode="contains" filterPlaceholder="Buscar por nombre o SKU">
+            [filter]="true" filterBy="name,sku" filterMatchMode="contains" filterPlaceholder="Buscar por nombre o SKU"
+            (onChange)="onProductSelected($event.value)">
             <ng-template #item let-product>
               <div class="order-product-option">
                 <div class="order-product-main">
@@ -207,13 +208,27 @@
             <small class="field-error">Selecciona un producto antes de agregarlo.</small>
           }
         </div>
+        @if (selectedProduct) {
+          <div class="form-field unit-field">
+            <label for="saleUnit">Presentación de venta</label>
+            <p-select inputId="saleUnit" [options]="saleUnitOptions" optionLabel="name"
+              [(ngModel)]="selectedSaleUnit" [ngModelOptions]="{standalone: true}"
+              (onChange)="onSaleUnitChange($event.value)" [loading]="productUnitsLoading"
+              [disabled]="isInRoute || paymentStatus !== 'PENDING' || productUnitsLoading"
+              placeholder="Selecciona una presentación" class="w-full"></p-select>
+            @if (selectedSaleUnit) {
+              <small>1 {{ selectedSaleUnit.isBase ? (selectedProduct.baseUnitName || 'unidad base') : selectedSaleUnit.name }}
+                = {{ selectedSaleUnit.conversionFactor }} {{ selectedProduct.baseUnitSymbol || selectedProduct.baseUnitName }}</small>
+            }
+          </div>
+        }
         <div class="form-field quantity-field">
-          <label for="quantity">Cantidad{{ selectedProduct?.baseUnitSymbol ? ' (' + selectedProduct.baseUnitSymbol + ')' : '' }}</label>
+          <label for="quantity">Cantidad{{ selectedSaleUnit ? ' (' + selectedSaleUnit.name + ')' : '' }}</label>
           <p-inputNumber [(ngModel)]="quantity"
-            [disabled]="isInRoute || paymentStatus !== 'PENDING'"
+            [disabled]="isInRoute || paymentStatus !== 'PENDING' || productUnitsLoading"
             mode="decimal" id="quantity" [ngModelOptions]="{standalone: true}"
-            [showButtons]="true" inputId="minmax-buttons" [min]="selectedProduct?.minimumSaleQuantity ?? 0.0001"
-            [step]="selectedProduct?.saleQuantityIncrement ?? 1" [minFractionDigits]="0" [maxFractionDigits]="4" />
+            [showButtons]="true" inputId="minmax-buttons" [min]="quantityMinimum"
+            [step]="quantityIncrement" [minFractionDigits]="0" [maxFractionDigits]="4" />
           @if (quantityError) {
             <small class="field-error">La cantidad debe ser mayor que cero.</small>
           }
@@ -244,7 +259,7 @@
                 <th>Producto</th>
                 <th>Cant</th>
                 <th>Stock / Mín.</th>
-                <th>Precio</th>
+                <th>Precio / unidad base</th>
                 <th>Total</th>
                 <th></th>
               </tr>
@@ -266,19 +281,19 @@
                   </td>
 
                   <td>
-                    {{ item.quantity }}
+                    {{ item.quantity }} {{ item.unitName }}
                   </td>
 
                   <td>
                     <strong
                       [class.stock-low]="item.stockAvailable <= item.stockMinimo"
                       [class.stock-ok]="item.stockAvailable > item.stockMinimo">
-                      {{ item.stockAvailable }} / {{ item.stockMinimo }}
+                      {{ item.stockAvailable }} / {{ item.stockMinimo }} {{ item.baseUnitSymbol }}
                     </strong>
                   </td>
 
                   <td>
-                    {{ item.unitPrice | currency:'CLP':'symbol':'1.0-0':'es-CL' }}
+                    {{ item.unitPrice | currency:'CLP':'symbol':'1.0-0':'es-CL' }} / {{ item.baseUnitSymbol }}
                   </td>
 
                   <td>

@@ -78,8 +78,8 @@ findById(id: number, sucursalId: number): Observable<Product> {
     );
   }
 
-  setBaseUnit(id: number, unitOfMeasureId: number): Observable<Product> {
-    return this.http.patch<Product>(`${this.api}/${id}/base-unit`, { unitOfMeasureId });
+  setBaseUnit(id: number, unitOfMeasureId: number, preserveExistingValues = false): Observable<Product> {
+    return this.http.patch<Product>(`${this.api}/${id}/base-unit`, { unitOfMeasureId, preserveExistingValues });
   }
 
   deleteImage(id: number): Observable<Product> {
