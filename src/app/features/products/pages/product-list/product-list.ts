@@ -120,28 +120,6 @@ export class ProductList implements OnInit, OnDestroy {
     this.router.navigate(['/products/view', id]);
   }
 
-  delete(id: number): void {
-
-    if (!confirm('El producto se desactivará para conservar su historial de inventario y pedidos. ¿Deseas continuar?')) {
-      return;
-    }
-
-    this.productService.delete(id).subscribe({
-
-      next: () => {
-        this.notificationService.success('Producto desactivado. Se conservó su historial de inventario y pedidos.');
-        this.loadProducts();
-      },
-
-      error: err => {
-        console.error('Error desactivando producto:', err);
-        this.notificationService.error(err?.error?.message ?? 'No fue posible desactivar el producto.');
-      }
-
-    });
-
-  }
-
   changeProductStatus(event: {
       id: number;
       active: boolean;
