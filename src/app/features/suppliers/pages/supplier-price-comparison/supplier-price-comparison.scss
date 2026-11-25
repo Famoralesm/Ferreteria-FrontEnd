@@ -23,3 +23,15 @@
 .product-summary small,.product-summary > strong { color:#64748b; font-size:12px; }
 .supplier-option { display:flex; flex-direction:column; gap:3px; padding:3px 0; }
 .supplier-option small { color:#64748b; font-size:11px; }
+
+.add-price-form { grid-template-columns: repeat(4, minmax(170px, 1fr)); }
+.add-price-actions { display:flex; justify-content:flex-end; margin-top:16px; }
+.equivalent-price-preview { display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 16px; margin-top:16px; padding:12px 14px; border-radius:8px; background:#f8fafc; }
+.equivalent-price-preview span { color:#475569; font-size:12px; }
+.equivalent-price-preview strong { color:#166534; font-size:17px; }
+.equivalent-price-preview small { color:#64748b; }
+.offer-factor { display:block; margin-top:3px; color:#64748b; font-size:11px; }
+.comparison-heading > div { display:flex; flex-direction:column; gap:4px; }
+.comparison-heading small { color:#64748b; font-size:12px; }
+@media (max-width: 1100px) { .add-price-form { grid-template-columns: repeat(2, minmax(180px, 1fr)); } }
+@media (max-width: 640px) { .add-price-form { grid-template-columns: 1fr; } .product-summary { align-items:flex-start; flex-direction:column; } }
