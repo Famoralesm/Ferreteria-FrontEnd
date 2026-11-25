@@ -5,13 +5,13 @@
   <div class="page-header">
     <div class="page-header-content">
       <span class="page-kicker">
-        {{ id ? 'EDITAR PRODUCTO' : 'NUEVO PRODUCTO' }}
+        {{ readOnlyMode ? 'VISUALIZAR PRODUCTO' : (id ? 'EDITAR PRODUCTO' : 'NUEVO PRODUCTO') }}
       </span>
 
       <p>
-        {{ id
+        {{ readOnlyMode ? 'Consulta la información del producto sin modificarla.' : (id
           ? 'Actualiza la información del producto.'
-          : 'Registra un nuevo producto en el inventario.'
+          : 'Registra un nuevo producto en el inventario.')
         }}
       </p>
     </div>
@@ -147,8 +147,8 @@
                 <p-select inputId="brandId" [options]="brands" optionLabel="name" optionValue="id"
                   formControlName="brandId" (onChange)="onBrandChange($event.value)"
                   [filter]="true" filterBy="name" placeholder="Buscar marca..." class="w-full"></p-select>
-                <button pButton type="button" icon="pi pi-plus" label="Agregar" severity="secondary"
-                  [outlined]="true" (click)="openBrandDialog()"></button>
+                @if (!readOnlyMode) { <button pButton type="button" icon="pi pi-plus" label="Agregar" severity="secondary"
+                  [outlined]="true" (click)="openBrandDialog()"></button> }
               </div>
               <app-field-error [control]="form.get('brandId')" [messages]="{ required: 'Selecciona una marca.' }" />
             </div>
@@ -157,7 +157,7 @@
               <label>Unidad base</label>
               <small class="base-unit-description"><strong>{{ baseUnitName || "Pendiente de configurar en Productos → Presentaciones" }}{{ baseUnitSymbol ? " (" + baseUnitSymbol + ")" : "" }}.</strong> El precio y el umbral mayorista se expresan en esta unidad. También se utiliza para convertir cantidades y controlar el stock.</small>
               @if (id) {
-                <button pButton type="button" label="Administrar presentaciones" icon="pi pi-sliders-h" severity="secondary" [outlined]="true" (click)="managePresentations()"></button>
+                @if (!readOnlyMode) { <button pButton type="button" label="Administrar presentaciones" icon="pi pi-sliders-h" severity="secondary" [outlined]="true" (click)="managePresentations()"></button> }
               }
             </div>
             <div class="active-field">
@@ -228,6 +228,7 @@
               }
 
               <div class="product-image-actions">
+                @if (!readOnlyMode) {
 
                 <input
                   #imageInput
@@ -251,7 +252,7 @@
                 }
 
                 <small>JPG, PNG o WebP. Máximo 5 MB.</small>
-
+                }
               </div>
 
             </div>
@@ -265,7 +266,7 @@
 
       <!-- ACCIONES -->
       <div class="form-actions">
-        @if (id) {
+        @if (id && !readOnlyMode) {
           <button
             pButton
             type="button"
@@ -286,6 +287,7 @@
           (click)="cancel()">
         </button>
 
+        @if (!readOnlyMode) {
         <button
           pButton
           type="button"
@@ -294,7 +296,7 @@
           severity="success"
           (click)="save()">
         </button>
-
+        }
       </div>
 
     </form>
