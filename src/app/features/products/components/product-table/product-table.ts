@@ -36,7 +36,6 @@ export class ProductTable {
 
   @Output() edit = new EventEmitter<number>();
   @Output() view = new EventEmitter<number>();
-  @Output() delete = new EventEmitter<number>();
   @Output() toggleStatus = new EventEmitter<{ id: number; active: boolean }>();
 
   // Filtros por columna
