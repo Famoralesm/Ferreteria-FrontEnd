@@ -589,6 +589,7 @@ private loadProducts(): void {
     this.productUnitsLoading = true;
     this.productUnitService.findByProduct(product.id).subscribe({
       next: units => {
+        if (this.selectedProduct?.id !== product.id) return;
         const commercialOptions = (units ?? [])
           .filter(unit => unit.active && unit.saleAllowed && unit.code !== product.baseUnitCode)
           .map(unit => ({

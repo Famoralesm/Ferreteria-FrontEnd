@@ -68,7 +68,7 @@
                         <button pButton type="button" [icon]="unit.active ? 'pi pi-ban' : 'pi pi-check'"
                           [severity]="unit.active ? 'danger' : 'success'" [text]="true"
                           (click)="toggleMeasureUnit(unit)" [attr.aria-label]="unit.active ? 'Desactivar unidad' : 'Activar unidad'"></button>
-                        <button pButton type="button" icon="pi pi-trash" severity="danger" [text]="true"
+                        <button pButton type="button" icon="pi pi-trash" label="Eliminar" severity="danger" [outlined]="true"
                           (click)="deleteMeasureUnit(unit)" aria-label="Eliminar unidad"></button>
                       </td>
                     </tr>
@@ -148,7 +148,7 @@
                         @if (!isBasePresentation(unit)) {
                           <button pButton type="button" icon="pi pi-pencil" severity="secondary" [text]="true" (click)="edit(unit)" aria-label="Editar"></button>
                           <button pButton type="button" [icon]="unit.active ? 'pi pi-ban' : 'pi pi-check'" [severity]="unit.active ? 'danger' : 'success'" [text]="true" (click)="toggleActive(unit)" [attr.aria-label]="unit.active ? 'Desactivar' : 'Activar'"></button>
-                          <button pButton type="button" icon="pi pi-trash" severity="danger" [text]="true" (click)="deletePresentation(unit)" aria-label="Eliminar presentación"></button>
+                          <button pButton type="button" icon="pi pi-trash" label="Eliminar" severity="danger" [outlined]="true" (click)="deletePresentation(unit)" aria-label="Eliminar presentación"></button>
                         } @else {
                           <span class="status">Unidad base</span>
                         }
