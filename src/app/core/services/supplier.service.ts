@@ -67,6 +67,10 @@ export class SupplierService {
     );
   }
 
+  updateProductSupplier(productId: number, productSupplierId: number, request: ProductSupplierRequest): Observable<ProductSupplier> {
+    return this.http.put<ProductSupplier>(`${this.api}/${productId}/suppliers/${productSupplierId}`, request);
+  }
+
   deleteProductSupplier(productId: number, productSupplierId: number): Observable<void> {
     return this.http.delete<void>(
       `${this.apiUrl}/${productId}/suppliers/${productSupplierId}`
