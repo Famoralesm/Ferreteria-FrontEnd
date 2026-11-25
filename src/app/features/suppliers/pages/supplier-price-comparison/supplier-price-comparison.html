@@ -87,14 +87,14 @@
         <tr><th>Proveedor</th><th>Marca</th><th>Presentación</th><th>Precio presentación</th><th>Equivalente / {{ baseUnitName }}</th><th>Contacto</th><th>Preferida</th><th class="actions-column">Acciones</th></tr>
       </ng-template>
       <ng-template #body let-item>
-        <tr [class.selected-supplier-row]="item.seleccionado">
+        <tr [class.selected-supplier-row]="item.seleccionado" [class.best-price-row]="item.id === bestOfferId">
           <td><strong>{{ item.nombreProveedor }}</strong></td>
           <td>{{ item.nombreMarca || 'Sin marca registrada' }}</td>
           <td>{{ item.nombrePresentacion || 'Unidad base (oferta anterior)' }}<small class="offer-factor">{{ item.factorConversion || 1 }} {{ baseUnitName }}</small></td>
           <td>{{ item.precioCompra | currency:'CLP':'symbol-narrow':'1.0-2':'es-CL' }}</td>
           <td><strong>{{ (item.precioUnidadBase ?? item.precioCompra) | currency:'CLP':'symbol-narrow':'1.2-4':'es-CL' }}</strong></td>
           <td>{{ item.telefonoProveedor || item.emailProveedor || '—' }}</td>
-          <td>{{ item.seleccionado ? 'Oferta preferida' : 'Alternativa' }}</td>
+          <td><span>{{ item.seleccionado ? 'Oferta preferida' : 'Alternativa' }}</span>@if (item.id === bestOfferId) { <small class="best-price-label">Menor costo equivalente</small> }</td>
           <td class="actions-column">
             <button pButton type="button" icon="pi pi-pencil" severity="secondary" text rounded size="small"
               aria-label="Editar oferta" (click)="editOffer(item)"></button>
