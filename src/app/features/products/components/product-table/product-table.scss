@@ -54,6 +54,5 @@ small {
 }
 
 
-.product-row-clickable { cursor: pointer; }
-.product-row-clickable:hover { background: var(--surface-hover); }
-.product-row-clickable:focus-visible { outline: 2px solid var(--primary-color); outline-offset: -2px; }
+.product-row-clickable td:nth-child(-n+8) { cursor: pointer; }
+.product-row-clickable td:nth-child(-n+8):hover { background: var(--surface-hover); }
