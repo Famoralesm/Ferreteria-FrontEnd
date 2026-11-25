@@ -195,7 +195,7 @@
                 </div>
                 <div class="order-product-stock">
                   <strong [class.stock-low]="product.stock <= (product.stockMinimo ?? 0)"
-                    [class.stock-ok]="product.stock > (product.stockMinimo ?? 0)">{{ product.stock }}</strong>
+                    [class.stock-ok]="product.stock > (product.stockMinimo ?? 0)">{{ product.stock }} {{ product.baseUnitSymbol }}</strong>
                   <small>{{ product.stock <= (product.stockMinimo ?? 0) ? 'Stock bajo' : 'Disponible' }}</small>
                 </div>
               </div>
@@ -235,7 +235,7 @@
         </div>
         <div class="add-product-button">
           <button pButton type="button" label="Agregar" icon="pi pi-plus"
-            severity="success" [disabled]="isInRoute || paymentStatus !== 'PENDING'"
+            severity="success" [disabled]="isInRoute || paymentStatus !== 'PENDING' || productUnitsLoading || !selectedSaleUnit"
             (click)="addProduct()">
           </button>
         </div>

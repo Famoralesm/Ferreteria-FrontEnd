@@ -644,14 +644,15 @@ private loadProducts(): void {
       this.notificationService.warning('Define la unidad base de ' + this.selectedProduct.name + ' en Productos → Presentaciones antes de agregarlo al pedido.');
       return;
     }
-    if (!this.selectedSaleUnit || this.quantity <= 0) {
+    const saleUnit = this.selectedSaleUnit;
+    if (!saleUnit || this.quantity <= 0) {
       this.quantityError = true;
       return;
     }
     this.quantityError = false;
 
     const product = this.selectedProduct;
-    const factor = this.selectedConversionFactor;
+    const factor = saleUnit.conversionFactor;
     const requestedBaseQuantity = this.quantity * factor;
     const currentBaseQuantity = this.items
       .filter(item => item.productId === product.id)
@@ -671,7 +672,7 @@ private loadProducts(): void {
       return;
     }
 
-    const unitId = this.selectedSaleUnit.isBase ? null : this.selectedSaleUnit.id;
+    const unitId = saleUnit.isBase ? null : saleUnit.id;
     const existing = this.items.find(item =>
       item.productId === product.id && (item.unitId ?? null) === unitId
     );
@@ -685,7 +686,7 @@ private loadProducts(): void {
         unitId,
         productName: product.name,
         quantity: this.quantity,
-        unitName: this.selectedSaleUnit.isBase ? (product.baseUnitName ?? 'Unidad base') : this.selectedSaleUnit.name,
+        unitName: saleUnit.isBase ? (product.baseUnitName ?? 'Unidad base') : saleUnit.name,
         conversionFactor: factor,
         quantityInBaseUnit: requestedBaseQuantity,
         baseUnitSymbol: product.baseUnitSymbol ?? '',
