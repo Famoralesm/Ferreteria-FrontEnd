@@ -8,6 +8,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { ProductStock } from '../../../../core/models/inventory/product-stock';
+import { Product } from '../../../../core/models/product/product';
+import { ProductService } from '../../../../core/services/product.service';
 import { InventoryMovement } from '../../../../core/models/inventory/inventory-movement';
 import { Store } from '../../../../core/models/store/store';
 import { InventoryService } from '../../../../core/services/inventory.service';
@@ -27,6 +29,7 @@ export class InitialStock implements OnInit, OnDestroy {
   selectedStore: Store | null = null;
   activeTab: 'initial' | 'movements' = 'initial';
   rows: InitialStockRow[] = [];
+  historyProducts: Product[] = [];
   loading = false;
   searchTerm = '';
   movementProductId: number | null = null;
@@ -40,7 +43,8 @@ export class InitialStock implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   constructor(private readonly storeService: StoreService, private readonly inventoryService: InventoryService,
-    private readonly notificationService: NotificationService, private readonly cdr: ChangeDetectorRef) {}
+    private readonly productService: ProductService, private readonly notificationService: NotificationService,
+    private readonly cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.storeService.selectedStore$.pipe(
@@ -50,6 +54,8 @@ export class InitialStock implements OnInit, OnDestroy {
         this.selectedStore = store;
         this.loading = true;
         this.rows = [];
+        this.historyProducts = [];
+        this.loadHistoryProducts(store.id);
         this.movementHistory = [];
         this.movementProductId = null;
         return this.inventoryService.getStocks(store.id);
@@ -63,6 +69,17 @@ export class InitialStock implements OnInit, OnDestroy {
       },
       error: error => { console.error('Error cargando existencias:', error); this.loading = false; this.notificationService.error('No fue posible cargar las existencias de la sucursal.'); this.cdr.markForCheck(); }
     });
+  }
+
+  private loadHistoryProducts(storeId: number): void {
+    this.productService.findAll(storeId).subscribe({
+      next: products => { this.historyProducts = products ?? []; this.cdr.markForCheck(); },
+      error: error => { console.error('Error cargando productos para historial:', error); this.notificationService.error('No fue posible cargar los productos para consultar el historial.'); }
+    });
+  }
+
+  get selectedMovementProduct(): Product | undefined {
+    return this.historyProducts.find(product => product.id === this.movementProductId);
   }
 
   ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }
@@ -119,6 +136,7 @@ export class InitialStock implements OnInit, OnDestroy {
     const quantity = Number(this.movementQuantity);
     const reason = this.movementReason.trim();
     if (!productId) { this.notificationService.warning('Debes seleccionar un producto para realizar el movimiento.'); return; }
+    if (this.selectedMovementProduct && !this.selectedMovementProduct.active) { this.notificationService.warning('Este producto está inactivo. Puedes consultar su historial, pero debes activarlo para registrar nuevos movimientos.'); return; }
     if (this.movementQuantity == null || !Number.isFinite(quantity)) { this.notificationService.warning('Debes ingresar una cantidad para realizar el movimiento.'); return; }
     if (!reason) { this.notificationService.warning('Debes llenar el campo Motivo / observación para realizar el movimiento.'); return; }
     if (this.movementType === 'ENTRY' && quantity <= 0) {
