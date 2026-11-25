@@ -14,3 +14,36 @@
   .status-done { color: #247342; background: #e8f5ec; } .status-pending { color: #9a6700; background: #fff4d6; }
 }
 @media (max-width: 768px) { .inventory-page .inventory-toolbar { align-items: stretch; flex-direction: column; } .inventory-page .inventory-search { width: 100%; } }
+
+.manual-movement-form { width: 100%; }
+.manual-movement-form > strong { display: block; margin-bottom: 6px; }
+.manual-movement-form > p { margin: 0 0 14px; color: #64748b; line-height: 1.5; }
+.manual-movement-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.manual-movement-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #34495e;
+  font-size: 13px;
+  font-weight: 600;
+}
+.manual-movement-fields input,
+.manual-movement-fields select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #243447;
+  box-sizing: border-box;
+}
+.manual-movement-fields .movement-reason { grid-column: span 2; }
+@media (max-width: 850px) {
+  .manual-movement-fields { grid-template-columns: 1fr; }
+  .manual-movement-fields .movement-reason { grid-column: auto; }
+}
