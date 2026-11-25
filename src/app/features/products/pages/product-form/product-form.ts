@@ -55,6 +55,7 @@ import { Brand } from '../../../../core/models/product/brand';
 export class ProductForm implements OnInit {
 
   id?: number;
+  readOnlyMode = false;
 
   form!: FormGroup;
 
@@ -203,6 +204,7 @@ ngOnInit(): void {
   }
 
   this.id = Number(paramId);
+  this.readOnlyMode = this.route.snapshot.routeConfig?.path === ':id';
 
   let previousStore: Store | null = null;
 
@@ -280,6 +282,7 @@ ngOnDestroy(): void {
           saleQuantityIncrement: product.saleQuantityIncrement ?? 1
         });
 
+        if (this.readOnlyMode) this.form.disable({ emitEvent: false });
         this.form.markAsPristine();
 
       },
