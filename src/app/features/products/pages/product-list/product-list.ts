@@ -147,6 +147,11 @@ export class ProductList implements OnInit, OnDestroy {
       active: boolean;
   }): void {
 
+    const action = event.active ? 'activar' : 'desactivar';
+    if (!confirm(`¿Deseas ${action} este producto? ${event.active ? 'Volverá a estar disponible para nuevas operaciones.' : 'Se conservará su historial, pero dejará de estar disponible para nuevas operaciones.'}`)) {
+      return;
+    }
+
     this.productService.patch(event.id, {
       active: event.active
     }).subscribe({
@@ -159,6 +164,7 @@ export class ProductList implements OnInit, OnDestroy {
             : product
         );
 
+        this.notificationService.success(event.active ? 'Producto activado correctamente.' : 'Producto desactivado; su historial se conserva.');
         this.cdr.detectChanges();
 
       },
