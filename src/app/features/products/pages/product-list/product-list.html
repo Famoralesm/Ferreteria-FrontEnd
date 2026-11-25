@@ -41,7 +41,8 @@
     [products]="products"
     (edit)="edit($event)"
     (view)="view($event)"
-    (delete)="delete($event)">
+    (delete)="delete($event)"
+    (toggleStatus)="changeProductStatus($event)">
   </app-product-table>
 
   </div>
