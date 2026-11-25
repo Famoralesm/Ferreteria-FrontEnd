@@ -113,11 +113,15 @@
                 severity="secondary" [outlined]="true" (click)="beginBaseUnitChange()"></button>
             }
             @if (!selectedProduct.baseUnitId || changingBaseUnit) {
-              <p-select inputId="baseUnit" [options]="configuredBaseUnits" optionLabel="name" optionValue="id"
-                [ngModel]="null" (ngModelChange)="onBaseUnitChange($event)"
-                placeholder="Selecciona una presentación configurada" [filter]="true" filterBy="name,code" class="w-full">
-                <ng-template #item let-unit><div class="product-option"><strong>{{ unit.name }}</strong><small>{{ unit.code }} · {{ unit.symbol }}</small></div></ng-template>
-              </p-select>
+              @if (configuredBaseUnits.length > 0) {
+                <p-select inputId="baseUnit" [options]="configuredBaseUnits" optionLabel="name" optionValue="id"
+                  [ngModel]="null" (ngModelChange)="onBaseUnitChange($event)"
+                  placeholder="Selecciona una presentación configurada" [filter]="true" filterBy="name,code" class="w-full">
+                  <ng-template #item let-unit><div class="product-option"><strong>{{ unit.name }}</strong><small>{{ unit.code }} · {{ unit.symbol }}</small></div></ng-template>
+                </p-select>
+              } @else {
+                <small>Este producto aún no tiene presentaciones configuradas. Crea primero la presentación que utilizarás como unidad base.</small>
+              }
               @if (changingBaseUnit) {
                 <small>Solo puedes seleccionar una unidad que ya esté configurada como presentación para este producto. Verifica que stock, precios y factores estén expresados en la nueva unidad.</small>
                 <button pButton type="button" label="Cancelar cambio" severity="secondary" [outlined]="true" (click)="cancelBaseUnitChange()"></button>
