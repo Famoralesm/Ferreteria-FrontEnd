@@ -229,6 +229,10 @@ export class ProductUnits implements OnInit, OnDestroy {
 
   onBaseUnitChange(unitOfMeasureId: number | null): void {
     if (!this.selectedProduct || !unitOfMeasureId) return;
+    if (this.selectedProduct.baseUnitId === unitOfMeasureId) {
+      this.changingBaseUnit = false;
+      return;
+    }
     const productId = this.selectedProduct.id;
     const preserveExistingValues = !!this.selectedProduct.baseUnitId;
     if (preserveExistingValues && !window.confirm(
