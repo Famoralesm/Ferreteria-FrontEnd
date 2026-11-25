@@ -30,7 +30,15 @@ type UnknownCustomerOption = {
 
 type CustomerOption = Customer | UnknownCustomerOption;
 
-type SaleUnitOption = { id: number | null; code: string; name: string; conversionFactor: number; isBase: boolean; };
+type SaleUnitOption = {
+  id: number | null;
+  code: string;
+  name: string;
+  conversionFactor: number;
+  minimumSaleQuantity: number;
+  saleQuantityIncrement: number;
+  isBase: boolean;
+};
 
 @Component({
   selector: 'app-order-form',
@@ -580,6 +588,8 @@ private loadProducts(): void {
       code: 'BASE',
       name: (product.baseUnitName ?? 'Unidad base') + ' (unidad base)',
       conversionFactor: 1,
+      minimumSaleQuantity: product.minimumSaleQuantity ?? 1,
+      saleQuantityIncrement: product.saleQuantityIncrement ?? 1,
       isBase: true
     };
     this.saleUnitOptions = [baseOption];
@@ -590,6 +600,12 @@ private loadProducts(): void {
     this.productUnitService.findByProduct(product.id).subscribe({
       next: units => {
         if (this.selectedProduct?.id !== product.id) return;
+        const basePresentation = (units ?? []).find(unit => unit.code === product.baseUnitCode);
+        baseOption.minimumSaleQuantity = basePresentation?.minimumSaleQuantity
+          ?? product.minimumSaleQuantity ?? 1;
+        baseOption.saleQuantityIncrement = basePresentation?.saleQuantityIncrement
+          ?? product.saleQuantityIncrement ?? 1;
+
         const commercialOptions = (units ?? [])
           .filter(unit => unit.active && unit.saleAllowed && unit.code !== product.baseUnitCode)
           .map(unit => ({
@@ -597,6 +613,8 @@ private loadProducts(): void {
             code: unit.code,
             name: unit.name,
             conversionFactor: unit.conversionFactor,
+            minimumSaleQuantity: unit.minimumSaleQuantity ?? 1,
+            saleQuantityIncrement: unit.saleQuantityIncrement ?? 1,
             isBase: false
           }));
         this.saleUnitOptions = [baseOption, ...commercialOptions];
@@ -623,11 +641,11 @@ private loadProducts(): void {
   }
 
   get quantityMinimum(): number {
-    return (this.selectedProduct?.minimumSaleQuantity ?? 1) / this.selectedConversionFactor;
+    return this.selectedSaleUnit?.minimumSaleQuantity ?? 1;
   }
 
   get quantityIncrement(): number {
-    return (this.selectedProduct?.saleQuantityIncrement ?? 1) / this.selectedConversionFactor;
+    return this.selectedSaleUnit?.saleQuantityIncrement ?? 1;
   }
 
   addProduct(): void {
@@ -653,27 +671,27 @@ private loadProducts(): void {
     this.quantityError = false;
 
     const product = this.selectedProduct;
-    const factor = saleUnit.conversionFactor;
-    const requestedBaseQuantity = this.quantity * factor;
-    const currentBaseQuantity = this.items
-      .filter(item => item.productId === product.id)
-      .reduce((sum, item) => sum + item.quantity * item.conversionFactor, 0);
-    const resultingBaseQuantity = currentBaseQuantity + requestedBaseQuantity;
-    const minimum = product.minimumSaleQuantity ?? 1;
-    const increment = product.saleQuantityIncrement ?? 1;
-    const steps = (resultingBaseQuantity - minimum) / increment;
+    const unitId = saleUnit.isBase ? null : saleUnit.id;
+    const currentPresentationQuantity = this.items
+      .filter(item => item.productId === product.id && (item.unitId ?? null) === unitId)
+      .reduce((sum, item) => sum + item.quantity, 0);
+    const resultingPresentationQuantity = currentPresentationQuantity + this.quantity;
+    const minimum = saleUnit.minimumSaleQuantity;
+    const increment = saleUnit.saleQuantityIncrement;
+    const steps = (resultingPresentationQuantity - minimum) / increment;
 
-    if (resultingBaseQuantity < minimum
+    if (resultingPresentationQuantity < minimum
         || !Number.isFinite(steps)
         || Math.abs(steps - Math.round(steps)) > 0.000001) {
       this.notificationService.warning(
-        'La cantidad total debe ser al menos ' + minimum + ' ' + (product.baseUnitSymbol ?? 'unidades')
+        'La cantidad de ' + saleUnit.name + ' debe ser al menos ' + minimum
         + ' y avanzar en incrementos de ' + increment + '.'
       );
       return;
     }
 
-    const unitId = saleUnit.isBase ? null : saleUnit.id;
+    const factor = saleUnit.conversionFactor;
+    const requestedBaseQuantity = this.quantity * factor;
     const existing = this.items.find(item =>
       item.productId === product.id && (item.unitId ?? null) === unitId
     );

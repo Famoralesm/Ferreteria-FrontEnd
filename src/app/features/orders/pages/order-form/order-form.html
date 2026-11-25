@@ -219,6 +219,7 @@
             @if (selectedSaleUnit) {
               <small>1 {{ selectedSaleUnit.isBase ? (selectedProduct.baseUnitName || 'unidad base') : selectedSaleUnit.name }}
                 = {{ selectedSaleUnit.conversionFactor }} {{ selectedProduct.baseUnitSymbol || selectedProduct.baseUnitName }}</small>
+              <small>Mínimo: {{ selectedSaleUnit.minimumSaleQuantity }} · Incremento: {{ selectedSaleUnit.saleQuantityIncrement }} {{ selectedSaleUnit.name }}</small>
             }
           </div>
         }

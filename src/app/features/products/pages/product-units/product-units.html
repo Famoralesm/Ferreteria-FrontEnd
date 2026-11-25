@@ -137,20 +137,22 @@
           } @else {
             <div class="units-table-wrap">
               <table class="units-table">
-                <thead><tr><th>Código</th><th>Presentación</th><th>Factor</th><th>Compra</th><th>Venta</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <thead><tr><th>Código</th><th>Presentación</th><th>Factor</th><th>Mínimo venta</th><th>Incremento</th><th>Compra</th><th>Venta</th><th>Estado</th><th>Acciones</th></tr></thead>
                 <tbody>
                   @for (unit of paginatedPresentations; track unit.id) {
                     <tr>
                       <td><strong>{{ unit.code }}</strong></td><td>{{ unit.name }}</td><td>{{ unit.conversionFactor }}</td>
+                      <td>{{ unit.minimumSaleQuantity }}</td><td>{{ unit.saleQuantityIncrement }}</td>
                       <td>{{ unit.purchaseAllowed ? 'Sí' : 'No' }}</td><td>{{ unit.saleAllowed ? 'Sí' : 'No' }}</td>
                       <td><span class="status" [class.status-off]="!unit.active">{{ unit.active ? 'Activa' : 'Inactiva' }}</span></td>
                       <td class="row-actions">
+                        <button pButton type="button" icon="pi pi-pencil" severity="secondary" [text]="true"
+                          (click)="edit(unit)" [attr.aria-label]="isBasePresentation(unit) ? 'Editar reglas de unidad base' : 'Editar presentación'"></button>
                         @if (!isBasePresentation(unit)) {
-                          <button pButton type="button" icon="pi pi-pencil" severity="secondary" [text]="true" (click)="edit(unit)" aria-label="Editar"></button>
                           <button pButton type="button" [icon]="unit.active ? 'pi pi-ban' : 'pi pi-check'" [severity]="unit.active ? 'danger' : 'success'" [text]="true" (click)="toggleActive(unit)" [attr.aria-label]="unit.active ? 'Desactivar' : 'Activar'"></button>
                           <button pButton type="button" icon="pi pi-trash" label="Eliminar" severity="danger" [outlined]="true" (click)="deletePresentation(unit)" aria-label="Eliminar presentación"></button>
                         } @else {
-                          <span class="status">Unidad base</span>
+                          <span class="status">Unidad base protegida</span>
                         }
                       </td>
                     </tr>
@@ -179,21 +181,38 @@
             <label for="unitCode">Código *</label>
             <p-select inputId="unitCode" [options]="activeMeasureUnits" optionLabel="code" optionValue="code"
               [(ngModel)]="form.code" (onChange)="onPresentationCodeChange($event.value)"
-              [filter]="true" filterBy="code,name" placeholder="Selecciona un código" class="w-full">
+              [filter]="true" filterBy="code,name" placeholder="Selecciona un código" class="w-full"
+              [disabled]="isEditingBaseUnit">
               <ng-template #item let-unit><div class="product-option"><strong>{{ unit.code }}</strong><small>{{ unit.name }} ({{ unit.symbol }})</small></div></ng-template>
             </p-select>
           </div>
           <div class="form-field">
             <label for="unitName">Descripción de la presentación *</label>
-            <input id="unitName" type="text" maxlength="80" [(ngModel)]="form.name" placeholder="Ej: Caja de 100 unidades">
+            <input id="unitName" type="text" maxlength="80" [(ngModel)]="form.name" placeholder="Ej: Caja de 100 unidades"
+              [disabled]="isEditingBaseUnit">
           </div>
           <div class="form-field">
             <label for="conversionFactor">Equivalencia en {{ selectedProduct.baseUnitName || 'unidad base' }} *</label>
-            <input id="conversionFactor" type="number" min="0.0001" step="0.0001" [(ngModel)]="form.conversionFactor">
+            <input id="conversionFactor" type="number" min="0.0001" step="0.0001" [(ngModel)]="form.conversionFactor"
+              [disabled]="isEditingBaseUnit">
             <small>Indica cuántas unidades base contiene esta presentación. Ejemplo: 1 caja = 100 unidades → 100.</small>
           </div>
-          <label class="toggle-row"><input type="checkbox" [(ngModel)]="form.purchaseAllowed"><span>Permitir compras con esta presentación</span></label>
-          <label class="toggle-row"><input type="checkbox" [(ngModel)]="form.saleAllowed"><span>Permitir ventas con esta presentación</span></label>
+          <div class="form-field">
+            <label for="minimumSaleQuantity">Cantidad mínima de venta ({{ form.name || 'presentación' }}) *</label>
+            <input id="minimumSaleQuantity" type="number" min="0.0001" step="0.0001"
+              [(ngModel)]="form.minimumSaleQuantity">
+            <small>Mínimo que se puede vender de esta presentación, no en unidad base.</small>
+          </div>
+          <div class="form-field">
+            <label for="saleQuantityIncrement">Incremento de venta ({{ form.name || 'presentación' }}) *</label>
+            <input id="saleQuantityIncrement" type="number" min="0.0001" step="0.0001"
+              [(ngModel)]="form.saleQuantityIncrement">
+            <small>Define los saltos permitidos al vender este formato.</small>
+          </div>
+          <label class="toggle-row"><input type="checkbox" [(ngModel)]="form.purchaseAllowed"
+            [disabled]="isEditingBaseUnit"><span>Permitir compras con esta presentación</span></label>
+          <label class="toggle-row"><input type="checkbox" [(ngModel)]="form.saleAllowed"
+            [disabled]="isEditingBaseUnit"><span>Permitir ventas con esta presentación</span></label>
           <div class="editor-actions">
             <button pButton type="button" label="Guardar presentación" icon="pi pi-check" severity="success" [disabled]="saving" [loading]="saving" (click)="save()"></button>
             @if (editingId !== null) { <button pButton type="button" label="Cancelar edición" severity="secondary" [outlined]="true" (click)="resetForm()"></button> }

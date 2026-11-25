@@ -90,24 +90,6 @@
               <small>Precio unitario que se aplicará al alcanzar la cantidad mayorista.</small>
             </div>
 
-            <div class="form-field">
-              <label for="minimumSaleQuantity">Cantidad mínima de venta ({{ baseUnitName || "unidad base" }})</label>
-              <p-inputNumber id="minimumSaleQuantity" formControlName="minimumSaleQuantity"
-                [min]="0.0001" [minFractionDigits]="0" [maxFractionDigits]="4"
-                [useGrouping]="false" class="w-full">
-              </p-inputNumber>
-              <small>Mínimo que se puede vender, expresado en la unidad base configurada en Presentaciones.</small>
-            </div>
-
-            <div class="form-field">
-              <label for="saleQuantityIncrement">Incremento de venta ({{ baseUnitName || "unidad base" }})</label>
-              <p-inputNumber id="saleQuantityIncrement" formControlName="saleQuantityIncrement"
-                [min]="0.0001" [minFractionDigits]="0" [maxFractionDigits]="4"
-                [useGrouping]="false" class="w-full">
-              </p-inputNumber>
-              <small>Ejemplo: mínimo 0,5 e incremento 0,5 permite 0,5; 1; 1,5; 2, etc.</small>
-            </div>
-
             <div class="form-field wholesale-field">
               <label for="wholesaleMinQuantity">Umbral mayorista ({{ baseUnitName || "unidad base" }})</label>
               <p-inputNumber
@@ -171,7 +153,7 @@
 
             <div class="form-field base-unit-help">
               <label>Unidad base</label>
-              <small>Unidad base: {{ baseUnitName || "pendiente de configurar en Productos → Presentaciones" }}{{ baseUnitSymbol ? " (" + baseUnitSymbol + ")" : "" }}. El precio, el mínimo, el incremento y el umbral mayorista se expresan en esta unidad.</small>
+              <small>Unidad base: {{ baseUnitName || "pendiente de configurar en Productos → Presentaciones" }}{{ baseUnitSymbol ? " (" + baseUnitSymbol + ")" : "" }}. El precio y el umbral mayorista se expresan en esta unidad. También se utiliza para convertir cantidades y controlar el stock.</small>
             </div>
             <div class="active-field">
             <p-checkbox

@@ -59,6 +59,12 @@ export class ProductUnits implements OnInit, OnDestroy {
     this.presentationPage = page;
   }
 
+  get isEditingBaseUnit(): boolean {
+    return this.editingId !== null
+      && !!this.units.find(unit => unit.id === this.editingId)
+      && this.isBasePresentation(this.units.find(unit => unit.id === this.editingId)!);
+  }
+
   get activeMeasureUnits(): UnitOfMeasure[] {
     return this.measureUnits.filter(unit => unit.active);
   }
@@ -236,7 +242,7 @@ export class ProductUnits implements OnInit, OnDestroy {
     const productId = this.selectedProduct.id;
     const preserveExistingValues = !!this.selectedProduct.baseUnitId;
     if (preserveExistingValues && !window.confirm(
-      'Vas a corregir la unidad base. Se conservarán exactamente los valores numéricos actuales de stock, stock mínimo, precios, mínimo de venta, incremento, umbral mayorista y factores de presentación. Solo continúa si esos valores YA están expresados en la nueva unidad. Las cantidades e importes históricos no se recalcularán; solo se actualizará la etiqueta de las líneas históricas vendidas en unidad base. ¿Deseas continuar?'
+      'Vas a corregir la unidad base. Se conservarán exactamente los valores numéricos actuales de stock, stock mínimo, precios, umbral mayorista y factores de presentación. Solo continúa si esos valores YA están expresados en la nueva unidad. Las cantidades e importes históricos no se recalcularán; solo se actualizará la etiqueta de las líneas históricas vendidas en unidad base. ¿Deseas continuar?'
     )) {
       this.changingBaseUnit = false;
       return;
@@ -324,11 +330,16 @@ export class ProductUnits implements OnInit, OnDestroy {
       code: this.form.code.trim().toUpperCase(),
       name: this.form.name.trim(),
       conversionFactor: Number(this.form.conversionFactor),
+      minimumSaleQuantity: Number(this.form.minimumSaleQuantity),
+      saleQuantityIncrement: Number(this.form.saleQuantityIncrement),
       purchaseAllowed: this.form.purchaseAllowed,
       saleAllowed: this.form.saleAllowed
     };
-    if (!request.code || !request.name || !Number.isFinite(request.conversionFactor) || request.conversionFactor <= 0) {
-      this.notificationService.warning('Completa código, nombre y un factor de conversión mayor que cero.');
+    if (!request.code || !request.name
+        || !Number.isFinite(request.conversionFactor) || request.conversionFactor <= 0
+        || !Number.isFinite(request.minimumSaleQuantity) || request.minimumSaleQuantity <= 0
+        || !Number.isFinite(request.saleQuantityIncrement) || request.saleQuantityIncrement <= 0) {
+      this.notificationService.warning('Completa código, nombre, factor, mínimo e incremento con valores mayores que cero.');
       return;
     }
     const productId = this.selectedProduct.id;
@@ -360,8 +371,15 @@ export class ProductUnits implements OnInit, OnDestroy {
 
   edit(unit: ProductUnit): void {
     this.editingId = unit.id;
-    this.form = { code: unit.code, name: unit.name, conversionFactor: unit.conversionFactor,
-      purchaseAllowed: unit.purchaseAllowed, saleAllowed: unit.saleAllowed };
+    this.form = {
+      code: unit.code,
+      name: unit.name,
+      conversionFactor: unit.conversionFactor,
+      minimumSaleQuantity: unit.minimumSaleQuantity ?? 1,
+      saleQuantityIncrement: unit.saleQuantityIncrement ?? 1,
+      purchaseAllowed: unit.purchaseAllowed,
+      saleAllowed: unit.saleAllowed
+    };
   }
 
   toggleActive(unit: ProductUnit): void {
@@ -382,7 +400,11 @@ export class ProductUnits implements OnInit, OnDestroy {
 
   resetForm(): void { this.editingId = null; this.form = this.emptyForm(); }
   private emptyForm(): ProductUnitRequest {
-    return { code: '', name: '', conversionFactor: 1, purchaseAllowed: true, saleAllowed: true };
+    return {
+      code: '', name: '', conversionFactor: 1,
+      minimumSaleQuantity: 1, saleQuantityIncrement: 1,
+      purchaseAllowed: true, saleAllowed: true
+    };
   }
   private emptyMeasureForm(): UnitOfMeasureRequest { return { code: '', name: '', symbol: '' }; }
 }

@@ -4,6 +4,8 @@ export interface ProductUnit {
   code: string;
   name: string;
   conversionFactor: number;
+  minimumSaleQuantity: number;
+  saleQuantityIncrement: number;
   purchaseAllowed: boolean;
   saleAllowed: boolean;
   active: boolean;
@@ -13,6 +15,8 @@ export interface ProductUnitRequest {
   code: string;
   name: string;
   conversionFactor: number;
+  minimumSaleQuantity: number;
+  saleQuantityIncrement: number;
   purchaseAllowed: boolean;
   saleAllowed: boolean;
 }
