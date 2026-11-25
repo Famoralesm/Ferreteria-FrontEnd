@@ -31,6 +31,8 @@ import { StoreService } from '../../../../core/services/store.service';
 import { Store } from '../../../../core/models/store/store';
 import { Subject, filter, distinctUntilChanged, takeUntil } from 'rxjs';
 import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error';
+import { BrandService } from '../../../../core/services/brand.service';
+import { Brand } from '../../../../core/models/product/brand';
 
 @Component({
   selector: 'app-product-form',
@@ -59,6 +61,10 @@ export class ProductForm implements OnInit {
   private fb = inject(FormBuilder);
   private storeService = inject(StoreService);
   private destroy$ = new Subject<void>();
+  brands: Brand[] = [];
+  showBrandDialog = false;
+  newBrandName = '';
+  savingBrand = false;
   currentStock = 0;
   currentStockMinimo = 0;
   currentStoreName = '';
@@ -71,6 +77,8 @@ export class ProductForm implements OnInit {
   private productService = inject(
     ProductService
   );
+
+  private brandService = inject(BrandService);
 
   private router = inject(
     Router
@@ -157,9 +165,8 @@ export class ProductForm implements OnInit {
         '', Validators.required
       ],
 
-      brand: [
-        '', Validators.required
-      ],
+      brand: [''],
+      brandId: [null, Validators.required],
 
       createdAt: [
         {
@@ -188,6 +195,7 @@ export class ProductForm implements OnInit {
 
 ngOnInit(): void {
 
+  this.loadBrands();
   const paramId = this.route.snapshot.paramMap.get('id');
 
   if (!paramId) {
@@ -263,6 +271,7 @@ ngOnDestroy(): void {
           active: product.active,
           category: product.category,
           brand: product.brand,
+          brandId: product.brandId ?? null,
           createdAt: product.createdAt,
           updatedAt: product.updatedAt,
           wholesalePrice: product.wholesalePrice,
@@ -304,6 +313,7 @@ ngOnDestroy(): void {
     active: value.active,
     category: value.category,
     brand: value.brand,
+    brandId: value.brandId,
     wholesalePrice: value.wholesalePrice,
     wholesaleMinQuantity: value.wholesaleMinQuantity,
     minimumSaleQuantity: value.minimumSaleQuantity,
@@ -322,6 +332,7 @@ const updateRequest: UpdateProductRequest = {
   active: formValue.active ?? true,
   category: formValue.category,
   brand: formValue.brand,
+  brandId: formValue.brandId,
   minimumSaleQuantity: formValue.minimumSaleQuantity,
   saleQuantityIncrement: formValue.saleQuantityIncrement
 };
@@ -370,6 +381,48 @@ const updateRequest: UpdateProductRequest = {
   managePresentations(): void {
     if (!this.id) return;
     this.router.navigate(['/products/units'], { queryParams: { tab: 'presentations', productId: this.id } });
+  }
+
+  loadBrands(): void {
+    this.brandService.findAll().subscribe({
+      next: brands => this.brands = brands ?? [],
+      error: error => {
+        console.error('Error cargando marcas:', error);
+        this.notificationService.error('No fue posible cargar el catálogo de marcas.');
+      }
+    });
+  }
+
+  openBrandDialog(): void {
+    this.newBrandName = '';
+    this.showBrandDialog = true;
+  }
+
+  createBrand(): void {
+    const name = this.newBrandName.trim().replace(/\\s+/g, ' ');
+    if (!name) {
+      this.notificationService.warning('Ingresa el nombre de la marca.');
+      return;
+    }
+    this.savingBrand = true;
+    this.brandService.create(name).subscribe({
+      next: brand => {
+        this.brands = [...this.brands, brand].sort((a, b) => a.name.localeCompare(b.name, 'es'));
+        this.form.patchValue({ brandId: brand.id, brand: brand.name });
+        this.showBrandDialog = false;
+        this.savingBrand = false;
+        this.notificationService.success('Marca creada y asociada al producto.');
+      },
+      error: error => {
+        this.savingBrand = false;
+        this.notificationService.error(error?.error?.message ?? 'No fue posible crear la marca.');
+      }
+    });
+  }
+
+  onBrandChange(brandId: number | null): void {
+    const brand = this.brands.find(item => item.id === Number(brandId));
+    this.form.patchValue({ brand: brand?.name ?? '' });
   }
 
   compareSupplierPrices(): void {

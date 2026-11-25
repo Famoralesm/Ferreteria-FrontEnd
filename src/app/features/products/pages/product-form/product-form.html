@@ -142,13 +142,15 @@
             </div>
 
             <div class="form-field">
-              <label for="brand">Marca <span>*</span></label>
-              <input
-                id="brand"
-                pInputText
-                formControlName="brand"
-                placeholder="Marca">
-              <app-field-error [control]="form.get('brand')" [messages]="{ required: 'La marca es obligatoria.' }" />
+              <label for="brandId">Marca <span>*</span></label>
+              <div class="brand-field-row">
+                <p-select inputId="brandId" [options]="brands" optionLabel="name" optionValue="id"
+                  formControlName="brandId" (onChange)="onBrandChange($event.value)"
+                  [filter]="true" filterBy="name" placeholder="Buscar marca..." class="w-full"></p-select>
+                <button pButton type="button" icon="pi pi-plus" label="Agregar" severity="secondary"
+                  [outlined]="true" (click)="openBrandDialog()"></button>
+              </div>
+              <app-field-error [control]="form.get('brandId')" [messages]="{ required: 'Selecciona una marca.' }" />
             </div>
 
             <div class="form-field base-unit-help">

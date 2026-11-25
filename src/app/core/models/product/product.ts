@@ -15,6 +15,7 @@ export interface Product {
   active: boolean;
   category?: string | null;
   brand?: string | null;
+  brandId?: number | null;
   unit?: string | null;
   baseUnitId?: number | null;
   baseUnitCode?: string | null;

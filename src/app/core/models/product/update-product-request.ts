@@ -10,4 +10,5 @@ export interface UpdateProductRequest {
   active: boolean;
   category?: string;
   brand?: string;
+  brandId: number;
 }

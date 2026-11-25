@@ -12,4 +12,5 @@ export interface CreateProductRequest {
   active?: boolean;
   category?: string;
   brand?: string;
+  brandId: number;
 }
