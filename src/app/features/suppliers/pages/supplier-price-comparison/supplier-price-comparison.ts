@@ -126,7 +126,7 @@ export class SupplierPriceComparison implements OnInit {
   }
 
   get bestOfferId(): number | null {
-    return this.sortedComparisons.length ? this.sortedComparisons[0].id : null;
+    return this.visibleComparisons.length ? this.visibleComparisons[0].id : null;
   }
 
   equivalentBasePrice(item: ProductSupplier): number {
@@ -202,7 +202,7 @@ export class SupplierPriceComparison implements OnInit {
       },
       error: error => {
         this.saving = false;
-        console.error('Error registrando oferta:', error);
+        if (error?.status !== 409) console.error('Error registrando oferta:', error);
         this.notificationService.error(error?.error?.message ?? 'No fue posible registrar la oferta.');
         this.cdr.detectChanges();
       }
