@@ -23,6 +23,7 @@ type InitialStockRow = ProductStock & { stockInicialDraft: number; stockMinimoDr
 })
 export class InitialStock implements OnInit, OnDestroy {
   selectedStore: Store | null = null;
+  activeTab: 'initial' | 'movements' = 'initial';
   rows: InitialStockRow[] = [];
   loading = false;
   searchTerm = '';

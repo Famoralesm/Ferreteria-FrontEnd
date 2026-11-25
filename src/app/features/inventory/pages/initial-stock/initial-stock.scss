@@ -47,3 +47,28 @@
   .manual-movement-fields { grid-template-columns: 1fr; }
   .manual-movement-fields .movement-reason { grid-column: auto; }
 }
+
+.inventory-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 18px;
+  padding: 5px;
+  border-radius: 10px;
+  background: #eef2f6;
+}
+.inventory-tabs button {
+  flex: 1;
+  border: 0;
+  border-radius: 7px;
+  padding: 11px 16px;
+  background: transparent;
+  color: #526174;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.inventory-tabs button.active {
+  background: #fff;
+  color: #243447;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, .12);
+}
