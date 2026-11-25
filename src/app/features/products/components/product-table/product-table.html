@@ -108,7 +108,7 @@
   <!-- PRODUCTOS -->
   <ng-template pTemplate="body" let-product>
 
-    <tr>
+    <tr class="product-row-clickable" (click)="edit.emit(product.id)" tabindex="0" (keydown.enter)="edit.emit(product.id)">
 
       <td>{{ product.id }}</td>
 
@@ -151,7 +151,7 @@
             icon="pi pi-eye"
             severity="info"
             rounded
-            (click)="view.emit(product.id)">
+            (click)="$event.stopPropagation(); view.emit(product.id)">
           </button>
 
           <button
@@ -169,7 +169,7 @@
             icon="pi pi-trash"
             severity="danger"
             rounded
-            (click)="delete.emit(product.id)">
+            (click)="$event.stopPropagation(); delete.emit(product.id)">
           </button>
 
         </div>

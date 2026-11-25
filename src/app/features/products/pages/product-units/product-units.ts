@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, filter, takeUntil } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
@@ -44,6 +45,7 @@ export class ProductUnits implements OnInit, OnDestroy {
   readonly measurePageSize = 4;
   presentationPage = 0;
   readonly presentationPageSize = 4;
+  private pendingProductId: number | null = null;
 
   get paginatedPresentations(): ProductUnit[] {
     const start = this.presentationPage * this.presentationPageSize;
@@ -91,10 +93,19 @@ export class ProductUnits implements OnInit, OnDestroy {
     private unitOfMeasureService: UnitOfMeasureService,
     private storeService: StoreService,
     private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
+    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      const productId = Number(params.get('productId'));
+      if (Number.isInteger(productId) && productId > 0) {
+        this.pendingProductId = productId;
+        this.activeTab = 'presentations';
+        this.selectPendingProduct();
+      }
+    });
     this.loadMeasureUnits();
     this.storeService.selectedStore$
       .pipe(
@@ -117,6 +128,7 @@ export class ProductUnits implements OnInit, OnDestroy {
         next: products => {
           this.products = products ?? [];
           this.productsLoading = false;
+          this.selectPendingProduct();
           this.cdr.detectChanges();
         },
         error: err => {
@@ -275,15 +287,32 @@ export class ProductUnits implements OnInit, OnDestroy {
   }
 
   onProductChange(product: Product | null): void {
+    // PrimeNG puede actualizar su índice interno de opción durante el mismo ciclo
+    // de detección. Diferimos el cambio de estado para evitar NG0100.
+    this.loading = !!product;
+    setTimeout(() => {
+      this.selectedProduct = product;
+      this.changingBaseUnit = false;
+      this.units = [];
+      this.resetForm();
+      if (!product) {
+        this.loading = false;
+        this.cdr.detectChanges();
+        return;
+      }
+      this.loadProductUnits(product.id);
+      this.cdr.detectChanges();
+    });
+  }
+
+  private selectPendingProduct(): void {
+    if (!this.pendingProductId || this.products.length === 0) return;
+    const product = this.products.find(item => item.id === this.pendingProductId);
+    if (!product) return;
+    this.pendingProductId = null;
     this.selectedProduct = product;
-    this.changingBaseUnit = false;
-    this.units = [];
-    this.resetForm();
-    if (!product) {
-      this.loading = false;
-      return;
-    }
-    this.loadProductUnits(product.id);
+    this.activeTab = 'presentations';
+    this.onProductChange(product);
   }
 
   private loadProductUnits(productId: number): void {

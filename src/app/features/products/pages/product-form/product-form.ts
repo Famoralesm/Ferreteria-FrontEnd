@@ -367,6 +367,11 @@ const updateRequest: UpdateProductRequest = {
 }
 
 
+  managePresentations(): void {
+    if (!this.id) return;
+    this.router.navigate(['/products/units'], { queryParams: { tab: 'presentations', productId: this.id } });
+  }
+
   compareSupplierPrices(): void {
     if (this.id) {
       this.router.navigate(['/products', this.id, 'suppliers']);

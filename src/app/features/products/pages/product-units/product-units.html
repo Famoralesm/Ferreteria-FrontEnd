@@ -95,8 +95,8 @@
       <div class="units-list">
         <div class="form-field product-picker">
           <label for="unitProduct">Producto</label>
-          <p-select inputId="unitProduct" [options]="products" optionLabel="name" [(ngModel)]="selectedProduct"
-            (onChange)="onProductChange($event.value)" [filter]="true" filterBy="name,sku"
+          <p-select inputId="unitProduct" [options]="products" optionLabel="name" [ngModel]="selectedProduct"
+            (ngModelChange)="onProductChange($event)" [filter]="true" filterBy="name,sku"
             placeholder="Selecciona un producto" [loading]="productsLoading" [showClear]="true" class="w-full">
             <ng-template #item let-product><div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div></ng-template>
           </p-select>
@@ -213,10 +213,8 @@
               [(ngModel)]="form.saleQuantityIncrement">
             <small>Define los saltos permitidos al vender este formato.</small>
           </div>
-          <label class="toggle-row"><input type="checkbox" [(ngModel)]="form.purchaseAllowed"
-            [disabled]="isEditingBaseUnit"><span>Permitir compras con esta presentación</span></label>
-          <label class="toggle-row"><input type="checkbox" [(ngModel)]="form.saleAllowed"
-            [disabled]="isEditingBaseUnit"><span>Permitir ventas con esta presentación</span></label>
+          <label class="toggle-row"><input type="checkbox" [(ngModel)]="form.purchaseAllowed"><span>Permitir compras con esta presentación</span></label>
+          <label class="toggle-row"><input type="checkbox" [(ngModel)]="form.saleAllowed"><span>Permitir ventas con esta presentación</span></label>
           <div class="editor-actions">
             <button pButton type="button" label="Guardar presentación" icon="pi pi-check" severity="success" [disabled]="saving" [loading]="saving" (click)="save()"></button>
             @if (editingId !== null) { <button pButton type="button" label="Cancelar edición" severity="secondary" [outlined]="true" (click)="resetForm()"></button> }
