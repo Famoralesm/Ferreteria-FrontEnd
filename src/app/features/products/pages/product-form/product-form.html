@@ -281,7 +281,7 @@
         <button
           pButton
           type="button"
-          label="Cancelar"
+          [label]="readOnlyMode ? 'Volver al listado' : 'Cancelar'"
           icon="pi pi-times"
           severity="secondary"
           (click)="cancel()">
