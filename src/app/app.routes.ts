@@ -72,6 +72,10 @@ export const routes: Routes = [
         component: ProductForm
       },
       {
+        path: 'products/view/:id',
+        component: ProductForm
+      },
+      {
         path: 'products/:id',
         component: ProductForm
       },
