@@ -8,9 +8,13 @@ import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { ProductSupplier, ProductSupplierRequest } from '../../../../core/models/supplier/product-supplier';
 import { Supplier } from '../../../../core/models/supplier/supplier';
+import { Brand } from '../../../../core/models/product/brand';
+import { ProductUnit } from '../../../../core/models/product/product-unit';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { SupplierService } from '../../../../core/services/supplier.service';
 import { ProductService } from '../../../../core/services/product.service';
+import { ProductUnitService } from '../../../../core/services/product-unit.service';
+import { BrandService } from '../../../../core/services/brand.service';
 import { StoreService } from '../../../../core/services/store.service';
 
 @Component({
@@ -24,18 +28,26 @@ export class SupplierPriceComparison implements OnInit {
   productId = 0;
   productName = 'Producto';
   productSku = '';
+  baseUnitName = 'unidad base';
   suppliers: Supplier[] = [];
+  brands: Brand[] = [];
+  purchaseUnits: ProductUnit[] = [];
   comparisons: ProductSupplier[] = [];
   selectedSupplierId: number | null = null;
+  selectedBrandId: number | null = null;
+  selectedProductUnitId: number | null = null;
   purchasePrice: number | null = null;
   loading = false;
   saving = false;
+  loadingOptions = false;
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly supplierService: SupplierService,
     private readonly productService: ProductService,
+    private readonly productUnitService: ProductUnitService,
+    private readonly brandService: BrandService,
     private readonly storeService: StoreService,
     private readonly notificationService: NotificationService,
     private readonly cdr: ChangeDetectorRef
@@ -48,6 +60,7 @@ export class SupplierPriceComparison implements OnInit {
       return;
     }
     this.loadSuppliers();
+    this.loadBrands();
     this.loadProduct();
     this.loadComparisons();
   }
@@ -59,24 +72,60 @@ export class SupplierPriceComparison implements OnInit {
       next: product => {
         this.productName = product.name;
         this.productSku = product.sku;
+        this.baseUnitName = product.baseUnitName || product.unit || 'unidad base';
+        this.selectedBrandId = product.brandId ?? null;
+        this.loadPurchaseUnits(product.baseUnitCode);
       },
       error: error => console.error('Error cargando producto comparado:', error)
     });
   }
 
+  loadPurchaseUnits(baseUnitCode?: string | null): void {
+    this.loadingOptions = true;
+    this.productUnitService.findByProduct(this.productId).subscribe({
+      next: units => {
+        this.purchaseUnits = (units ?? []).filter(unit => unit.active && unit.purchaseAllowed);
+        const baseUnit = this.purchaseUnits.find(unit => unit.code === baseUnitCode && unit.conversionFactor === 1);
+        this.selectedProductUnitId = baseUnit?.id ?? this.purchaseUnits[0]?.id ?? null;
+        this.loadingOptions = false;
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        console.error('Error cargando presentaciones de compra:', error);
+        this.loadingOptions = false;
+        this.notificationService.error('No fue posible cargar las presentaciones habilitadas para compra.');
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   get sortedComparisons(): ProductSupplier[] {
-    return [...this.comparisons].sort((a, b) => a.precioCompra - b.precioCompra);
+    return [...this.comparisons].sort((a, b) =>
+      Number(a.precioUnidadBase ?? a.precioCompra) - Number(b.precioUnidadBase ?? b.precioCompra));
   }
 
   get availableSuppliers(): Supplier[] {
-    const linked = new Set(this.comparisons.map(item => item.proveedorId));
-    return this.suppliers.filter(item => item.activo && !linked.has(item.id));
+    // Un proveedor puede ofrecer el mismo producto en varias presentaciones o marcas.
+    return this.suppliers.filter(item => item.activo);
+  }
+
+  get estimatedBasePrice(): number | null {
+    const unit = this.purchaseUnits.find(item => item.id === this.selectedProductUnitId);
+    if (this.purchasePrice == null || !unit || unit.conversionFactor <= 0) return null;
+    return this.purchasePrice / unit.conversionFactor;
   }
 
   loadSuppliers(): void {
     this.supplierService.findAll().subscribe({
       next: items => { this.suppliers = items ?? []; this.cdr.detectChanges(); },
       error: error => { console.error('Error cargando proveedores:', error); this.notificationService.error('No fue posible cargar los proveedores.'); }
+    });
+  }
+
+  loadBrands(): void {
+    this.brandService.findAll().subscribe({
+      next: items => { this.brands = items ?? []; this.cdr.detectChanges(); },
+      error: error => { console.error('Error cargando marcas:', error); this.notificationService.error('No fue posible cargar las marcas.'); }
     });
   }
 
@@ -89,12 +138,15 @@ export class SupplierPriceComparison implements OnInit {
   }
 
   addSupplierPrice(): void {
-    if (!this.selectedSupplierId || this.purchasePrice == null || this.purchasePrice < 0 || this.saving) {
-      this.notificationService.warning('Selecciona un proveedor e ingresa un precio válido.');
+    if (!this.selectedSupplierId || !this.selectedBrandId || !this.selectedProductUnitId
+      || this.purchasePrice == null || this.purchasePrice < 0 || this.saving) {
+      this.notificationService.warning('Selecciona proveedor, marca, presentación e ingresa un precio válido.');
       return;
     }
     const request: ProductSupplierRequest = {
       supplierId: this.selectedSupplierId,
+      brandId: this.selectedBrandId,
+      productUnitId: this.selectedProductUnitId,
       purchasePrice: this.purchasePrice,
       selected: false
     };
@@ -102,31 +154,30 @@ export class SupplierPriceComparison implements OnInit {
     this.supplierService.associateSupplier(this.productId, request).subscribe({
       next: () => {
         this.saving = false;
-        this.selectedSupplierId = null;
         this.purchasePrice = null;
-        this.notificationService.success('Precio de proveedor agregado correctamente.');
+        this.notificationService.success('Oferta de proveedor registrada correctamente.');
         this.loadComparisons();
       },
       error: error => {
         this.saving = false;
-        console.error('Error asociando proveedor:', error);
-        this.notificationService.error(error?.error?.message ?? 'No fue posible agregar el precio del proveedor.');
+        console.error('Error registrando oferta:', error);
+        this.notificationService.error(error?.error?.message ?? 'No fue posible registrar la oferta.');
         this.cdr.detectChanges();
       }
     });
   }
 
   removeSupplier(item: ProductSupplier): void {
-    if (!confirm(`¿Quitar a ${item.nombreProveedor} de la comparación de este producto?`)) return;
+    if (!confirm(`¿Quitar la oferta de ${item.nombreProveedor} para ${item.nombreMarca || 'esta marca'} / ${item.nombrePresentacion || 'esta presentación'}?`)) return;
     this.supplierService.deleteProductSupplier(this.productId, item.id).subscribe({
       next: () => {
         this.comparisons = this.comparisons.filter(row => row.id !== item.id);
-        this.notificationService.success('Proveedor quitado de la comparación.');
+        this.notificationService.success('Oferta quitada de la comparación.');
         this.cdr.detectChanges();
       },
       error: error => {
-        console.error('Error quitando proveedor del producto:', error);
-        this.notificationService.error(error?.error?.message ?? 'No fue posible quitar el proveedor.');
+        console.error('Error quitando oferta:', error);
+        this.notificationService.error(error?.error?.message ?? 'No fue posible quitar la oferta.');
       }
     });
   }
@@ -135,12 +186,12 @@ export class SupplierPriceComparison implements OnInit {
     this.supplierService.selectSupplier(this.productId, item.id).subscribe({
       next: () => {
         this.comparisons = this.comparisons.map(row => ({ ...row, seleccionado: row.id === item.id }));
-        this.notificationService.success('Proveedor seleccionado para este producto.');
+        this.notificationService.success('Oferta seleccionada como preferida para este producto.');
         this.cdr.detectChanges();
       },
       error: error => {
-        console.error('Error seleccionando proveedor:', error);
-        this.notificationService.error(error?.error?.message ?? 'No fue posible seleccionar el proveedor.');
+        console.error('Error seleccionando oferta:', error);
+        this.notificationService.error(error?.error?.message ?? 'No fue posible seleccionar la oferta.');
       }
     });
   }
