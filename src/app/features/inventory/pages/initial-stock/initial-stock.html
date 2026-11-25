@@ -8,7 +8,6 @@
   @if (activeTab === 'initial') {
   <div class="page-card inventory-help"><div class="help-icon"><i class="pi pi-info-circle"></i></div><div><strong>¿Cómo registrar el inventario inicial?</strong><p>Ingresa la cantidad que tienes físicamente y define el stock mínimo de cada producto. No necesitas registrar una factura ni una compra. El sistema dejará un movimiento de apertura y bloqueará un segundo registro inicial para el mismo producto y sucursal.</p></div></div>
   <div class="inventory-toolbar"><div class="inventory-search"><i class="pi pi-search"></i><input pInputText type="text" [(ngModel)]="searchTerm" placeholder="Buscar por SKU, producto o marca" aria-label="Buscar productos"></div><div class="page-info"><i class="pi pi-box"></i><span>Total de productos: <strong>{{ rows.length }}</strong></span></div></div>
-
   <div class="page-card">
     <p-table [value]="filteredRows" [loading]="loading" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]" [tableStyle]="{ 'min-width': '72rem' }" responsiveLayout="scroll">
       <ng-template #header><tr><th>SKU</th><th>Producto</th><th>Stock actual</th><th>Stock inicial físico</th><th>Stock mínimo</th><th>Estado</th><th class="actions-column">Acción</th></tr></ng-template>
@@ -17,18 +16,8 @@
         <td>{{ row.stock }} unidades</td>
         <td><p-inputNumber [(ngModel)]="row.stockInicialDraft" [ngModelOptions]="{standalone: true}" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="4" [disabled]="row.inventarioInicialRegistrado || row.tieneMovimientos" inputStyleClass="stock-input"></p-inputNumber></td>
         <td><p-inputNumber [(ngModel)]="row.stockMinimoDraft" [ngModelOptions]="{standalone: true}" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="4" inputStyleClass="stock-input"></p-inputNumber></td>
-        <td>
-          @if (row.inventarioInicialRegistrado) { <span class="status status-done">Inicializado</span> }
-          @else if (row.tieneMovimientos) { <span class="status status-pending">Con movimientos previos</span> }
-          @else { <span class="status status-pending">Pendiente</span> }
-        </td>
-        <td class="actions-column">
-          @if (row.inventarioInicialRegistrado || row.tieneMovimientos) {
-            <button pButton type="button" icon="pi pi-save" label="Guardar mínimo" severity="secondary" size="small" [loading]="isSaving(row)" (click)="updateMinimumStock(row)"></button>
-          } @else {
-            <button pButton type="button" icon="pi pi-check" label="Registrar inicial" severity="success" size="small" [loading]="isSaving(row)" (click)="saveInitialStock(row)"></button>
-          }
-        </td>
+        <td>@if (row.inventarioInicialRegistrado) { <span class="status status-done">Inicializado</span> } @else if (row.tieneMovimientos) { <span class="status status-pending">Con movimientos previos</span> } @else { <span class="status status-pending">Pendiente</span> }</td>
+        <td class="actions-column">@if (row.inventarioInicialRegistrado || row.tieneMovimientos) { <button pButton type="button" icon="pi pi-save" label="Guardar mínimo" severity="secondary" size="small" [loading]="isSaving(row)" (click)="updateMinimumStock(row)"></button> } @else { <button pButton type="button" icon="pi pi-check" label="Registrar inicial" severity="success" size="small" [loading]="isSaving(row)" (click)="saveInitialStock(row)"></button> }</td>
       </tr></ng-template>
       <ng-template #emptymessage><tr><td colspan="7" class="empty-message">{{ searchTerm ? 'No hay productos que coincidan con la búsqueda.' : 'No hay productos para esta sucursal.' }}</td></tr></ng-template>
     </p-table>
@@ -42,18 +31,15 @@
       <p>Registra ingresos de mercadería sin factura o ajustes por diferencias, pérdidas y daños. Todo movimiento queda asociado al usuario, sucursal, fecha y motivo.</p>
       <div class="manual-movement-fields">
         <label>Producto
-          <select [(ngModel)]="movementProductId">
-            <option [ngValue]="null">Selecciona un producto</option>
-            @for (row of rows; track row.productoId) {
-              <option [ngValue]="row.productoId">{{ row.nombreProducto }} ({{ row.sku }})</option>
-            }
-          </select>
+          <p-select [options]="rows" optionLabel="nombreProducto" optionValue="productoId" [ngModel]="movementProductId"
+            (ngModelChange)="onMovementProductChange($event)" [filter]="true" filterBy="nombreProducto,sku"
+            [showClear]="true" placeholder="Buscar y seleccionar producto" class="w-full">
+            <ng-template #item let-product><div class="movement-product-option"><strong>{{ product.nombreProducto }}</strong><small>{{ product.sku }}</small></div></ng-template>
+            <ng-template #selectedItem let-product>{{ product?.nombreProducto }}</ng-template>
+          </p-select>
         </label>
         <label>Tipo de movimiento
-          <select [(ngModel)]="movementType">
-            <option value="ENTRY">Ingreso manual</option>
-            <option value="ADJUSTMENT">Ajuste de inventario (+/-)</option>
-          </select>
+          <select [(ngModel)]="movementType"><option value="ENTRY">Ingreso manual</option><option value="ADJUSTMENT">Ajuste de inventario (+/-)</option></select>
         </label>
         <label>{{ movementType === 'ENTRY' ? 'Cantidad a ingresar' : 'Diferencia (+/-)' }} en unidad base
           <input type="number" step="0.0001" [(ngModel)]="movementQuantity" [placeholder]="movementType === 'ENTRY' ? 'Ej: 25' : 'Ej: -2 o 5'">
@@ -67,7 +53,22 @@
       </div>
     </div>
   </div>
-
+  <section class="page-card movement-history">
+    <div class="movement-history-heading"><div><h3>Historial de movimientos</h3><p>Incluye inventario inicial, ingresos, ajustes y demás movimientos del producto seleccionado.</p></div></div>
+    @if (!movementProductId) { <div class="empty-message">Selecciona un producto para consultar su historial.</div> }
+    @else if (loadingHistory) { <div class="empty-message">Cargando historial...</div> }
+    @else {
+      <p-table [value]="movementHistory" [paginator]="movementHistory.length > 10" [rows]="10" responsiveLayout="scroll" [tableStyle]="{ 'min-width': '65rem' }">
+        <ng-template #header><tr><th>Fecha y hora</th><th>Movimiento</th><th>Cantidad</th><th>Stock anterior</th><th>Stock nuevo</th><th>Usuario</th><th>Motivo / observación</th></tr></ng-template>
+        <ng-template #body let-movement><tr>
+          <td>{{ movement.fechaCreacion | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+          <td>{{ movementLabel(movement.tipoMovimiento) }}</td>
+          <td [class.movement-positive]="movementDifference(movement) > 0" [class.movement-negative]="movementDifference(movement) < 0">{{ movementDifference(movement) > 0 ? '+' : '' }}{{ movementDifference(movement) }}</td>
+          <td>{{ movement.stockAnterior }}</td><td>{{ movement.stockNuevo }}</td><td>{{ movement.usuario || 'Sistema' }}</td><td>{{ movement.motivo || '—' }}</td>
+        </tr></ng-template>
+        <ng-template #emptymessage><tr><td colspan="7" class="empty-message">Este producto todavía no registra movimientos en la sucursal.</td></tr></ng-template>
+      </p-table>
+    }
+  </section>
   }
-
 </div>
