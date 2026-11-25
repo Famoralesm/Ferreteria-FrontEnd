@@ -72,3 +72,19 @@
   color: #243447;
   box-shadow: 0 1px 4px rgba(15, 23, 42, .12);
 }
+
+.manual-movement-fields input,
+.manual-movement-fields select { min-height: 30px; height: 30px; padding: 4px 8px; border-radius: 6px; }
+.manual-movement-fields .movement-reason { grid-column: 1 / -1; margin-top: 4px; }
+.manual-movement-form .editor-actions { margin-top: 14px; }
+.manual-movement-fields p-select { width: 100%; }
+.manual-movement-fields ::ng-deep .p-select { min-height: 30px; height: 30px; align-items: center; }
+.manual-movement-fields ::ng-deep .p-select-label { padding-top: 5px; padding-bottom: 5px; }
+.movement-product-option { display: flex; flex-direction: column; gap: 2px; }
+.movement-product-option small { color: #64748b; }
+.movement-history { margin-top: 16px; }
+.movement-history-heading { margin-bottom: 12px; }
+.movement-history-heading h3 { margin: 0; color: #243447; }
+.movement-history-heading p { margin: 5px 0 0; color: #64748b; }
+.movement-positive { color: #247342; font-weight: 600; }
+.movement-negative { color: #b42318; font-weight: 600; }
