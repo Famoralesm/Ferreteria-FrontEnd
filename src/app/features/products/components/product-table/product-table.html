@@ -108,31 +108,31 @@
   <!-- PRODUCTOS -->
   <ng-template pTemplate="body" let-product>
 
-    <tr class="product-row-clickable" (click)="edit.emit(product.id)" tabindex="0" (keydown.enter)="edit.emit(product.id)">
+    <tr class="product-row-clickable">
 
-      <td>{{ product.id }}</td>
+      <td (click)="edit.emit(product.id)">{{ product.id }}</td>
 
-      <td>
+      <td (click)="edit.emit(product.id)">
         <strong>{{ product.sku }}</strong>
       </td>
 
-      <td>
+      <td (click)="edit.emit(product.id)">
         <div>{{ product.name }}</div>
         <small>{{ product.description }}</small>
       </td>
 
-      <td>{{ product.category }}</td>
+      <td (click)="edit.emit(product.id)">{{ product.category }}</td>
 
-      <td>{{ product.brand }}</td>
+      <td (click)="edit.emit(product.id)">{{ product.brand }}</td>
 
-      <td>
+      <td (click)="edit.emit(product.id)">
         {{ product.price | currency:'CLP':'symbol':'1.0-0':'es-CL' }}
       </td>      
-      <td>
+      <td (click)="edit.emit(product.id)">
         <strong>{{ product.stock ?? 0 }}</strong>
       </td>
 
-      <td>{{ product.unit }}</td>
+      <td (click)="edit.emit(product.id)">{{ product.unit }}</td>
 
       <td>
         <p-tag
@@ -166,7 +166,7 @@
           <button
             pButton
             type="button"
-            [icon]="product.active ? 'pi pi-power-off' : 'pi pi-refresh'"
+            icon="pi pi-power-off"
             [severity]="product.active ? 'danger' : 'success'"
             [rounded]="true"
             [text]="true"
