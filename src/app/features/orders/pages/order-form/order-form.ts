@@ -586,7 +586,7 @@ private loadProducts(): void {
     const baseOption: SaleUnitOption = {
       id: null,
       code: 'BASE',
-      name: (product.baseUnitName ?? 'Unidad base') + ' (unidad base)',
+      name: product.baseUnitName ?? 'Unidad base',
       conversionFactor: 1,
       minimumSaleQuantity: product.minimumSaleQuantity ?? 1,
       saleQuantityIncrement: product.saleQuantityIncrement ?? 1,

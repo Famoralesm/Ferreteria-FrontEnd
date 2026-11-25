@@ -216,15 +216,11 @@
               (onChange)="onSaleUnitChange($event.value)" [loading]="productUnitsLoading"
               [disabled]="isInRoute || paymentStatus !== 'PENDING' || productUnitsLoading"
               placeholder="Selecciona una presentación" class="w-full"></p-select>
-            @if (selectedSaleUnit) {
-              <small>1 {{ selectedSaleUnit.isBase ? (selectedProduct.baseUnitName || 'unidad base') : selectedSaleUnit.name }}
-                = {{ selectedSaleUnit.conversionFactor }} {{ selectedProduct.baseUnitSymbol || selectedProduct.baseUnitName }}</small>
-              <small>Mínimo: {{ selectedSaleUnit.minimumSaleQuantity }} · Incremento: {{ selectedSaleUnit.saleQuantityIncrement }} {{ selectedSaleUnit.name }}</small>
-            }
+            
           </div>
         }
         <div class="form-field quantity-field">
-          <label for="quantity">Cantidad{{ selectedSaleUnit ? ' (' + selectedSaleUnit.name + ')' : '' }}</label>
+          <label for="quantity">Cantidad</label>
           <p-inputNumber [(ngModel)]="quantity"
             [disabled]="isInRoute || paymentStatus !== 'PENDING' || productUnitsLoading"
             mode="decimal" id="quantity" [ngModelOptions]="{standalone: true}"
@@ -259,8 +255,7 @@
               <tr>
                 <th>Producto</th>
                 <th>Cant</th>
-                <th>Stock / Mín.</th>
-                <th>Precio / unidad base</th>
+                <th>Precio</th>
                 <th>Total</th>
                 <th></th>
               </tr>
@@ -282,19 +277,11 @@
                   </td>
 
                   <td>
-                    {{ item.quantity }} {{ item.unitName }}
+                    {{ item.quantityInBaseUnit | number:'1.0-4':'es-CL' }} {{ item.baseUnitSymbol }}
                   </td>
 
                   <td>
-                    <strong
-                      [class.stock-low]="item.stockAvailable <= item.stockMinimo"
-                      [class.stock-ok]="item.stockAvailable > item.stockMinimo">
-                      {{ item.stockAvailable }} / {{ item.stockMinimo }} {{ item.baseUnitSymbol }}
-                    </strong>
-                  </td>
-
-                  <td>
-                    {{ item.unitPrice | currency:'CLP':'symbol':'1.0-0':'es-CL' }} / {{ item.baseUnitSymbol }}
+                    {{ item.unitPrice | currency:'CLP':'symbol':'1.0-0':'es-CL' }} × {{ item.baseUnitSymbol }}
                   </td>
 
                   <td>

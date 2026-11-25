@@ -69,6 +69,13 @@ export class ProductUnits implements OnInit, OnDestroy {
     return this.measureUnits.filter(unit => unit.active);
   }
 
+  get configuredBaseUnits(): UnitOfMeasure[] {
+    const configuredCodes = new Set(
+      this.units.filter(unit => unit.active).map(unit => unit.code)
+    );
+    return this.measureUnits.filter(unit => unit.active && configuredCodes.has(unit.code));
+  }
+
   get paginatedMeasureUnits(): UnitOfMeasure[] {
     const start = this.measurePage * this.measurePageSize;
     return this.measureUnits.slice(start, start + this.measurePageSize);
