@@ -25,7 +25,7 @@
   </div>
 
   <div class="page-card add-price-card">
-    <h3>Registrar oferta de proveedor</h3>
+    <h3>{{ editingOfferId ? 'Editar oferta de proveedor' : 'Registrar oferta de proveedor' }}</h3>
     <div class="add-price-form">
       <div class="form-field">
         <label for="comparisonSupplier">Proveedor</label>
@@ -64,9 +64,10 @@
       </div>
     }
     <div class="add-price-actions">
-      <button pButton type="button" label="Registrar oferta" icon="pi pi-plus" severity="success"
+      <button pButton type="button" [label]="editingOfferId ? 'Guardar cambios' : 'Registrar oferta'" [icon]="editingOfferId ? 'pi pi-check' : 'pi pi-plus'" severity="success"
         [loading]="saving" [disabled]="saving || loadingOptions || purchaseUnits.length === 0 || brands.length === 0 || availableSuppliers.length === 0"
         (click)="addSupplierPrice()"></button>
+      @if (editingOfferId) { <button pButton type="button" label="Cancelar edición" severity="secondary" [outlined]="true" (click)="cancelOfferEdit()"></button> }
     </div>
     @if (purchaseUnits.length === 0) {
       <small class="hint">Este producto no tiene presentaciones habilitadas para compra. Configúralas en Productos → Presentaciones antes de registrar ofertas.</small>
@@ -95,6 +96,8 @@
           <td>{{ item.telefonoProveedor || item.emailProveedor || '—' }}</td>
           <td>{{ item.seleccionado ? 'Oferta preferida' : 'Alternativa' }}</td>
           <td class="actions-column">
+            <button pButton type="button" icon="pi pi-pencil" severity="secondary" text rounded size="small"
+              aria-label="Editar oferta" (click)="editOffer(item)"></button>
             @if (!item.seleccionado) {
               <button pButton type="button" label="Elegir" icon="pi pi-check" severity="secondary" size="small" (click)="selectSupplier(item)"></button>
             } @else { <span class="selected-label"><i class="pi pi-check-circle"></i> Seleccionada</span> }
