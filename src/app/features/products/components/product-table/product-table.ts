@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { Product } from '../../../../core/models/product/product';
 
@@ -22,7 +23,8 @@ import { Product } from '../../../../core/models/product/product';
     CommonModule,
     TableModule,
     ButtonModule,
-    TagModule
+    TagModule,
+    TooltipModule
   ],
 
   templateUrl: './product-table.html',
