@@ -49,9 +49,11 @@
         </label>
       </div>
       <div class="editor-actions">
-        @if (selectedMovementProduct && !selectedMovementProduct.active) { <small class="hint">Producto inactivo: el historial sigue disponible, pero no se permiten nuevos movimientos.</small> }
         <button pButton type="button" label="Registrar movimiento" icon="pi pi-check" [loading]="savingMovement" [disabled]="savingMovement || (selectedMovementProduct && !selectedMovementProduct.active)" (click)="registerManualMovement()"></button>
       </div>
+      @if (selectedMovementProduct && !selectedMovementProduct.active) {
+        <small class="inactive-product-warning">Producto inactivo: el historial sigue disponible, pero no se permiten nuevos movimientos.</small>
+      }
     </div>
   </div>
   <section class="page-card movement-history">
