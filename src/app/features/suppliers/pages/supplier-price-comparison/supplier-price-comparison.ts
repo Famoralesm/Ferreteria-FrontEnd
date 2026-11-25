@@ -40,6 +40,7 @@ export class SupplierPriceComparison implements OnInit {
   loading = false;
   saving = false;
   loadingOptions = false;
+  editingOfferId: number | null = null;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -151,11 +152,16 @@ export class SupplierPriceComparison implements OnInit {
       selected: false
     };
     this.saving = true;
-    this.supplierService.associateSupplier(this.productId, request).subscribe({
+    const saveRequest = this.editingOfferId
+      ? this.supplierService.updateProductSupplier(this.productId, this.editingOfferId, request)
+      : this.supplierService.associateSupplier(this.productId, request);
+    saveRequest.subscribe({
       next: () => {
         this.saving = false;
         this.purchasePrice = null;
-        this.notificationService.success('Oferta de proveedor registrada correctamente.');
+        const wasEditing = this.editingOfferId !== null;
+        this.editingOfferId = null;
+        this.notificationService.success(wasEditing ? 'Oferta actualizada correctamente.' : 'Oferta de proveedor registrada correctamente.');
         this.loadComparisons();
       },
       error: error => {
@@ -165,6 +171,23 @@ export class SupplierPriceComparison implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  editOffer(item: ProductSupplier): void {
+    this.editingOfferId = item.id;
+    this.selectedSupplierId = item.proveedorId;
+    this.selectedBrandId = item.marcaId ?? null;
+    this.selectedProductUnitId = item.presentacionId ?? null;
+    this.purchasePrice = item.precioCompra;
+  }
+
+  cancelOfferEdit(): void {
+    this.editingOfferId = null;
+    this.selectedSupplierId = null;
+    this.selectedBrandId = null;
+    this.purchasePrice = null;
+    const baseUnit = this.purchaseUnits.find(unit => unit.conversionFactor === 1);
+    this.selectedProductUnitId = baseUnit?.id ?? this.purchaseUnits[0]?.id ?? null;
   }
 
   removeSupplier(item: ProductSupplier): void {
