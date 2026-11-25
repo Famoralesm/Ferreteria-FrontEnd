@@ -2,7 +2,7 @@
   <div class="page-header">
     <div class="page-header-content">
       <span class="page-kicker">COMPRAS · COMPARACIÓN DE PRECIOS</span>
-      <p>Compara los precios de compra registrados para este producto y selecciona el proveedor preferido.</p>
+      <p>Registra ofertas por proveedor, marca y presentación. Compara su costo real en la unidad base del producto.</p>
     </div>
   </div>
 
@@ -11,94 +11,99 @@
       <span>PRODUCTO EN COMPARACIÓN</span>
       <h2>{{ productName }}</h2>
       @if (productSku) { <small>SKU: {{ productSku }}</small> }
+      <small>Unidad base: <strong>{{ baseUnitName }}</strong></small>
     </div>
-    <strong>{{ comparisons.length }} proveedor(es)</strong>
+    <strong>{{ comparisons.length }} oferta(s)</strong>
   </div>
 
   <div class="page-card comparison-help">
     <i class="pi pi-info-circle"></i>
     <div>
-      <strong>Comparación por producto</strong>
-      <p>Registra el precio que ofrece cada proveedor. La tabla se ordena desde el precio más bajo y puedes marcar cuál será el proveedor seleccionado para este producto.</p>
+      <strong>Comparación equivalente</strong>
+      <p>Ingresa el precio total de la presentación ofrecida. El sistema lo divide por su factor de conversión para obtener el precio por {{ baseUnitName }}. Por ejemplo, una caja de 100 unidades a $20.000 equivale a $200 por unidad base.</p>
     </div>
   </div>
 
   <div class="page-card add-price-card">
-    <h3>Agregar precio de proveedor</h3>
+    <h3>Registrar oferta de proveedor</h3>
     <div class="add-price-form">
       <div class="form-field">
         <label for="comparisonSupplier">Proveedor</label>
-        <p-select
-          inputId="comparisonSupplier"
-          [options]="availableSuppliers"
-          [(ngModel)]="selectedSupplierId"
-          optionLabel="nombre"
-          optionValue="id"
-          placeholder="Seleccionar proveedor"
-          [showClear]="true"
-          [filter]="true"
-          filterBy="nombre,rut,razonSocial"
-          appendTo="body"
-          [panelStyle]="{ 'max-height': '70vh' }"
-          class="w-full">
-          <ng-template #item let-supplier>
-            <div class="supplier-option">
-              <strong>{{ supplier.nombre }}</strong>
-              <small>{{ supplier.rut || supplier.razonSocial || 'Sin RUT registrado' }}</small>
-            </div>
-          </ng-template>
+        <p-select inputId="comparisonSupplier" [options]="availableSuppliers"
+          [(ngModel)]="selectedSupplierId" optionLabel="nombre" optionValue="id"
+          placeholder="Seleccionar proveedor" [showClear]="true" [filter]="true"
+          filterBy="nombre,rut,razonSocial" appendTo="body" class="w-full">
+          <ng-template #item let-supplier><div class="supplier-option"><strong>{{ supplier.nombre }}</strong><small>{{ supplier.rut || supplier.razonSocial || 'Sin RUT registrado' }}</small></div></ng-template>
         </p-select>
       </div>
       <div class="form-field">
-        <label for="comparisonPrice">Precio de compra</label>
-        <p-inputNumber
-          inputId="comparisonPrice"
-          [(ngModel)]="purchasePrice"
-          mode="currency"
-          currency="CLP"
-          locale="es-CL"
-          [min]="0"
-          class="w-full">
-        </p-inputNumber>
+        <label for="comparisonBrand">Marca ofrecida</label>
+        <p-select inputId="comparisonBrand" [options]="brands" [(ngModel)]="selectedBrandId"
+          optionLabel="name" optionValue="id" placeholder="Seleccionar marca"
+          [showClear]="true" [filter]="true" filterBy="name" appendTo="body" class="w-full"></p-select>
       </div>
-      <button pButton type="button" label="Agregar precio" icon="pi pi-plus" severity="success"
-        [loading]="saving" [disabled]="availableSuppliers.length === 0" (click)="addSupplierPrice()"></button>
+      <div class="form-field">
+        <label for="comparisonUnit">Presentación de compra</label>
+        <p-select inputId="comparisonUnit" [options]="purchaseUnits" [(ngModel)]="selectedProductUnitId"
+          optionLabel="name" optionValue="id" placeholder="Seleccionar presentación"
+          [showClear]="true" [filter]="true" filterBy="name,code" appendTo="body" class="w-full">
+          <ng-template #item let-unit><div class="supplier-option"><strong>{{ unit.name }}</strong><small>{{ unit.conversionFactor }} {{ baseUnitName }} por presentación</small></div></ng-template>
+        </p-select>
+      </div>
+      <div class="form-field">
+        <label for="comparisonPrice">Precio de la presentación (CLP)</label>
+        <p-inputNumber inputId="comparisonPrice" [(ngModel)]="purchasePrice"
+          mode="currency" currency="CLP" locale="es-CL" [min]="0" class="w-full"></p-inputNumber>
+      </div>
     </div>
+    @if (estimatedBasePrice !== null) {
+      <div class="equivalent-price-preview">
+        <span>Precio equivalente estimado</span>
+        <strong>{{ estimatedBasePrice | currency:'CLP':'symbol-narrow':'1.2-4':'es-CL' }} / {{ baseUnitName }}</strong>
+        <small>Precio de presentación ÷ factor de conversión</small>
+      </div>
+    }
+    <div class="add-price-actions">
+      <button pButton type="button" label="Registrar oferta" icon="pi pi-plus" severity="success"
+        [loading]="saving" [disabled]="saving || loadingOptions || purchaseUnits.length === 0 || brands.length === 0 || availableSuppliers.length === 0"
+        (click)="addSupplierPrice()"></button>
+    </div>
+    @if (purchaseUnits.length === 0) {
+      <small class="hint">Este producto no tiene presentaciones habilitadas para compra. Configúralas en Productos → Presentaciones antes de registrar ofertas.</small>
+    }
     @if (availableSuppliers.length === 0) {
-      <small class="hint">No hay proveedores activos disponibles para asociar, o todos ya tienen un precio registrado para este producto.</small>
+      <small class="hint">No hay proveedores activos disponibles. Registra o activa un proveedor para continuar.</small>
     }
   </div>
 
   <div class="page-card">
     <div class="comparison-heading">
-      <h3>Precios registrados</h3>
-      <span>{{ comparisons.length }} proveedor(es)</span>
+      <div><h3>Comparación de ofertas</h3><small>Ordenadas por menor precio equivalente en unidad base</small></div>
+      <span>{{ comparisons.length }} oferta(s)</span>
     </div>
-    <p-table [value]="sortedComparisons" [loading]="loading" [tableStyle]="{ 'min-width': '48rem' }" responsiveLayout="scroll">
+    <p-table [value]="sortedComparisons" [loading]="loading" [tableStyle]="{ 'min-width': '72rem' }" responsiveLayout="scroll">
       <ng-template #header>
-        <tr><th>Proveedor</th><th>Precio de compra</th><th>Contacto</th><th>Selección</th><th class="actions-column">Acciones</th></tr>
+        <tr><th>Proveedor</th><th>Marca</th><th>Presentación</th><th>Precio presentación</th><th>Equivalente / {{ baseUnitName }}</th><th>Contacto</th><th>Preferida</th><th class="actions-column">Acciones</th></tr>
       </ng-template>
       <ng-template #body let-item>
         <tr [class.selected-supplier-row]="item.seleccionado">
           <td><strong>{{ item.nombreProveedor }}</strong></td>
-          <td>{{ item.precioCompra | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</td>
+          <td>{{ item.nombreMarca || 'Sin marca registrada' }}</td>
+          <td>{{ item.nombrePresentacion || 'Unidad base (oferta anterior)' }}<small class="offer-factor">{{ item.factorConversion || 1 }} {{ baseUnitName }}</small></td>
+          <td>{{ item.precioCompra | currency:'CLP':'symbol-narrow':'1.0-2':'es-CL' }}</td>
+          <td><strong>{{ (item.precioUnidadBase ?? item.precioCompra) | currency:'CLP':'symbol-narrow':'1.2-4':'es-CL' }}</strong></td>
           <td>{{ item.telefonoProveedor || item.emailProveedor || '—' }}</td>
-          <td>{{ item.seleccionado ? 'Proveedor elegido' : 'Alternativa' }}</td>
+          <td>{{ item.seleccionado ? 'Oferta preferida' : 'Alternativa' }}</td>
           <td class="actions-column">
             @if (!item.seleccionado) {
-              <button pButton type="button" label="Elegir" icon="pi pi-check" severity="secondary" size="small"
-                (click)="selectSupplier(item)"></button>
-            } @else {
-              <span class="selected-label"><i class="pi pi-check-circle"></i> Seleccionado</span>
-            }
+              <button pButton type="button" label="Elegir" icon="pi pi-check" severity="secondary" size="small" (click)="selectSupplier(item)"></button>
+            } @else { <span class="selected-label"><i class="pi pi-check-circle"></i> Seleccionada</span> }
             <button pButton type="button" icon="pi pi-trash" severity="danger" text rounded size="small"
-              aria-label="Quitar proveedor de la comparación" (click)="removeSupplier(item)"></button>
+              aria-label="Quitar oferta" (click)="removeSupplier(item)"></button>
           </td>
         </tr>
       </ng-template>
-      <ng-template #emptymessage>
-        <tr><td colspan="5" class="empty-message">Todavía no hay precios asociados a este producto. Agrega un proveedor y su precio de compra para comenzar la comparación.</td></tr>
-      </ng-template>
+      <ng-template #emptymessage><tr><td colspan="8" class="empty-message">Todavía no hay ofertas para este producto. Registra el proveedor, marca, presentación y precio para comenzar la comparación.</td></tr></ng-template>
     </p-table>
   </div>
 
