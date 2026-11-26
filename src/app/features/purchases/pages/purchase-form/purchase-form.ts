@@ -46,6 +46,7 @@ export class PurchaseForm implements OnInit {
   stores: Store[] = [];
   products: Product[] = [];
   selectedStoreId: number | null = null;
+  private lastSelectedStoreId: number | null = null;
   purchaseId: number | null = null;
   first = 0;
   readonly pageSize = 4;
@@ -98,6 +99,7 @@ export class PurchaseForm implements OnInit {
       next: stores => {
         this.stores = stores ?? [];
         this.selectedStoreId = this.storeService.selectedStoreId ?? this.stores[0]?.id ?? null;
+        this.lastSelectedStoreId = this.selectedStoreId;
         this.loadProducts();
         this.cdr.detectChanges();
       },
@@ -154,18 +156,19 @@ export class PurchaseForm implements OnInit {
 
   onStoreChange(): void {
     if (this.lines.some(line => line.productId !== null)) {
-      const previousStoreId = this.storeService.selectedStoreId;
+      const previousStoreId = this.lastSelectedStoreId;
       this.confirmationService.confirm({
         header: 'Cambiar sucursal',
         message: 'Al cambiar la sucursal se quitarán los productos agregados a esta compra. ¿Deseas continuar?',
         icon: 'pi pi-exclamation-triangle',
         acceptLabel: 'Sí, cambiar', rejectLabel: 'Mantener sucursal', acceptButtonStyleClass: 'p-button-warning',
-        accept: () => { this.lines = [this.newLine()]; this.loadProducts(); },
+        accept: () => { this.lines = [this.newLine()]; this.lastSelectedStoreId = this.selectedStoreId; this.loadProducts(); },
         reject: () => { this.selectedStoreId = previousStoreId; this.cdr.detectChanges(); }
       });
       return;
     }
     this.lines = [this.newLine()];
+    this.lastSelectedStoreId = this.selectedStoreId;
     this.loadProducts();
   }
 
@@ -343,6 +346,7 @@ export class PurchaseForm implements OnInit {
   private populatePurchaseForm(purchase: Purchase): void {
     this.selectedSupplierId = purchase.supplierId;
     this.selectedStoreId = purchase.sucursalId;
+    this.lastSelectedStoreId = purchase.sucursalId;
     this.documentType = purchase.documentType;
     this.documentNumber = purchase.documentNumber ?? '';
     this.purchaseDate = purchase.purchaseDate;
