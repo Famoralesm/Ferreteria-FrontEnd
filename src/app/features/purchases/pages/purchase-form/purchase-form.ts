@@ -357,7 +357,7 @@ export class PurchaseForm implements OnInit {
       quantity: Number(item.quantity),
       unitPurchasePrice: Number(item.unitPurchasePrice),
       units: [],
-      loadingUnits: item.productUnitId !== null
+      loadingUnits: true
     }));
     if (!this.lines.length) this.lines = [this.newLine()];
     this.first = 0;
