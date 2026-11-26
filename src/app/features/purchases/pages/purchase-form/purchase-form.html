@@ -55,27 +55,39 @@
 
       <div class="form-section products-section">
         <div class="section-heading">
-          <div><h3>Productos</h3><p>Selecciona el producto y la presentación utilizada en la compra.</p></div>
-          <button pButton type="button" label="Agregar producto" icon="pi pi-plus"
-            severity="success" (click)="addLine()"></button>
+          <div><h3>Productos</h3><p>Selecciona un producto y agrégalo a la grilla. Puedes incorporar varios productos.</p></div>
+          <div class="product-adder">
+            <div class="form-field product-picker">
+              <label for="productToAdd">Buscar producto</label>
+              <p-select inputId="productToAdd" [options]="products"
+                [(ngModel)]="selectedProductToAdd" [ngModelOptions]="{standalone:true}"
+                optionLabel="name" optionValue="id" placeholder="Selecciona un producto"
+                [filter]="true" filterBy="name,sku" class="w-full">
+                <ng-template #item let-product>
+                  <div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div>
+                </ng-template>
+              </p-select>
+            </div>
+            <button pButton type="button" label="Agregar a la grilla" icon="pi pi-plus"
+              severity="success" [disabled]="!selectedProductToAdd" (click)="addLine()"></button>
+          </div>
         </div>
 
-        @for (line of visibleLines; track $index; let i = $index) {
-          <div class="purchase-line">
-            <div class="line-fields">
-              <div class="form-field product-field">
-                <label>Producto <span>*</span></label>
-                <p-select [options]="products" [(ngModel)]="line.productId"
-                  [ngModelOptions]="{standalone:true}" optionLabel="name" optionValue="id"
-                  placeholder="Selecciona producto" [filter]="true" filterBy="name,sku"
-                  (onChange)="onProductChange(line)" class="w-full">
-                  <ng-template #item let-product>
-                    <div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div>
-                  </ng-template>
-                </p-select>
-              </div>
-              <div class="form-field">
-                <label>Presentación</label>
+        @if (lines.length === 0) {
+          <p class="empty-products">Todavía no hay productos agregados. Usa el selector para incorporar el primero.</p>
+        } @else {
+          @for (line of visibleLines; track $index; let i = $index) {
+            <div class="purchase-line">
+              <div class="line-fields">
+                <div class="form-field product-field">
+                  <label>Producto</label>
+                  <div class="selected-product">
+                    <strong>{{ selectedProduct(line)?.name || 'Producto no disponible' }}</strong>
+                    <small>{{ selectedProduct(line)?.sku }}</small>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label>Presentación</label>
                 <select class="presentation-select" [(ngModel)]="line.productUnitId" [ngModelOptions]="{standalone:true}"
                   [disabled]="!line.productId || line.loadingUnits || line.units.length === 0">
                   <option [ngValue]="null">{{ baseUnitLabel(line) }} (unidad base)</option>
@@ -108,9 +120,9 @@
             <button pButton type="button" icon="pi pi-trash" severity="danger"
               [text]="true" [rounded]="true" aria-label="Quitar producto"
               (click)="removeLine(first + i)"></button>
-          </div>
+            </div>
+          }
         }
-      </div>
 
       @if (lines.length > pageSize) {
         <p-paginator [first]="first" [rows]="pageSize" [totalRecords]="lines.length"
