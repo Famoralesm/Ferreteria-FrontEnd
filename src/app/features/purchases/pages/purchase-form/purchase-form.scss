@@ -406,18 +406,7 @@
   box-sizing: border-box;
 }
 
-:host ::ng-deep .product-entry-grid .product-picker .p-select-label {
-  display: flex;
-  flex: 1 1 auto;
-  align-items: center;
-  min-width: 0;
-  height: 100%;
-  overflow: hidden;
-  padding: 0 8px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  box-sizing: border-box;
-}
+/* Se conserva el renderizado nativo de .p-select-label de PrimeNG. */
 
 :host ::ng-deep .product-entry-grid .product-picker .p-select-dropdown {
   display: flex;
