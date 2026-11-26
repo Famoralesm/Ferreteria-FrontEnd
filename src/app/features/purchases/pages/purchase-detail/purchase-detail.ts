@@ -26,6 +26,7 @@ export class PurchaseDetail implements OnInit {
   stores: Store[] = [];
   loading = true;
   receiving = false;
+  deleting = false;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -118,6 +119,30 @@ export class PurchaseDetail implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  discardPurchase(): void {
+    if (!this.purchase || this.deleting || this.receiving || this.purchase.status !== 'PENDING_RECEIPT') return;
+    this.confirmationService.confirm({
+      header: 'Descartar compra definitivamente',
+      message: 'Se eliminará la compra #' + this.purchase.id + ' y sus líneas de detalle. Esta acción no se puede deshacer. Solo es posible porque la compra aún no ha sido recibida ni ha afectado el inventario. ¿Deseas continuar?',
+      icon: 'pi pi-trash', acceptLabel: 'Descartar compra', rejectLabel: 'Conservar compra',
+      acceptButtonStyleClass: 'p-button-danger', accept: () => this.executeDiscard()
+    });
+  }
+
+  private executeDiscard(): void {
+    if (!this.purchase || this.deleting || this.purchase.status !== 'PENDING_RECEIPT') return;
+    this.deleting = true;
+    this.purchaseService.delete(this.purchase.id).subscribe({
+      next: () => { this.deleting = false; this.notificationService.success('La compra pendiente fue descartada definitivamente.'); this.router.navigate(['/purchases']); },
+      error: error => { this.deleting = false; this.notificationService.error(error?.error?.message ?? 'No fue posible descartar la compra.'); this.cdr.detectChanges(); }
+    });
+  }
+
+  editPurchase(): void {
+    if (!this.purchase || this.purchase.status !== 'PENDING_RECEIPT') return;
+    this.router.navigate(['/purchases', this.purchase.id, 'edit']);
   }
 
   back(): void {
