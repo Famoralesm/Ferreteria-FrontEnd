@@ -56,7 +56,8 @@ export class PurchaseForm implements OnInit {
   documentNumber = '';
   purchaseDate = this.todayLocal();
   notes = '';
-  lines: PurchaseLine[] = [this.newLine()];
+  lines: PurchaseLine[] = [];
+  selectedProductToAdd: number | null = null;
 
   loading = true;
   saving = false;
@@ -162,12 +163,14 @@ export class PurchaseForm implements OnInit {
         message: 'Al cambiar la sucursal se quitarán los productos agregados a esta compra. ¿Deseas continuar?',
         icon: 'pi pi-exclamation-triangle',
         acceptLabel: 'Sí, cambiar', rejectLabel: 'Mantener sucursal', acceptButtonStyleClass: 'p-button-warning',
-        accept: () => { this.lines = [this.newLine()]; this.lastSelectedStoreId = this.selectedStoreId; this.loadProducts(); },
+        accept: () => { this.lines = []; this.selectedProductToAdd = null; this.first = 0; this.lastSelectedStoreId = this.selectedStoreId; this.loadProducts(); },
         reject: () => { this.selectedStoreId = previousStoreId; this.cdr.detectChanges(); }
       });
       return;
     }
-    this.lines = [this.newLine()];
+    this.lines = [];
+    this.selectedProductToAdd = null;
+    this.first = 0;
     this.lastSelectedStoreId = this.selectedStoreId;
     this.loadProducts();
   }
@@ -196,15 +199,20 @@ export class PurchaseForm implements OnInit {
   }
 
   addLine(): void {
-    this.lines = [...this.lines, this.newLine()];
+    if (!this.selectedProductToAdd) {
+      this.notificationService.warning('Selecciona un producto antes de agregarlo.');
+      return;
+    }
+
+    const line = this.newLine();
+    line.productId = this.selectedProductToAdd;
+    this.lines = [...this.lines, line];
+    this.selectedProductToAdd = null;
     this.first = Math.floor((this.lines.length - 1) / this.pageSize) * this.pageSize;
+    this.onProductChange(line);
   }
 
   removeLine(index: number): void {
-    if (this.lines.length === 1) {
-      this.lines[0] = this.newLine();
-      return;
-    }
     this.lines = this.lines.filter((_, lineIndex) => lineIndex !== index);
     if (this.first >= this.lines.length) this.first = Math.max(0, Math.floor((this.lines.length - 1) / this.pageSize) * this.pageSize);
   }
@@ -359,7 +367,6 @@ export class PurchaseForm implements OnInit {
       units: [],
       loadingUnits: true
     }));
-    if (!this.lines.length) this.lines = [this.newLine()];
     this.first = 0;
     this.loading = false;
     this.lines.forEach(line => {
