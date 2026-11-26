@@ -1,14 +1,6 @@
+<p-confirmDialog [style]="{width: 'min(92vw, 500px)'}" [closable]="true" [dismissableMask]="true"></p-confirmDialog>
 <div class="page-shell purchase-detail-page">
-  <div class="detail-toolbar">
-    <button pButton type="button" label="Volver a compras" icon="pi pi-arrow-left"
-      severity="secondary" [text]="true" (click)="back()"></button>
-    @if (purchase?.status === 'PENDING_RECEIPT') {
-      <button pButton type="button" label="Recibir compra" icon="pi pi-check-circle"
-        severity="success" [disabled]="receiving || loading" [loading]="receiving"
-        (click)="receivePurchase()"></button>
-    }
-  </div>
-
+  <div class="page-header"><div class="page-header-content"><span class="page-kicker">COMPRAS</span><h1>Detalle de compra</h1><p>Consulta de productos, documento y estado de recepción</p></div></div>
   @if (loading) {
     <section class="page-card loading-card">Cargando detalle de la compra...</section>
   } @else if (purchase) {
@@ -71,6 +63,15 @@
       @if (purchase.notes) {
         <div class="purchase-notes"><strong>Observaciones:</strong> {{ purchase.notes }}</div>
       }
+      <div class="detail-actions">
+        <button pButton type="button" label="Volver a compras" icon="pi pi-arrow-left"
+          severity="secondary" [text]="true" (click)="back()"></button>
+        @if (purchase.status === 'PENDING_RECEIPT') {
+          <button pButton type="button" label="Recibir compra" icon="pi pi-check-circle"
+            severity="success" [disabled]="receiving || loading" [loading]="receiving"
+            (click)="receivePurchase()"></button>
+        }
+      </div>
     </section>
 
     @if (purchase.status === 'PENDING_RECEIPT') {
