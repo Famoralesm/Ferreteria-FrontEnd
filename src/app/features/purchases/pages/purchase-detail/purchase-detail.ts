@@ -4,6 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 
 import { Purchase, PurchaseStatus } from '../../../../core/models/purchase/purchase';
 import { Store } from '../../../../core/models/store/store';
@@ -14,7 +16,8 @@ import { NotificationService } from '../../../../core/services/notification.serv
 @Component({
   selector: 'app-purchase-detail',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TableModule],
+  imports: [CommonModule, ButtonModule, TableModule, ConfirmDialogModule],
+  providers: [ConfirmationService],
   templateUrl: './purchase-detail.html',
   styleUrl: './purchase-detail.scss'
 })
@@ -30,6 +33,7 @@ export class PurchaseDetail implements OnInit {
     private readonly purchaseService: PurchaseService,
     private readonly storeService: StoreService,
     private readonly notificationService: NotificationService,
+    private readonly confirmationService: ConfirmationService,
     private readonly cdr: ChangeDetectorRef
   ) {}
 
@@ -86,11 +90,19 @@ export class PurchaseDetail implements OnInit {
   receivePurchase(): void {
     if (!this.purchase || this.receiving || this.purchase.status !== 'PENDING_RECEIPT') return;
 
-    const confirmed = confirm(
-      `¿Confirmas la recepción de la compra #${this.purchase.id}?\n\nSe ingresarán al stock de ${this.storeName} las cantidades de todos sus productos. Esta operación no se puede repetir.`
-    );
-    if (!confirmed) return;
+    this.confirmationService.confirm({
+      header: 'Confirmar recepción de compra',
+      message: `Se ingresarán al stock de ${this.storeName} las cantidades de todos los productos de la compra #${this.purchase.id}. Esta operación no se puede repetir. ¿Deseas continuar?`,
+      icon: 'pi pi-box',
+      acceptLabel: 'Confirmar recepción',
+      rejectLabel: 'Volver',
+      acceptButtonStyleClass: 'p-button-success',
+      accept: () => this.executeReception()
+    });
+  }
 
+  private executeReception(): void {
+    if (!this.purchase || this.receiving) return;
     this.receiving = true;
     this.purchaseService.receive(this.purchase.id).subscribe({
       next: purchase => {
