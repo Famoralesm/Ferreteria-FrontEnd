@@ -83,6 +83,9 @@
                     <option [ngValue]="unit.id">{{ unit.name }} · factor {{ unit.conversionFactor }}</option>
                   }
                 </select>
+                @if (line.productId && !line.loadingUnits && line.units.length === 0) {
+                  <small class="presentation-warning">Este producto no tiene presentación configurada.</small>
+                }
               </div>
               <div class="form-field">
                 <label>Cantidad <span>*</span></label>
