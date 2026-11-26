@@ -52,6 +52,14 @@ export class Sidebar {
             }
           ];
 
+          if (user.role === Role.ADMIN || user.role === Role.SELLER) {
+            items.push({
+              label: 'Compras',
+              icon: 'pi pi-shopping-bag',
+              routerLink: ['/purchases']
+            });
+          }
+
           if (user.role === Role.ADMIN) {
             items.push(
               {
