@@ -104,6 +104,7 @@ export class PurchaseList implements OnInit {
       case 'RECEIVED': return 'Recibida';
       case 'CANCELED': return 'Cancelada';
     }
+    return 'Desconocido';
   }
 
   clearFilters(): void {
