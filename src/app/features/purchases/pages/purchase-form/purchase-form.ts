@@ -272,22 +272,23 @@ export class PurchaseForm implements OnInit {
     };
 
     this.confirmationService.confirm({
-      header: 'Confirmar registro de compra',
-      message: 'La compra quedará pendiente de recepción. El stock no cambiará hasta confirmar su recepción. ¿Deseas registrar esta compra?',
+      header: this.purchaseId ? 'Confirmar cambios de compra' : 'Confirmar registro de compra',
+      message: this.purchaseId ? 'Se actualizarán los datos y productos de esta compra pendiente. ¿Deseas guardar los cambios?' : 'La compra quedará pendiente de recepción. El stock no cambiará hasta confirmar su recepción. ¿Deseas registrar esta compra?',
       icon: 'pi pi-file-check',
-      acceptLabel: 'Registrar compra',
+      acceptLabel: this.purchaseId ? 'Guardar cambios' : 'Registrar compra',
       rejectLabel: 'Revisar datos',
       acceptButtonStyleClass: 'p-button-success',
-      accept: () => this.createPurchase(request)
+      accept: () => this.savePurchase(request)
     });
   }
 
-  private createPurchase(request: PurchaseRequest): void {
+  private savePurchase(request: PurchaseRequest): void {
     this.saving = true;
-    this.purchaseService.create(request).subscribe({
+    const operation = this.purchaseId ? this.purchaseService.update(this.purchaseId, request) : this.purchaseService.create(request);
+    operation.subscribe({
       next: purchase => {
         this.saving = false;
-        this.notificationService.success('Compra registrada como pendiente de recepción.');
+        this.notificationService.success(this.purchaseId ? 'Compra actualizada correctamente.' : 'Compra registrada como pendiente de recepción.');
         this.router.navigate(['/purchases', purchase.id]);
       },
       error: error => {
