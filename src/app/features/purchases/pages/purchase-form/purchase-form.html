@@ -62,13 +62,14 @@
               <p-select inputId="purchaseProduct" [options]="products"
                 [(ngModel)]="draftLine.productId" [ngModelOptions]="{standalone:true}"
                 (onChange)="onProductChange(draftLine)"
-                optionLabel="name" optionValue="id" placeholder="Buscar producto"
-                [filter]="true" filterBy="name,sku" class="w-full">
-                <ng-template #selectedItem let-product>
-                  <span class="product-selected-label">{{ product?.name }}</span>
-                </ng-template>
+                optionLabel="name" optionValue="id" placeholder="Selecciona un producto"
+                [filter]="true" filterBy="name,sku" [showClear]="true"
+                class="w-full purchase-product-select">
                 <ng-template #item let-product>
-                  <div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div>
+                  <div class="product-option">
+                    <strong>{{ product.name }}</strong>
+                    <small>{{ product.sku }}</small>
+                  </div>
                 </ng-template>
               </p-select>
             </div>
@@ -79,7 +80,7 @@
                 [(ngModel)]="draftLine.productUnitId" [ngModelOptions]="{standalone:true}"
                 optionLabel="name" optionValue="id" placeholder="Selecciona presentación"
                 [disabled]="!draftLine.productId || draftLine.loadingUnits || draftLine.units.length === 0"
-                class="w-full">
+                class="w-full purchase-presentation-select">
                 <ng-template #item let-unit>
                   <span>{{ unit.name }} · factor {{ unit.conversionFactor }}</span>
                 </ng-template>
