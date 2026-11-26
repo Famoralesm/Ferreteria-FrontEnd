@@ -208,6 +208,17 @@ export class PurchaseForm implements OnInit {
       this.notificationService.warning('Espera a que se carguen las presentaciones del producto.');
       return;
     }
+    if (draft.units.length === 0) {
+      this.notificationService.warning('Este producto no tiene presentaciones habilitadas para compra.');
+      return;
+    }
+    const duplicate = this.lines.some(line =>
+      line.productId === draft.productId && line.productUnitId === draft.productUnitId
+    );
+    if (duplicate) {
+      this.notificationService.warning('Este producto ya fue agregado con esa presentación. Puedes agregarlo nuevamente si seleccionas otra presentación.');
+      return;
+    }
     if (!Number.isFinite(Number(draft.quantity)) || Number(draft.quantity) <= 0
       || !Number.isFinite(Number(draft.unitPurchasePrice)) || Number(draft.unitPurchasePrice) < 0) {
       this.notificationService.warning('Ingresa una cantidad y un precio unitario válidos.');
