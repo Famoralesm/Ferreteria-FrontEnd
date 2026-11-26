@@ -71,6 +71,12 @@
                     <small>{{ product.sku }}</small>
                   </div>
                 </ng-template>
+                <ng-template #selectedItem let-product>
+                  <div class="product-selected-value">
+                    <strong>{{ product.name }}</strong>
+                    <small>{{ product.sku }}</small>
+                  </div>
+                </ng-template>
               </p-select>
             </div>
 
