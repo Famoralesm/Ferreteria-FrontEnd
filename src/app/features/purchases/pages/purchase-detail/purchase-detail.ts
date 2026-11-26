@@ -71,7 +71,7 @@ export class PurchaseDetail implements OnInit {
   get storeName(): string {
     if (!this.purchase) return '—';
     return this.stores.find(store => store.id === this.purchase?.sucursalId)?.nombre
-      ?? \`Sucursal #\${this.purchase.sucursalId}\`;
+      ?? `Sucursal #${this.purchase.sucursalId}`;
   }
 
   statusLabel(status: PurchaseStatus): string {
@@ -86,7 +86,7 @@ export class PurchaseDetail implements OnInit {
     if (!this.purchase || this.receiving || this.purchase.status !== 'PENDING_RECEIPT') return;
 
     const confirmed = confirm(
-      \`¿Confirmas la recepción de la compra #\${this.purchase.id}?\n\nSe ingresarán al stock de \${this.storeName} las cantidades de todos sus productos. Esta operación no se puede repetir.\`
+      `¿Confirmas la recepción de la compra #${this.purchase.id}?\n\nSe ingresarán al stock de ${this.storeName} las cantidades de todos sus productos. Esta operación no se puede repetir.`
     );
     if (!confirmed) return;
 
