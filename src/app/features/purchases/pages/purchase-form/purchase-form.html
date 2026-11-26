@@ -77,7 +77,7 @@
               <div class="form-field">
                 <label>Presentación</label>
                 <select class="presentation-select" [(ngModel)]="line.productUnitId" [ngModelOptions]="{standalone:true}"
-                  [disabled]="!line.productId || line.loadingUnits">
+                  [disabled]="!line.productId || line.loadingUnits || line.units.length === 0">
                   <option [ngValue]="null">{{ baseUnitLabel(line) }} (unidad base)</option>
                   @for (unit of line.units; track unit.id) {
                     <option [ngValue]="unit.id">{{ unit.name }} · factor {{ unit.conversionFactor }}</option>
