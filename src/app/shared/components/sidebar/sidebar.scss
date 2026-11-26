@@ -68,3 +68,28 @@ a:hover {
     color: #6c757d;
   }
 }
+:host {
+  display: block;
+  flex: 0 0 270px;
+  min-width: 270px;
+  align-self: stretch;
+}
+.sidebar {
+  position: sticky;
+  top: 0;
+  box-sizing: border-box;
+  width: 270px;
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
+  flex: 0 0 270px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.logo {
+  flex: 0 0 auto;
+}
+.fc-menu {
+  flex: 1 1 auto;
+  min-height: 0;
+}
