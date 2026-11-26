@@ -217,7 +217,7 @@ export class PurchaseForm implements OnInit {
       return;
     }
     if (this.lines.length === 0 || this.lines.some(line =>
-      !line.productId || !Number.isFinite(Number(line.quantity)) || Number(line.quantity) <= 0
+      line.loadingUnits || !line.productId || !Number.isFinite(Number(line.quantity)) || Number(line.quantity) <= 0
       || !Number.isFinite(Number(line.unitPurchasePrice)) || Number(line.unitPurchasePrice) < 0
       || Number(line.quantity) > 9999999999.9999
       || Number(line.unitPurchasePrice) > 9999999999999.99
