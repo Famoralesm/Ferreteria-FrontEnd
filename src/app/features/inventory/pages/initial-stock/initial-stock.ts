@@ -103,9 +103,10 @@ export class InitialStock implements OnInit, OnDestroy {
     });
   }
 
-  movementLabel(type: string): string {
+  movementLabel(movement: InventoryMovement): string {
+    if (movement.tipoReferencia === 'PURCHASE') return 'Recepción de compra';
     const labels: Record<string, string> = { INITIAL: 'Inventario inicial', ENTRY: 'Ingreso manual', EXIT: 'Salida', RETURN: 'Devolución', ADJUSTMENT: 'Ajuste' };
-    return labels[type] ?? type;
+    return labels[movement.tipoMovimiento] ?? movement.tipoMovimiento;
   }
 
   movementDifference(movement: InventoryMovement): number {
