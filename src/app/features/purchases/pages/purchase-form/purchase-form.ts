@@ -212,6 +212,10 @@ export class PurchaseForm implements OnInit {
       this.notificationService.warning('Este producto no tiene presentaciones habilitadas para compra.');
       return;
     }
+    if (!draft.productUnitId || !draft.units.some(unit => unit.id === draft.productUnitId)) {
+      this.notificationService.warning('Selecciona una presentación antes de agregar el producto.');
+      return;
+    }
     const duplicate = this.lines.some(line =>
       line.productId === draft.productId && line.productUnitId === draft.productUnitId
     );
