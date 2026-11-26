@@ -64,15 +64,10 @@
                 (onChange)="onProductChange(draftLine)"
                 optionLabel="name" optionValue="id" placeholder="Selecciona un producto"
                 [filter]="true" filterBy="name,sku" [showClear]="true"
-                class="w-full purchase-product-select">
+                class="w-full purchase-product-select"
+                [style]="{ width: '360px' }">
                 <ng-template #item let-product>
                   <div class="product-option">
-                    <strong>{{ product.name }}</strong>
-                    <small>{{ product.sku }}</small>
-                  </div>
-                </ng-template>
-                <ng-template #selectedItem let-product>
-                  <div class="product-selected-value">
                     <strong>{{ product.name }}</strong>
                     <small>{{ product.sku }}</small>
                   </div>
