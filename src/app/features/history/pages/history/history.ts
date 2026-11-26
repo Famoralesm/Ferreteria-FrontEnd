@@ -49,8 +49,8 @@ export class History implements OnInit {
       module: this.selectedModule || undefined,
       entityId: this.entityId.trim() || undefined,
       action: this.action.trim() || undefined,
-      fromDate: this.fromDate ? new Date(this.fromDate).toISOString() : undefined,
-      toDate: this.toDate ? new Date(this.toDate).toISOString() : undefined,
+      fromDate: this.fromDate ? (this.fromDate.length === 16 ? this.fromDate + ':00' : this.fromDate) : undefined,
+      toDate: this.toDate ? (this.toDate.length === 16 ? this.toDate + ':59' : this.toDate) : undefined,
       page: this.currentPage,
       size: this.pageSize
     };
