@@ -23,6 +23,7 @@ import { SupplierPriceComparison } from './features/suppliers/pages/supplier-pri
 import { PurchaseList } from './features/purchases/pages/purchase-list/purchase-list';
 import { PurchaseDetail } from './features/purchases/pages/purchase-detail/purchase-detail';
 import { PurchaseForm } from './features/purchases/pages/purchase-form/purchase-form';
+import { History } from './features/history/pages/history/history';
 
 export const routes: Routes = [
   {
@@ -42,6 +43,11 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         component: Dashboard
+      },
+      {
+        path: 'history',
+        component: History,
+        canActivate: [roleGuard([Role.ADMIN])]
       },
       // Pedidos
       {
