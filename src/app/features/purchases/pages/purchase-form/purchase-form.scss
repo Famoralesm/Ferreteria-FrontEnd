@@ -251,3 +251,131 @@
   .entry-subtotal { grid-column: 1; }
   .add-product-action { grid-column: 2; grid-row: 4; justify-content: flex-end; }
 }
+
+
+/* Ajuste final del selector y la grilla de compras */
+.product-selection-card {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  border: 1px solid #dbe3ec;
+  border-radius: 9px;
+  background: #fbfdff;
+}
+.product-entry-grid {
+  grid-template-columns: 290px 290px 130px 160px minmax(130px, 1fr) 40px;
+  column-gap: 30px;
+  row-gap: 0;
+  align-items: end;
+}
+.product-entry-grid > .form-field {
+  position: relative;
+  min-width: 0;
+  padding-bottom: 18px;
+}
+.product-entry-grid .product-picker,
+.product-entry-grid .product-picker .p-select,
+.product-entry-grid .presentation-field .presentation-select {
+  width: 290px !important;
+  max-width: 290px !important;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.product-entry-grid .product-picker .p-select {
+  display: block;
+}
+.product-entry-grid .quantity-field .p-inputnumber,
+.product-entry-grid .unit-price-field .p-inputnumber {
+  display: block;
+  min-width: 0;
+  box-sizing: border-box;
+}
+:host ::ng-deep .product-entry-grid .quantity-field .p-inputnumber,
+:host ::ng-deep .product-entry-grid .quantity-field .p-inputnumber-input {
+  width: 130px !important;
+  max-width: 130px !important;
+  min-width: 130px !important;
+  box-sizing: border-box;
+}
+:host ::ng-deep .product-entry-grid .unit-price-field .p-inputnumber,
+:host ::ng-deep .product-entry-grid .unit-price-field .p-inputnumber-input {
+  width: 160px !important;
+  max-width: 160px !important;
+  min-width: 160px !important;
+  box-sizing: border-box;
+}
+.presentation-warning-slot {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: block;
+  width: 290px;
+  min-height: 16px;
+  color: #dc2626;
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 600;
+}
+.product-entry-grid .entry-subtotal {
+  padding-bottom: 18px;
+}
+.product-entry-grid .entry-subtotal strong {
+  min-height: 30px;
+  white-space: nowrap;
+}
+.product-entry-grid .add-product-action {
+  align-self: end;
+  margin-bottom: 18px;
+}
+.products-grid-header,
+.products-grid-row {
+  grid-template-columns: minmax(180px, 1.7fr) minmax(135px, 1.2fr) minmax(90px, .7fr) minmax(145px, 1.1fr) minmax(135px, 1fr) 76px;
+  column-gap: 16px;
+}
+.products-grid-header span:nth-child(3),
+.products-grid-header span:nth-child(4),
+.products-grid-header span:nth-child(5) {
+  text-align: right;
+}
+.products-grid-row > .grid-number {
+  display: block;
+  width: 100%;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 1250px) {
+  .product-entry-grid {
+    grid-template-columns: 290px 290px 130px 160px;
+    column-gap: 30px;
+    row-gap: 10px;
+  }
+  .product-entry-grid .entry-subtotal { grid-column: 3; }
+  .product-entry-grid .add-product-action { grid-column: 4; grid-row: 2; }
+}
+@media (max-width: 700px) {
+  .product-selection-card { padding: 14px; }
+  .product-entry-grid {
+    grid-template-columns: minmax(0, 1fr) 130px;
+    column-gap: 18px;
+    row-gap: 8px;
+  }
+  .product-entry-grid .product-picker,
+  .product-entry-grid .product-picker .p-select,
+  .product-entry-grid .presentation-field .presentation-select {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .product-entry-grid .product-picker,
+  .product-entry-grid .presentation-field { grid-column: 1 / -1; }
+  .product-entry-grid .quantity-field { grid-column: 1; }
+  .product-entry-grid .unit-price-field { grid-column: 2; }
+  :host ::ng-deep .product-entry-grid .unit-price-field .p-inputnumber,
+  :host ::ng-deep .product-entry-grid .unit-price-field .p-inputnumber-input {
+    width: 130px !important;
+    max-width: 130px !important;
+    min-width: 130px !important;
+  }
+  .product-entry-grid .entry-subtotal { grid-column: 1; }
+  .product-entry-grid .add-product-action { grid-column: 2; grid-row: auto; justify-content: flex-end; }
+}
