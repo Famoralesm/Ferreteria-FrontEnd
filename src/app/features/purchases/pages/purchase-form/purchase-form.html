@@ -64,6 +64,9 @@
                 (onChange)="onProductChange(draftLine)"
                 optionLabel="name" optionValue="id" placeholder="Buscar producto"
                 [filter]="true" filterBy="name,sku" class="w-full">
+                <ng-template #selectedItem let-product>
+                  <span class="product-selected-label">{{ product?.name }}</span>
+                </ng-template>
                 <ng-template #item let-product>
                   <div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div>
                 </ng-template>
