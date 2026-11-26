@@ -1,0 +1,102 @@
+<div class="page-shell purchase-page">
+  <div class="page-header">
+    <div class="page-header-content">
+      <span class="page-kicker">ABASTECIMIENTO</span>
+      <p>Registro, seguimiento y recepción de compras a proveedores</p>
+    </div>
+  </div>
+
+  <section class="filters-card">
+    <div class="filters-heading">
+      <div>
+        <h3>Filtros de búsqueda</h3>
+        <span>{{ filteredPurchases.length }} de {{ purchases.length }} compras</span>
+      </div>
+      <button pButton type="button" label="Nueva compra" icon="pi pi-plus"
+        severity="success" (click)="newPurchase()"></button>
+    </div>
+
+    <div class="filters-grid">
+      <div class="filter-field">
+        <label for="purchaseSupplierFilter">Proveedor</label>
+        <p-select inputId="purchaseSupplierFilter" [options]="supplierOptions"
+          [(ngModel)]="supplierFilter" [ngModelOptions]="{standalone:true}"
+          optionLabel="label" optionValue="value" placeholder="Todos los proveedores"
+          [showClear]="true" class="w-full"></p-select>
+      </div>
+      <div class="filter-field">
+        <label for="purchaseStoreFilter">Sucursal</label>
+        <p-select inputId="purchaseStoreFilter" [options]="stores"
+          [(ngModel)]="storeFilter" [ngModelOptions]="{standalone:true}"
+          optionLabel="nombre" optionValue="id" placeholder="Todas las sucursales"
+          [showClear]="true" class="w-full"></p-select>
+      </div>
+      <div class="filter-field">
+        <label for="purchaseStatusFilter">Estado</label>
+        <p-select inputId="purchaseStatusFilter" [options]="statuses"
+          [(ngModel)]="statusFilter" [ngModelOptions]="{standalone:true}"
+          optionLabel="label" optionValue="value" placeholder="Todos los estados"
+          [showClear]="true" class="w-full"></p-select>
+      </div>
+      <div class="filter-field">
+        <label for="purchaseDateFrom">Desde</label>
+        <input id="purchaseDateFrom" type="date" [(ngModel)]="dateFrom"
+          [ngModelOptions]="{standalone:true}">
+      </div>
+      <div class="filter-field">
+        <label for="purchaseDateTo">Hasta</label>
+        <input id="purchaseDateTo" type="date" [(ngModel)]="dateTo"
+          [ngModelOptions]="{standalone:true}">
+      </div>
+      <div class="filter-actions">
+        <button pButton type="button" label="Limpiar filtros" icon="pi pi-filter-slash"
+          severity="secondary" [outlined]="true" (click)="clearFilters()"></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-card purchases-table-card">
+    <p-table [value]="filteredPurchases" [loading]="loading" [paginator]="true"
+      [rows]="10" [rowsPerPageOptions]="[10,20,50]" [rowTrackBy]="trackById"
+      responsiveLayout="scroll" [tableStyle]="{'min-width':'68rem'}">
+      <ng-template #header>
+        <tr>
+          <th>Compra</th>
+          <th>Fecha</th>
+          <th>Proveedor</th>
+          <th>Sucursal</th>
+          <th class="number-column">Total</th>
+          <th>Estado</th>
+          <th class="actions-column">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-purchase>
+        <tr>
+          <td><strong>#{{ purchase.id }}</strong></td>
+          <td>{{ purchase.purchaseDate | date:'dd/MM/yyyy':'':'es-CL' }}</td>
+          <td>{{ purchase.supplierName }}</td>
+          <td>{{ storeName(purchase.sucursalId) }}</td>
+          <td class="number-column">{{ purchase.total | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</td>
+          <td>
+            <span class="purchase-status"
+              [class.status-pending]="purchase.status === 'PENDING_RECEIPT'"
+              [class.status-received]="purchase.status === 'RECEIVED'"
+              [class.status-canceled]="purchase.status === 'CANCELED'">
+              {{ statusLabel(purchase.status) }}
+            </span>
+          </td>
+          <td class="actions-column">
+            <button pButton type="button" icon="pi pi-eye" label="Ver"
+              severity="secondary" [outlined]="true" size="small"
+              (click)="openDetail(purchase)"></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr><td colspan="7" class="empty-message">
+          {{ loading ? 'Cargando compras...' : 'No hay compras que coincidan con los filtros.' }}
+        </td></tr>
+      </ng-template>
+    </p-table>
+  </section>
+</div>
