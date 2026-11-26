@@ -62,3 +62,31 @@
 .page-header h1 { margin: 0; color: #fff; font-size: 25px; font-weight: 700; }
 .page-header p { margin: 6px 0 0; color: #dbe7f2; font-size: 13px; }
 @media (max-width: 650px) { .form-grid { grid-template-columns: 1fr; } .form-field-wide { grid-column: auto; } .line-fields { grid-template-columns: 1fr; } .product-field { grid-column: auto; } }
+
+/* Ajustes de distribución y legibilidad del formulario */
+.form-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 50px; row-gap: 1.25rem; }
+.form-field-notes { grid-column: 3; grid-row: 2; }
+.form-field-notes textarea { height: 90px !important; min-height: 90px !important; resize: vertical; box-sizing: border-box; padding: 8px 10px; line-height: 1.35; }
+.purchase-line { gap: 0.7rem; }
+.line-fields { grid-template-columns: minmax(170px, 2fr) minmax(150px, 1.5fr) minmax(95px, .8fr) minmax(145px, 1.2fr) minmax(130px, 1fr); gap: 26px; }
+.presentation-select { height: 30px !important; min-height: 30px !important; padding: 0 8px !important; line-height: 28px; box-sizing: border-box; font-family: inherit; font-size: 13px; }
+.presentation-warning { color: #c62828; font-size: 12px; font-weight: 600; line-height: 1.35; }
+.purchase-estimated-total { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; margin-top: 14px; color: #64748b; font-size: 13px; }
+.purchase-estimated-total strong { color: #173b5e; font-size: 1.35rem; }
+.form-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.form-actions { display: flex; align-items: center; justify-content: flex-end; gap: .7rem; }
+@media (max-width: 1250px) {
+  .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; }
+  .form-field-notes { grid-column: 1 / -1; grid-row: auto; }
+  .line-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 26px; }
+  .product-field { grid-column: 1 / -1; }
+}
+@media (max-width: 650px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-field-notes { grid-column: auto; grid-row: auto; }
+  .line-fields { grid-template-columns: 1fr; }
+  .product-field { grid-column: auto; }
+  .form-footer { align-items: stretch; flex-direction: column; }
+  .form-actions { flex-direction: column-reverse; }
+  .form-footer > button, .form-actions button { width: 100%; }
+}
