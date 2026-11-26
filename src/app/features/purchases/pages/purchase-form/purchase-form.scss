@@ -520,3 +520,22 @@
     max-width: 130px !important;
   }
 }
+
+
+/* Selector de producto: ancho estable sin alterar el contenido interno de PrimeNG */
+:host ::ng-deep .product-entry-grid .product-picker .p-select,
+:host ::ng-deep .product-entry-grid .product-picker p-select {
+  width: 360px !important;
+  min-width: 360px !important;
+  max-width: 360px !important;
+  box-sizing: border-box;
+}
+
+@media (max-width: 700px) {
+  :host ::ng-deep .product-entry-grid .product-picker .p-select,
+  :host ::ng-deep .product-entry-grid .product-picker p-select {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+}
