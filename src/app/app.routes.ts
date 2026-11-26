@@ -20,6 +20,9 @@ import { SupplierList } from './features/suppliers/pages/supplier-list/supplier-
 import { Profile } from './features/profile/profile';
 import { InitialStock } from './features/inventory/pages/initial-stock/initial-stock';
 import { SupplierPriceComparison } from './features/suppliers/pages/supplier-price-comparison/supplier-price-comparison';
+import { PurchaseList } from './features/purchases/pages/purchase-list/purchase-list';
+import { PurchaseDetail } from './features/purchases/pages/purchase-detail/purchase-detail';
+import { PurchaseForm } from './features/purchases/pages/purchase-form/purchase-form';
 
 export const routes: Routes = [
   {
@@ -56,6 +59,22 @@ export const routes: Routes = [
       {
         path: 'orders/edit/:id',
         component: OrderForm
+      },
+      // Compras
+      {
+        path: 'purchases',
+        component: PurchaseList,
+        canActivate: [roleGuard([Role.ADMIN, Role.SELLER])]
+      },
+      {
+        path: 'purchases/new',
+        component: PurchaseForm,
+        canActivate: [roleGuard([Role.ADMIN, Role.SELLER])]
+      },
+      {
+        path: 'purchases/:id',
+        component: PurchaseDetail,
+        canActivate: [roleGuard([Role.ADMIN, Role.SELLER])]
       },
       // Productos
       {
