@@ -65,7 +65,7 @@
         <ng-template #header><tr><th>Fecha y hora</th><th>Movimiento</th><th>Cantidad</th><th>Stock anterior</th><th>Stock nuevo</th><th>Usuario</th><th>Motivo / observación</th></tr></ng-template>
         <ng-template #body let-movement><tr>
           <td>{{ movement.fechaCreacion | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-          <td>{{ movementLabel(movement.tipoMovimiento) }}</td>
+          <td>{{ movementLabel(movement) }}</td>
           <td [class.movement-positive]="movementDifference(movement) > 0" [class.movement-negative]="movementDifference(movement) < 0">{{ movementDifference(movement) > 0 ? '+' : '' }}{{ movementDifference(movement) }}</td>
           <td>{{ movement.stockAnterior }}</td><td>{{ movement.stockNuevo }}</td><td>{{ movement.usuario || 'Sistema' }}</td><td>{{ movement.motivo || '—' }}</td>
         </tr></ng-template>
