@@ -80,6 +80,7 @@ export class PurchaseDetail implements OnInit {
       case 'RECEIVED': return 'Recibida';
       case 'CANCELED': return 'Cancelada';
     }
+    return 'Desconocido';
   }
 
   receivePurchase(): void {
