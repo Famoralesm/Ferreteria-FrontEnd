@@ -7,7 +7,7 @@ import { Purchase, PurchaseRequest } from '../models/purchase/purchase';
 
 @Injectable({ providedIn: 'root' })
 export class PurchaseService {
-  private readonly api = \`\${environment.apiUrl}/purchases\`;
+  private readonly api = `${environment.apiUrl}/purchases`;
 
   constructor(private readonly http: HttpClient) {}
 
@@ -16,7 +16,7 @@ export class PurchaseService {
   }
 
   findById(id: number): Observable<Purchase> {
-    return this.http.get<Purchase>(\`\${this.api}/\${id}\`);
+    return this.http.get<Purchase>(`${this.api}/${id}`);
   }
 
   create(request: PurchaseRequest): Observable<Purchase> {
@@ -24,6 +24,6 @@ export class PurchaseService {
   }
 
   receive(id: number): Observable<Purchase> {
-    return this.http.post<Purchase>(\`\${this.api}/\${id}/receive\`, {});
+    return this.http.post<Purchase>(`${this.api}/${id}/receive`, {});
   }
 }
