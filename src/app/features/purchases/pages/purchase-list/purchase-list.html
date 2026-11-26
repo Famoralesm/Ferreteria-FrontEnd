@@ -1,7 +1,8 @@
 <div class="page-shell purchase-page">
   <div class="page-header">
     <div class="page-header-content">
-      <span class="page-kicker">ABASTECIMIENTO</span>
+      <span class="page-kicker">COMPRAS</span>
+      <h1>Compras a proveedores</h1>
       <p>Registro, seguimiento y recepción de compras a proveedores</p>
     </div>
   </div>
@@ -21,7 +22,7 @@
         <label for="purchaseSupplierFilter">Proveedor</label>
         <p-select inputId="purchaseSupplierFilter" [options]="supplierOptions"
           [(ngModel)]="supplierFilter" [ngModelOptions]="{standalone:true}"
-          optionLabel="label" optionValue="value" placeholder="Todos los proveedores"
+          optionLabel="label" optionValue="value" filterBy="nombre,rut" [filter]="true" placeholder="Buscar por nombre o RUT"
           [showClear]="true" class="w-full"></p-select>
       </div>
       <div class="filter-field">
