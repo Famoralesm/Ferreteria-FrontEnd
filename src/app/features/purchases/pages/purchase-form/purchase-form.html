@@ -53,77 +53,98 @@
         </div>
       </div>
 
-      <div class="form-section products-section">
-        <div class="section-heading">
-          <div><h3>Productos</h3><p>Selecciona un producto y agrégalo a la grilla. Puedes incorporar varios productos.</p></div>
-          <div class="product-adder">
-            <div class="form-field product-picker">
-              <label for="productToAdd">Buscar producto</label>
-              <p-select inputId="productToAdd" [options]="products"
-                [(ngModel)]="selectedProductToAdd" [ngModelOptions]="{standalone:true}"
-                optionLabel="name" optionValue="id" placeholder="Selecciona un producto"
-                [filter]="true" filterBy="name,sku" class="w-full">
-                <ng-template #item let-product>
-                  <div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div>
-                </ng-template>
-              </p-select>
-            </div>
-            <button pButton type="button" label="Agregar a la grilla" icon="pi pi-plus"
-              severity="success" [disabled]="!selectedProductToAdd" (click)="addLine()"></button>
+      <section class="form-section products-selection-section">
+        <h3>Productos</h3>
+        <div class="product-entry-grid">
+          <div class="form-field product-picker">
+            <label for="purchaseProduct">Buscar producto</label>
+            <p-select inputId="purchaseProduct" [options]="products"
+              [(ngModel)]="draftLine.productId" [ngModelOptions]="{standalone:true}"
+              (onChange)="onProductChange(draftLine)"
+              optionLabel="name" optionValue="id" placeholder="Buscar producto"
+              [filter]="true" filterBy="name,sku" class="w-full">
+              <ng-template #item let-product>
+                <div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div>
+              </ng-template>
+            </p-select>
+          </div>
+
+          <div class="form-field">
+            <label>Presentación</label>
+            <select class="presentation-select" [(ngModel)]="draftLine.productUnitId" [ngModelOptions]="{standalone:true}"
+              [disabled]="!draftLine.productId || draftLine.loadingUnits || draftLine.units.length === 0">
+              <option [ngValue]="null">{{ baseUnitLabel(draftLine) }} (unidad base)</option>
+              @for (unit of draftLine.units; track unit.id) {
+                <option [ngValue]="unit.id">{{ unit.name }} · factor {{ unit.conversionFactor }}</option>
+              }
+            </select>
+            @if (draftLine.productId && !draftLine.loadingUnits && draftLine.units.length === 0) {
+              <small class="presentation-warning">Este producto no tiene presentación configurada.</small>
+            }
+          </div>
+
+          <div class="form-field quantity-field">
+            <label>Cantidad <span>*</span></label>
+            <p-inputnumber [(ngModel)]="draftLine.quantity" [ngModelOptions]="{standalone:true}"
+              [min]="0.0001" [maxFractionDigits]="4" [minFractionDigits]="0"
+              [useGrouping]="false" inputStyleClass="w-full"></p-inputnumber>
+          </div>
+
+          <div class="form-field unit-price-field">
+            <label>Precio unitario <span>*</span></label>
+            <p-inputnumber [(ngModel)]="draftLine.unitPurchasePrice" [ngModelOptions]="{standalone:true}"
+              mode="currency" currency="CLP" locale="es-CL" [min]="0"
+              [maxFractionDigits]="2" [minFractionDigits]="0"
+              inputStyleClass="w-full"></p-inputnumber>
+          </div>
+
+          <div class="form-field entry-subtotal">
+            <label>Subtotal</label>
+            <strong>{{ (draftLine.quantity * draftLine.unitPurchasePrice) | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong>
+          </div>
+
+          <div class="add-product-action">
+            <button pButton type="button" icon="pi pi-plus" severity="success"
+              [rounded]="true" aria-label="Agregar producto a la grilla"
+              [disabled]="!draftLine.productId || draftLine.loadingUnits"
+              (click)="addLine()"></button>
           </div>
         </div>
+      </section>
 
+      <section class="products-grid-section">
         @if (lines.length === 0) {
-          <p class="empty-products">Todavía no hay productos agregados. Usa el selector para incorporar el primero.</p>
+          <p class="empty-products">Todavía no hay productos en la compra. Selecciona los datos del producto y presiona + para agregarlo.</p>
         } @else {
-          @for (line of visibleLines; track $index; let i = $index) {
-            <div class="purchase-line">
-              <div class="line-fields">
-                <div class="form-field product-field">
-                  <label>Producto</label>
-                  <div class="selected-product">
-                    <strong>{{ selectedProduct(line)?.name || 'Producto no disponible' }}</strong>
-                    <small>{{ selectedProduct(line)?.sku }}</small>
-                  </div>
+          <div class="products-grid-table">
+            <div class="products-grid-header">
+              <span>Producto</span>
+              <span>Presentación</span>
+              <span>Cantidad</span>
+              <span>Precio unitario</span>
+              <span>Subtotal</span>
+              <span>Acciones</span>
+            </div>
+            @for (line of visibleLines; track $index; let i = $index) {
+              <div class="products-grid-row">
+                <div class="grid-product-name">
+                  <strong>{{ selectedProduct(line)?.name || 'Producto no disponible' }}</strong>
+                  <small>{{ selectedProduct(line)?.sku }}</small>
                 </div>
-                <div class="form-field">
-                  <label>Presentación</label>
-                <select class="presentation-select" [(ngModel)]="line.productUnitId" [ngModelOptions]="{standalone:true}"
-                  [disabled]="!line.productId || line.loadingUnits || line.units.length === 0">
-                  <option [ngValue]="null">{{ baseUnitLabel(line) }} (unidad base)</option>
-                  @for (unit of line.units; track unit.id) {
-                    <option [ngValue]="unit.id">{{ unit.name }} · factor {{ unit.conversionFactor }}</option>
-                  }
-                </select>
-                @if (line.productId && !line.loadingUnits && line.units.length === 0) {
-                  <small class="presentation-warning">Este producto no tiene presentación configurada.</small>
-                }
+                <span>{{ lineUnitLabel(line) }}</span>
+                <span class="grid-number">{{ line.quantity }}</span>
+                <span class="grid-number">{{ line.unitPurchasePrice | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</span>
+                <strong class="grid-number">{{ (line.quantity * line.unitPurchasePrice) | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong>
+                <div class="grid-actions">
+                  <button pButton type="button" icon="pi pi-trash" severity="danger"
+                    [text]="true" [rounded]="true" aria-label="Eliminar producto de la grilla"
+                    (click)="removeLine(first + i)"></button>
+                </div>
               </div>
-              <div class="form-field">
-                <label>Cantidad <span>*</span></label>
-                <p-inputnumber [(ngModel)]="line.quantity" [ngModelOptions]="{standalone:true}"
-                  [min]="0.0001" [maxFractionDigits]="4" [minFractionDigits]="0"
-                  [useGrouping]="false" inputStyleClass="w-full"></p-inputnumber>
-              </div>
-              <div class="form-field">
-                <label>Precio unitario <span>*</span></label>
-                <p-inputnumber [(ngModel)]="line.unitPurchasePrice" [ngModelOptions]="{standalone:true}"
-                  mode="currency" currency="CLP" locale="es-CL" [min]="0"
-                  [maxFractionDigits]="2" [minFractionDigits]="0"
-                  inputStyleClass="w-full"></p-inputnumber>
-              </div>
-              <div class="form-field line-subtotal">
-                <label>Subtotal estimado</label>
-                <strong>{{ (line.quantity * line.unitPurchasePrice) | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong>
-              </div>
-            </div>
-            <button pButton type="button" icon="pi pi-trash" severity="danger"
-              [text]="true" [rounded]="true" aria-label="Quitar producto"
-              (click)="removeLine(first + i)"></button>
-            </div>
-          }
+            }
+          </div>
         }
-      </div>
+      </section>
 
       @if (lines.length > pageSize) {
         <p-paginator [first]="first" [rows]="pageSize" [totalRecords]="lines.length"
