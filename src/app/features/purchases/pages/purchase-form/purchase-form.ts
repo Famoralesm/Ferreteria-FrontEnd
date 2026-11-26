@@ -99,7 +99,6 @@ export class PurchaseForm implements OnInit {
         this.stores = stores ?? [];
         this.selectedStoreId = this.storeService.selectedStoreId ?? this.stores[0]?.id ?? null;
         this.loadProducts();
-        this.loading = false;
         this.cdr.detectChanges();
       },
       error: error => {
@@ -133,6 +132,7 @@ export class PurchaseForm implements OnInit {
   loadProducts(): void {
     if (!this.selectedStoreId) {
       this.products = [];
+      this.loading = false;
       return;
     }
     this.loading = true;
