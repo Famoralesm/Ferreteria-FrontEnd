@@ -1,12 +1,13 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { PaginatorModule } from 'primeng/paginator';
 import { TextareaModule } from 'primeng/textarea';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
@@ -35,7 +36,7 @@ interface PurchaseLine {
 @Component({
   selector: 'app-purchase-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, SelectModule, InputNumberModule, InputTextModule, TextareaModule, ConfirmDialogModule],
+  imports: [CommonModule, FormsModule, ButtonModule, SelectModule, InputNumberModule, InputTextModule, TextareaModule, ConfirmDialogModule, PaginatorModule],
   providers: [ConfirmationService],
   templateUrl: './purchase-form.html',
   styleUrl: './purchase-form.scss'
@@ -45,6 +46,10 @@ export class PurchaseForm implements OnInit {
   stores: Store[] = [];
   products: Product[] = [];
   selectedStoreId: number | null = null;
+  purchaseId: number | null = null;
+  first = 0;
+  readonly pageSize = 4;
+  private editLoaded = false;
 
   documentType: string | null = null;
   documentNumber = '';
@@ -71,10 +76,13 @@ export class PurchaseForm implements OnInit {
     private readonly notificationService: NotificationService,
     private readonly confirmationService: ConfirmationService,
     private readonly router: Router,
+    private readonly route: ActivatedRoute,
     private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    const routeId = Number(this.route.snapshot.paramMap.get('id'));
+    this.purchaseId = Number.isInteger(routeId) && routeId > 0 ? routeId : null;
     this.supplierService.findAll().subscribe({
       next: suppliers => {
         this.suppliers = (suppliers ?? []).filter(supplier => supplier.activo);
@@ -131,7 +139,8 @@ export class PurchaseForm implements OnInit {
     this.productService.findAll(this.selectedStoreId).subscribe({
       next: products => {
         this.products = (products ?? []).filter(product => product.active);
-        this.loading = false;
+        if (this.purchaseId && !this.editLoaded) this.loadPurchaseForEdit();
+        else this.loading = false;
         this.cdr.detectChanges();
       },
       error: error => {
@@ -160,6 +169,8 @@ export class PurchaseForm implements OnInit {
     this.loadProducts();
   }
 
+  get visibleLines(): PurchaseLine[] { return this.lines.slice(this.first, this.first + this.pageSize); }
+
   onProductChange(line: PurchaseLine): void {
     line.productUnitId = null;
     line.units = [];
@@ -183,6 +194,7 @@ export class PurchaseForm implements OnInit {
 
   addLine(): void {
     this.lines = [...this.lines, this.newLine()];
+    this.first = Math.floor((this.lines.length - 1) / this.pageSize) * this.pageSize;
   }
 
   removeLine(index: number): void {
@@ -191,6 +203,7 @@ export class PurchaseForm implements OnInit {
       return;
     }
     this.lines = this.lines.filter((_, lineIndex) => lineIndex !== index);
+    if (this.first >= this.lines.length) this.first = Math.max(0, Math.floor((this.lines.length - 1) / this.pageSize) * this.pageSize);
   }
 
   get estimatedTotal(): number {
