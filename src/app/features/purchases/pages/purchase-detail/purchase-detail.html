@@ -1,13 +1,12 @@
 <p-confirmDialog [style]="{width: 'min(92vw, 500px)'}" [closable]="true" [dismissableMask]="true"></p-confirmDialog>
 <div class="page-shell purchase-detail-page">
-  <div class="page-header"><div class="page-header-content"><span class="page-kicker">COMPRAS</span><h1>Detalle de compra</h1><p>Consulta de productos, documento y estado de recepción</p></div></div>
+  <div class="page-header"><div class="page-header-content"><h1>DETALLE DE COMPRA</h1><p>Consulta de productos, documento y estado de recepción</p></div></div>
   @if (loading) {
     <section class="page-card loading-card">Cargando detalle de la compra...</section>
   } @else if (purchase) {
     <section class="page-card detail-card">
       <div class="detail-heading">
         <div>
-          <span class="page-kicker">DETALLE DE COMPRA</span>
           <h2>Compra #{{ purchase.id }}</h2>
         </div>
         <span class="purchase-status"
@@ -66,11 +65,18 @@
       <div class="detail-actions">
         <button pButton type="button" label="Volver a compras" icon="pi pi-arrow-left"
           severity="secondary" [text]="true" (click)="back()"></button>
-        @if (purchase.status === 'PENDING_RECEIPT') {
-          <button pButton type="button" label="Recibir compra" icon="pi pi-check-circle"
-            severity="success" [disabled]="receiving || loading" [loading]="receiving"
-            (click)="receivePurchase()"></button>
-        }
+        <div class="detail-action-buttons">
+          @if (purchase.status === 'PENDING_RECEIPT') {
+            <button pButton type="button" label="Descartar compra" icon="pi pi-trash"
+              severity="danger" [disabled]="deleting || receiving" [loading]="deleting"
+              (click)="discardPurchase()"></button>
+            <button pButton type="button" label="Editar compra" icon="pi pi-pencil"
+              severity="warn" [disabled]="deleting || receiving" (click)="editPurchase()"></button>
+            <button pButton type="button" label="Recibir compra" icon="pi pi-check-circle"
+              severity="success" [disabled]="receiving || deleting || loading" [loading]="receiving"
+              (click)="receivePurchase()"></button>
+          }
+        </div>
       </div>
     </section>
 
