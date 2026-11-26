@@ -115,7 +115,7 @@
       @if (lines.length > pageSize) {
         <p-paginator [first]="first" [rows]="pageSize" [totalRecords]="lines.length"
           [showCurrentPageReport]="true" currentPageReportTemplate="Productos {first} a {last} de {totalRecords}"
-          (onPageChange)="first = $event.first"></p-paginator>
+          (onPageChange)="first = $event.first ?? 0"></p-paginator>
       }
       <div class="purchase-estimated-total">
         <span>Total estimado</span>
