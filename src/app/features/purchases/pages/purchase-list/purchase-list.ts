@@ -9,8 +9,10 @@ import { SelectModule } from 'primeng/select';
 
 import { Purchase, PurchaseStatus } from '../../../../core/models/purchase/purchase';
 import { Store } from '../../../../core/models/store/store';
+import { Supplier } from '../../../../core/models/supplier/supplier';
 import { PurchaseService } from '../../../../core/services/purchase.service';
 import { StoreService } from '../../../../core/services/store.service';
+import { SupplierService } from '../../../../core/services/supplier.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
@@ -23,6 +25,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 export class PurchaseList implements OnInit {
   purchases: Purchase[] = [];
   stores: Store[] = [];
+  suppliers: Supplier[] = [];
   loading = false;
 
   supplierFilter: number | null = null;
@@ -41,12 +44,17 @@ export class PurchaseList implements OnInit {
   constructor(
     private readonly purchaseService: PurchaseService,
     private readonly storeService: StoreService,
+    private readonly supplierService: SupplierService,
     private readonly notificationService: NotificationService,
     private readonly router: Router,
     private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.supplierService.findAll().subscribe({
+      next: suppliers => { this.suppliers = (suppliers ?? []).filter(supplier => supplier.activo); this.cdr.detectChanges(); },
+      error: error => console.error('Error cargando proveedores:', error)
+    });
     this.storeService.findActive().subscribe({
       next: stores => {
         this.stores = stores ?? [];
@@ -77,15 +85,15 @@ export class PurchaseList implements OnInit {
   }
 
   get supplierOptions(): { label: string; value: number; nombre: string; rut: string }[] {
-    const unique = new Map<number, string>();
-    this.purchases.forEach(purchase => unique.set(purchase.supplierId, purchase.supplierName));
-    return [...unique.entries()]
-      .sort((a, b) => a[1].localeCompare(b[1], 'es'))
-      .map(([value, label]) => ({ value, label: `${label} · ${this.supplierRut(value)}`, nombre: label, rut: this.supplierRut(value) }));
-  }
-
-  supplierRut(_supplierId: number): string {
-    return '';
+    return this.suppliers
+      .slice()
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
+      .map(supplier => ({
+        value: supplier.id,
+        label: supplier.rut ? `${supplier.nombre} · ${supplier.rut}` : supplier.nombre,
+        nombre: supplier.nombre,
+        rut: supplier.rut ?? ''
+      }));
   }
 
   get filteredPurchases(): Purchase[] {
