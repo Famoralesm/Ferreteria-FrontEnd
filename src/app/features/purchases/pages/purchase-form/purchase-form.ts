@@ -301,6 +301,62 @@ export class PurchaseForm implements OnInit {
   }
 
   selectedSupplierId: number | null = null;
+  get pageTitle(): string { return this.purchaseId ? 'Editar compra' : 'Registrar compra'; }
+
+  private loadPurchaseForEdit(): void {
+    if (!this.purchaseId || this.editLoaded) return;
+    this.editLoaded = true;
+    this.loading = true;
+    this.purchaseService.findById(this.purchaseId).subscribe({
+      next: purchase => {
+        if (purchase.status !== 'PENDING_RECEIPT') {
+          this.notificationService.warning('Solo se pueden editar compras pendientes de recepción.');
+          this.router.navigate(['/purchases', purchase.id]);
+          return;
+        }
+        this.selectedSupplierId = purchase.supplierId;
+        this.selectedStoreId = purchase.sucursalId;
+        this.documentType = purchase.documentType;
+        this.documentNumber = purchase.documentNumber ?? '';
+        this.purchaseDate = purchase.purchaseDate;
+        this.notes = purchase.notes ?? '';
+        this.lines = purchase.items.map(item => ({
+          productId: item.productId,
+          productUnitId: item.productUnitId,
+          quantity: Number(item.quantity),
+          unitPurchasePrice: Number(item.unitPurchasePrice),
+          units: [],
+          loadingUnits: item.productUnitId !== null
+        }));
+        if (!this.lines.length) this.lines = [this.newLine()];
+        this.first = 0;
+        this.loading = false;
+        this.lines.forEach(line => {
+          if (!line.productId) return;
+          this.productUnitService.findByProduct(line.productId).subscribe({
+            next: units => {
+              line.units = (units ?? []).filter(unit => unit.active && unit.purchaseAllowed);
+              line.loadingUnits = false;
+              this.cdr.detectChanges();
+            },
+            error: error => {
+              console.error('Error cargando presentaciones de compra:', error);
+              line.loadingUnits = false;
+              this.notificationService.error('No fue posible cargar las presentaciones de uno de los productos.');
+              this.cdr.detectChanges();
+            }
+          });
+        });
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.loading = false;
+        this.notificationService.error(error?.error?.message ?? 'No fue posible cargar la compra para editar.');
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
 
   private documentDateValid(): boolean {
     return !!this.purchaseDate && /^\d{4}-\d{2}-\d{2}$/.test(this.purchaseDate);
