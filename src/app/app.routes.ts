@@ -72,6 +72,11 @@ export const routes: Routes = [
         canActivate: [roleGuard([Role.ADMIN, Role.SELLER])]
       },
       {
+        path: 'purchases/:id/edit',
+        component: PurchaseForm,
+        canActivate: [roleGuard([Role.ADMIN, Role.SELLER])]
+      },
+      {
         path: 'purchases/:id',
         component: PurchaseDetail,
         canActivate: [roleGuard([Role.ADMIN, Role.SELLER])]
