@@ -81,6 +81,11 @@ export class Sidebar {
                 label: 'Usuarios',
                 icon: 'pi pi-user',
                 routerLink: ['/users']
+              },
+              {
+                label: 'Historial',
+                icon: 'pi pi-history',
+                routerLink: ['/history']
               }
             );
           }
