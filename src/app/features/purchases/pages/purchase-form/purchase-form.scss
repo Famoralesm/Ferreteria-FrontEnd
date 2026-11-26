@@ -90,3 +90,6 @@
   .form-actions { flex-direction: column-reverse; }
   .form-footer > button, .form-actions button { width: 100%; }
 }
+
+.form-field input, .form-field select { box-sizing: border-box; padding: 0 8px; height: 30px; min-height: 30px; line-height: 28px; }
+.form-field textarea { box-sizing: border-box; }
