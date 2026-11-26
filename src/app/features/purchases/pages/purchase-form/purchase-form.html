@@ -1,0 +1,131 @@
+<div class="page-shell purchase-form-page">
+  <div class="form-toolbar">
+    <button pButton type="button" label="Volver a compras" icon="pi pi-arrow-left"
+      severity="secondary" [text]="true" (click)="cancel()"></button>
+  </div>
+
+  <section class="page-card form-card">
+    <div class="form-heading">
+      <div>
+        <span class="page-kicker">ABASTECIMIENTO</span>
+        <h2>Registrar compra</h2>
+        <p>La compra quedará pendiente de recepción y no modificará el stock hasta confirmar su ingreso.</p>
+      </div>
+    </div>
+
+    @if (loading) {
+      <p class="loading-message">Cargando proveedores, sucursales y productos...</p>
+    } @else {
+      <div class="form-section">
+        <h3>Datos generales</h3>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="purchaseSupplier">Proveedor <span>*</span></label>
+            <p-select inputId="purchaseSupplier" [options]="suppliers"
+              [(ngModel)]="selectedSupplierId" [ngModelOptions]="{standalone:true}"
+              optionLabel="nombre" optionValue="id" placeholder="Selecciona un proveedor"
+              [filter]="true" filterBy="nombre" class="w-full"></p-select>
+          </div>
+          <div class="form-field">
+            <label for="purchaseStore">Sucursal de destino <span>*</span></label>
+            <p-select inputId="purchaseStore" [options]="stores"
+              [(ngModel)]="selectedStoreId" [ngModelOptions]="{standalone:true}"
+              optionLabel="nombre" optionValue="id" placeholder="Selecciona una sucursal"
+              [disabled]="stores.length <= 1" (onChange)="onStoreChange()" class="w-full"></p-select>
+          </div>
+          <div class="form-field">
+            <label for="purchaseDate">Fecha de compra <span>*</span></label>
+            <input id="purchaseDate" type="date" [(ngModel)]="purchaseDate"
+              [ngModelOptions]="{standalone:true}">
+          </div>
+          <div class="form-field">
+            <label for="purchaseDocumentType">Tipo de documento</label>
+            <p-select inputId="purchaseDocumentType" [options]="documentTypes"
+              [(ngModel)]="documentType" [ngModelOptions]="{standalone:true}"
+              optionLabel="label" optionValue="value" placeholder="Sin especificar"
+              [showClear]="true" class="w-full"></p-select>
+          </div>
+          <div class="form-field">
+            <label for="purchaseDocumentNumber">Número de documento</label>
+            <input id="purchaseDocumentNumber" pInputText [(ngModel)]="documentNumber"
+              [ngModelOptions]="{standalone:true}" maxlength="60" placeholder="Folio o número">
+          </div>
+          <div class="form-field form-field-wide">
+            <label for="purchaseNotes">Observaciones</label>
+            <textarea id="purchaseNotes" pTextarea [(ngModel)]="notes"
+              [ngModelOptions]="{standalone:true}" rows="2" maxlength="1000"
+              placeholder="Información adicional de la compra"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section products-section">
+        <div class="section-heading">
+          <div><h3>Productos</h3><p>Selecciona el producto y la presentación utilizada en la compra.</p></div>
+          <button pButton type="button" label="Agregar producto" icon="pi pi-plus"
+            severity="secondary" [outlined]="true" (click)="addLine()"></button>
+        </div>
+
+        @for (line of lines; track $index; let i = $index) {
+          <div class="purchase-line">
+            <div class="line-number">{{ i + 1 }}</div>
+            <div class="line-fields">
+              <div class="form-field product-field">
+                <label>Producto <span>*</span></label>
+                <p-select [options]="products" [(ngModel)]="line.productId"
+                  [ngModelOptions]="{standalone:true}" optionLabel="name" optionValue="id"
+                  placeholder="Selecciona producto" [filter]="true" filterBy="name,sku"
+                  (onChange)="onProductChange(line)" class="w-full">
+                  <ng-template #item let-product>
+                    <div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div>
+                  </ng-template>
+                </p-select>
+              </div>
+              <div class="form-field">
+                <label>Presentación</label>
+                <select [(ngModel)]="line.productUnitId" [ngModelOptions]="{standalone:true}"
+                  [disabled]="!line.productId || line.loadingUnits">
+                  <option [ngValue]="null">{{ baseUnitLabel(line) }} (unidad base)</option>
+                  @for (unit of line.units; track unit.id) {
+                    <option [ngValue]="unit.id">{{ unit.name }} · factor {{ unit.conversionFactor }}</option>
+                  }
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Cantidad <span>*</span></label>
+                <p-inputnumber [(ngModel)]="line.quantity" [ngModelOptions]="{standalone:true}"
+                  [min]="0.0001" [maxFractionDigits]="4" [minFractionDigits]="0"
+                  [useGrouping]="false" inputStyleClass="w-full"></p-inputnumber>
+              </div>
+              <div class="form-field">
+                <label>Precio unitario <span>*</span></label>
+                <p-inputnumber [(ngModel)]="line.unitPurchasePrice" [ngModelOptions]="{standalone:true}"
+                  mode="currency" currency="CLP" locale="es-CL" [min]="0"
+                  [maxFractionDigits]="2" [minFractionDigits]="0"
+                  inputStyleClass="w-full"></p-inputnumber>
+              </div>
+              <div class="form-field line-subtotal">
+                <label>Subtotal estimado</label>
+                <strong>{{ (line.quantity * line.unitPurchasePrice) | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong>
+              </div>
+            </div>
+            <button pButton type="button" icon="pi pi-trash" severity="danger"
+              [text]="true" [rounded]="true" aria-label="Quitar producto"
+              (click)="removeLine(i)"></button>
+          </div>
+        }
+      </div>
+
+      <div class="form-footer">
+        <div class="estimated-total"><span>Total estimado</span><strong>{{ estimatedTotal | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong></div>
+        <div class="form-actions">
+          <button pButton type="button" label="Cancelar" severity="secondary"
+            [outlined]="true" [disabled]="saving" (click)="cancel()"></button>
+          <button pButton type="button" label="Registrar compra" icon="pi pi-check"
+            severity="success" [disabled]="saving || loading" [loading]="saving"
+            (click)="save()"></button>
+        </div>
+      </div>
+    }
+  </section>
+</div>
