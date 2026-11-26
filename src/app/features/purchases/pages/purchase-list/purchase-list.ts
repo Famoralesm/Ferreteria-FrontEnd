@@ -95,7 +95,7 @@ export class PurchaseList implements OnInit {
   }
 
   storeName(storeId: number): string {
-    return this.stores.find(store => store.id === storeId)?.nombre ?? \`Sucursal #\${storeId}\`;
+    return this.stores.find(store => store.id === storeId)?.nombre ?? `Sucursal #${storeId}`;
   }
 
   statusLabel(status: PurchaseStatus): string {
