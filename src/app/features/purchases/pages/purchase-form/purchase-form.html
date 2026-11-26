@@ -122,11 +122,11 @@
         <strong>{{ estimatedTotal | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong>
       </div>
       <div class="form-footer">
-        <div class="estimated-total"><span>Total estimado</span><strong>{{ estimatedTotal | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong></div>
+        <button pButton type="button" label="Volver a compras" icon="pi pi-arrow-left" severity="secondary" [text]="true" [disabled]="saving" (click)="cancel()"></button>
         <div class="form-actions">
           <button pButton type="button" label="Cancelar" severity="secondary"
             [outlined]="true" [disabled]="saving" (click)="cancel()"></button>
-          <button pButton type="button" label="Registrar compra" icon="pi pi-check"
+          <button pButton type="button" [label]="purchaseId ? 'Guardar cambios' : 'Registrar compra'" icon="pi pi-check"
             severity="success" [disabled]="saving || loading" [loading]="saving"
             (click)="save()"></button>
         </div>
