@@ -16,7 +16,7 @@ import { Product } from '../../../../core/models/product/product';
 import { ProductUnit } from '../../../../core/models/product/product-unit';
 import { Store } from '../../../../core/models/store/store';
 import { Supplier } from '../../../../core/models/supplier/supplier';
-import { PurchaseRequest } from '../../../../core/models/purchase/purchase';
+import { Purchase, PurchaseRequest } from '../../../../core/models/purchase/purchase';
 import { ProductService } from '../../../../core/services/product.service';
 import { ProductUnitService } from '../../../../core/services/product-unit.service';
 import { StoreService } from '../../../../core/services/store.service';
@@ -340,7 +340,7 @@ export class PurchaseForm implements OnInit {
   }
 
 
-  private populatePurchaseForm(purchase: import('../../../../core/models/purchase/purchase').Purchase): void {
+  private populatePurchaseForm(purchase: Purchase): void {
     this.selectedSupplierId = purchase.supplierId;
     this.selectedStoreId = purchase.sucursalId;
     this.documentType = purchase.documentType;
