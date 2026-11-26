@@ -26,6 +26,7 @@ export class PurchaseList implements OnInit {
   loading = false;
 
   supplierFilter: number | null = null;
+  supplierSearch = '';
   storeFilter: number | null = null;
   statusFilter: PurchaseStatus | null = null;
   dateFrom = '';
@@ -75,12 +76,16 @@ export class PurchaseList implements OnInit {
     });
   }
 
-  get supplierOptions(): { label: string; value: number }[] {
+  get supplierOptions(): { label: string; value: number; nombre: string; rut: string }[] {
     const unique = new Map<number, string>();
     this.purchases.forEach(purchase => unique.set(purchase.supplierId, purchase.supplierName));
     return [...unique.entries()]
       .sort((a, b) => a[1].localeCompare(b[1], 'es'))
-      .map(([value, label]) => ({ value, label }));
+      .map(([value, label]) => ({ value, label: `${label} · ${this.supplierRut(value)}`, nombre: label, rut: this.supplierRut(value) }));
+  }
+
+  supplierRut(_supplierId: number): string {
+    return '';
   }
 
   get filteredPurchases(): Purchase[] {
