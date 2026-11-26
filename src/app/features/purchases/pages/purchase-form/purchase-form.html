@@ -1,14 +1,10 @@
 <p-confirmDialog [style]="{width: 'min(92vw, 480px)'}" [closable]="true" [dismissableMask]="true"></p-confirmDialog>
 <div class="page-shell purchase-form-page">
-  <div class="page-header"><div class="page-header-content"><span class="page-kicker">COMPRAS</span><h1>Registrar compra</h1><p>Ingreso de documentos y productos adquiridos a proveedores</p></div></div>
-  <div class="form-toolbar">
-    <button pButton type="button" label="Volver a compras" icon="pi pi-arrow-left"
-      severity="secondary" [text]="true" (click)="cancel()"></button>
-  </div>
-
+  <div class="page-header"><div class="page-header-content"><span class="page-kicker">COMPRAS</span><h1>{{ pageTitle }}</h1><p>Ingreso de documentos y productos adquiridos a proveedores</p></div></div>
+  
   <section class="page-card form-card">
     <div class="form-heading">
-<div><p>La compra quedará pendiente de recepción y no modificará el stock hasta confirmar su ingreso.</p></div>
+<div><p>{{ purchaseId ? 'Edita los datos y productos de esta compra pendiente.' : 'La compra quedará pendiente de recepción y no modificará el stock hasta confirmar su ingreso.' }}</p></div>
     </div>
 
     @if (loading) {
@@ -48,10 +44,10 @@
             <input id="purchaseDocumentNumber" pInputText [(ngModel)]="documentNumber"
               [ngModelOptions]="{standalone:true}" maxlength="60" placeholder="Folio o número">
           </div>
-          <div class="form-field form-field-wide">
+          <div class="form-field form-field-notes">
             <label for="purchaseNotes">Observaciones</label>
             <textarea id="purchaseNotes" pTextarea [(ngModel)]="notes"
-              [ngModelOptions]="{standalone:true}" rows="2" maxlength="1000"
+              [ngModelOptions]="{standalone:true}" rows="3" maxlength="1000"
               placeholder="Información adicional de la compra"></textarea>
           </div>
         </div>
@@ -61,12 +57,11 @@
         <div class="section-heading">
           <div><h3>Productos</h3><p>Selecciona el producto y la presentación utilizada en la compra.</p></div>
           <button pButton type="button" label="Agregar producto" icon="pi pi-plus"
-            severity="secondary" [outlined]="true" (click)="addLine()"></button>
+            severity="success" (click)="addLine()"></button>
         </div>
 
-        @for (line of lines; track $index; let i = $index) {
+        @for (line of visibleLines; track $index; let i = $index) {
           <div class="purchase-line">
-            <div class="line-number">{{ i + 1 }}</div>
             <div class="line-fields">
               <div class="form-field product-field">
                 <label>Producto <span>*</span></label>
@@ -109,7 +104,7 @@
             </div>
             <button pButton type="button" icon="pi pi-trash" severity="danger"
               [text]="true" [rounded]="true" aria-label="Quitar producto"
-              (click)="removeLine(i)"></button>
+              (click)="removeLine(first + i)"></button>
           </div>
         }
       </div>
