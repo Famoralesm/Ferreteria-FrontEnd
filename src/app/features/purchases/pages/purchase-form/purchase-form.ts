@@ -8,6 +8,8 @@ import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 
 import { Product } from '../../../../core/models/product/product';
 import { ProductUnit } from '../../../../core/models/product/product-unit';
@@ -33,7 +35,8 @@ interface PurchaseLine {
 @Component({
   selector: 'app-purchase-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, SelectModule, InputNumberModule, InputTextModule, TextareaModule],
+  imports: [CommonModule, FormsModule, ButtonModule, SelectModule, InputNumberModule, InputTextModule, TextareaModule, ConfirmDialogModule],
+  providers: [ConfirmationService],
   templateUrl: './purchase-form.html',
   styleUrl: './purchase-form.scss'
 })
@@ -66,6 +69,7 @@ export class PurchaseForm implements OnInit {
     private readonly productUnitService: ProductUnitService,
     private readonly purchaseService: PurchaseService,
     private readonly notificationService: NotificationService,
+    private readonly confirmationService: ConfirmationService,
     private readonly router: Router,
     private readonly cdr: ChangeDetectorRef
   ) {}
@@ -140,9 +144,16 @@ export class PurchaseForm implements OnInit {
   }
 
   onStoreChange(): void {
-    if (this.lines.some(line => line.productId !== null)
-      && !confirm('Cambiar la sucursal limpiará los productos agregados. ¿Deseas continuar?')) {
-      this.selectedStoreId = this.storeService.selectedStoreId;
+    if (this.lines.some(line => line.productId !== null)) {
+      const previousStoreId = this.storeService.selectedStoreId;
+      this.confirmationService.confirm({
+        header: 'Cambiar sucursal',
+        message: 'Al cambiar la sucursal se quitarán los productos agregados a esta compra. ¿Deseas continuar?',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Sí, cambiar', rejectLabel: 'Mantener sucursal', acceptButtonStyleClass: 'p-button-warning',
+        accept: () => { this.lines = [this.newLine()]; this.loadProducts(); },
+        reject: () => { this.selectedStoreId = previousStoreId; this.cdr.detectChanges(); }
+      });
       return;
     }
     this.lines = [this.newLine()];
@@ -247,6 +258,18 @@ export class PurchaseForm implements OnInit {
       }))
     };
 
+    this.confirmationService.confirm({
+      header: 'Confirmar registro de compra',
+      message: 'La compra quedará pendiente de recepción. El stock no cambiará hasta confirmar su recepción. ¿Deseas registrar esta compra?',
+      icon: 'pi pi-file-check',
+      acceptLabel: 'Registrar compra',
+      rejectLabel: 'Revisar datos',
+      acceptButtonStyleClass: 'p-button-success',
+      accept: () => this.createPurchase(request)
+    });
+  }
+
+  private createPurchase(request: PurchaseRequest): void {
     this.saving = true;
     this.purchaseService.create(request).subscribe({
       next: purchase => {
