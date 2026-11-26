@@ -57,7 +57,7 @@ export class PurchaseForm implements OnInit {
   purchaseDate = this.todayLocal();
   notes = '';
   lines: PurchaseLine[] = [];
-  selectedProductToAdd: number | null = null;
+  draftLine: PurchaseLine = this.newLine();
 
   loading = true;
   saving = false;
@@ -163,13 +163,13 @@ export class PurchaseForm implements OnInit {
         message: 'Al cambiar la sucursal se quitarán los productos agregados a esta compra. ¿Deseas continuar?',
         icon: 'pi pi-exclamation-triangle',
         acceptLabel: 'Sí, cambiar', rejectLabel: 'Mantener sucursal', acceptButtonStyleClass: 'p-button-warning',
-        accept: () => { this.lines = []; this.selectedProductToAdd = null; this.first = 0; this.lastSelectedStoreId = this.selectedStoreId; this.loadProducts(); },
+        accept: () => { this.lines = []; this.draftLine = this.newLine(); this.first = 0; this.lastSelectedStoreId = this.selectedStoreId; this.loadProducts(); },
         reject: () => { this.selectedStoreId = previousStoreId; this.cdr.detectChanges(); }
       });
       return;
     }
     this.lines = [];
-    this.selectedProductToAdd = null;
+    this.draftLine = this.newLine();
     this.first = 0;
     this.lastSelectedStoreId = this.selectedStoreId;
     this.loadProducts();
@@ -199,17 +199,30 @@ export class PurchaseForm implements OnInit {
   }
 
   addLine(): void {
-    if (!this.selectedProductToAdd) {
+    const draft = this.draftLine;
+    if (!draft.productId) {
       this.notificationService.warning('Selecciona un producto antes de agregarlo.');
       return;
     }
+    if (draft.loadingUnits) {
+      this.notificationService.warning('Espera a que se carguen las presentaciones del producto.');
+      return;
+    }
+    if (!Number.isFinite(Number(draft.quantity)) || Number(draft.quantity) <= 0
+      || !Number.isFinite(Number(draft.unitPurchasePrice)) || Number(draft.unitPurchasePrice) < 0) {
+      this.notificationService.warning('Ingresa una cantidad y un precio unitario válidos.');
+      return;
+    }
 
-    const line = this.newLine();
-    line.productId = this.selectedProductToAdd;
+    const line: PurchaseLine = {
+      ...draft,
+      quantity: Number(draft.quantity),
+      unitPurchasePrice: Number(draft.unitPurchasePrice),
+      units: [...draft.units]
+    };
     this.lines = [...this.lines, line];
-    this.selectedProductToAdd = null;
     this.first = Math.floor((this.lines.length - 1) / this.pageSize) * this.pageSize;
-    this.onProductChange(line);
+    this.draftLine = this.newLine();
   }
 
   removeLine(index: number): void {
@@ -359,6 +372,7 @@ export class PurchaseForm implements OnInit {
     this.documentNumber = purchase.documentNumber ?? '';
     this.purchaseDate = purchase.purchaseDate;
     this.notes = purchase.notes ?? '';
+    this.draftLine = this.newLine();
     this.lines = purchase.items.map(item => ({
       productId: item.productId,
       productUnitId: item.productUnitId,
