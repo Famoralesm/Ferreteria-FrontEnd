@@ -34,7 +34,7 @@
   label { color: #475569; font-size: .83rem; font-weight: 600; }
   input {
     width: 100%;
-    min-height: 2.75rem;
+    height: 30px; min-height: 30px; font: inherit;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     padding: .55rem .7rem;
@@ -70,3 +70,9 @@
   .filters-grid { grid-template-columns: 1fr; }
   .filter-actions button { width: 100%; }
 }
+.filters-grid :is(input, .p-select, .p-select-label, .p-datepicker-input) {
+  font-family: inherit;
+  font-size: 13px;
+}
+.filters-grid .p-select { height: 30px; min-height: 30px; }
+.filters-grid .p-select-label { padding-top: 5px; padding-bottom: 5px; }
