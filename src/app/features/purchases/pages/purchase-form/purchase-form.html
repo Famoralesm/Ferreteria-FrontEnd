@@ -75,13 +75,15 @@
 
             <div class="form-field presentation-field">
               <label>Presentación</label>
-              <select class="presentation-select" [(ngModel)]="draftLine.productUnitId" [ngModelOptions]="{standalone:true}"
-                [disabled]="!draftLine.productId || draftLine.loadingUnits || draftLine.units.length === 0">
-                <option [ngValue]="null" disabled>Selecciona presentación</option>
-                @for (unit of draftLine.units; track unit.id) {
-                  <option [ngValue]="unit.id">{{ unit.name }} · factor {{ unit.conversionFactor }}</option>
-                }
-              </select>
+              <p-select inputId="purchasePresentation" [options]="draftLine.units"
+                [(ngModel)]="draftLine.productUnitId" [ngModelOptions]="{standalone:true}"
+                optionLabel="name" optionValue="id" placeholder="Selecciona presentación"
+                [disabled]="!draftLine.productId || draftLine.loadingUnits || draftLine.units.length === 0"
+                class="w-full">
+                <ng-template #item let-unit>
+                  <span>{{ unit.name }} · factor {{ unit.conversionFactor }}</span>
+                </ng-template>
+              </p-select>
               <small class="presentation-warning-slot">
                 @if (draftLine.productId && !draftLine.loadingUnits && draftLine.units.length === 0) {
                   Este producto no tiene presentación configurada.
