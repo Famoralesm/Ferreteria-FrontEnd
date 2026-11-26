@@ -55,59 +55,62 @@
 
       <section class="form-section products-selection-section">
         <h3>Productos</h3>
-        <div class="product-entry-grid">
-          <div class="form-field product-picker">
-            <label for="purchaseProduct">Buscar producto</label>
-            <p-select inputId="purchaseProduct" [options]="products"
-              [(ngModel)]="draftLine.productId" [ngModelOptions]="{standalone:true}"
-              (onChange)="onProductChange(draftLine)"
-              optionLabel="name" optionValue="id" placeholder="Buscar producto"
-              [filter]="true" filterBy="name,sku" class="w-full">
-              <ng-template #item let-product>
-                <div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div>
-              </ng-template>
-            </p-select>
-          </div>
+        <div class="product-selection-card">
+          <div class="product-entry-grid">
+            <div class="form-field product-picker">
+              <label for="purchaseProduct">Productos</label>
+              <p-select inputId="purchaseProduct" [options]="products"
+                [(ngModel)]="draftLine.productId" [ngModelOptions]="{standalone:true}"
+                (onChange)="onProductChange(draftLine)"
+                optionLabel="name" optionValue="id" placeholder="Buscar producto"
+                [filter]="true" filterBy="name,sku" class="w-full">
+                <ng-template #item let-product>
+                  <div class="product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></div>
+                </ng-template>
+              </p-select>
+            </div>
 
-          <div class="form-field">
-            <label>Presentación</label>
-            <select class="presentation-select" [(ngModel)]="draftLine.productUnitId" [ngModelOptions]="{standalone:true}"
-              [disabled]="!draftLine.productId || draftLine.loadingUnits || draftLine.units.length === 0">
-              <option [ngValue]="null">{{ baseUnitLabel(draftLine) }} (unidad base)</option>
-              @for (unit of draftLine.units; track unit.id) {
-                <option [ngValue]="unit.id">{{ unit.name }} · factor {{ unit.conversionFactor }}</option>
-              }
-            </select>
-            @if (draftLine.productId && !draftLine.loadingUnits && draftLine.units.length === 0) {
-              <small class="presentation-warning">Este producto no tiene presentación configurada.</small>
-            }
-          </div>
+            <div class="form-field presentation-field">
+              <label>Presentación</label>
+              <select class="presentation-select" [(ngModel)]="draftLine.productUnitId" [ngModelOptions]="{standalone:true}"
+                [disabled]="!draftLine.productId || draftLine.loadingUnits || draftLine.units.length === 0">
+                <option [ngValue]="null" disabled>Selecciona presentación</option>
+                @for (unit of draftLine.units; track unit.id) {
+                  <option [ngValue]="unit.id">{{ unit.name }} · factor {{ unit.conversionFactor }}</option>
+                }
+              </select>
+              <small class="presentation-warning-slot">
+                @if (draftLine.productId && !draftLine.loadingUnits && draftLine.units.length === 0) {
+                  Este producto no tiene presentación configurada.
+                }
+              </small>
+            </div>
 
-          <div class="form-field quantity-field">
-            <label>Cantidad <span>*</span></label>
-            <p-inputnumber [(ngModel)]="draftLine.quantity" [ngModelOptions]="{standalone:true}"
-              [min]="0.0001" [maxFractionDigits]="4" [minFractionDigits]="0"
-              [useGrouping]="false" inputStyleClass="w-full"></p-inputnumber>
-          </div>
+            <div class="form-field quantity-field">
+              <label>Cantidad <span>*</span></label>
+              <p-inputnumber [(ngModel)]="draftLine.quantity" [ngModelOptions]="{standalone:true}"
+                [min]="0.0001" [maxFractionDigits]="4" [minFractionDigits]="0"
+                [useGrouping]="false"></p-inputnumber>
+            </div>
 
-          <div class="form-field unit-price-field">
-            <label>Precio unitario <span>*</span></label>
-            <p-inputnumber [(ngModel)]="draftLine.unitPurchasePrice" [ngModelOptions]="{standalone:true}"
-              mode="currency" currency="CLP" locale="es-CL" [min]="0"
-              [maxFractionDigits]="2" [minFractionDigits]="0"
-              inputStyleClass="w-full"></p-inputnumber>
-          </div>
+            <div class="form-field unit-price-field">
+              <label>Precio unitario <span>*</span></label>
+              <p-inputnumber [(ngModel)]="draftLine.unitPurchasePrice" [ngModelOptions]="{standalone:true}"
+                mode="currency" currency="CLP" locale="es-CL" [min]="0"
+                [maxFractionDigits]="2" [minFractionDigits]="0"></p-inputnumber>
+            </div>
 
-          <div class="form-field entry-subtotal">
-            <label>Subtotal</label>
-            <strong>{{ (draftLine.quantity * draftLine.unitPurchasePrice) | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong>
-          </div>
+            <div class="form-field entry-subtotal">
+              <label>Subtotal</label>
+              <strong>{{ (draftLine.quantity * draftLine.unitPurchasePrice) | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</strong>
+            </div>
 
-          <div class="add-product-action">
-            <button pButton type="button" icon="pi pi-plus" severity="success"
-              [rounded]="true" aria-label="Agregar producto a la grilla"
-              [disabled]="!draftLine.productId || draftLine.loadingUnits"
-              (click)="addLine()"></button>
+            <div class="add-product-action">
+              <button pButton type="button" icon="pi pi-plus" severity="success"
+                [rounded]="true" aria-label="Agregar producto a la grilla"
+                [disabled]="!draftLine.productId || draftLine.loadingUnits"
+                (click)="addLine()"></button>
+            </div>
           </div>
         </div>
       </section>
