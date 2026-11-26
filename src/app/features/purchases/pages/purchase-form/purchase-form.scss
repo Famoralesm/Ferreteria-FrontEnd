@@ -379,3 +379,98 @@
   .product-entry-grid .entry-subtotal { grid-column: 1; }
   .product-entry-grid .add-product-action { grid-column: 2; grid-row: auto; justify-content: flex-end; }
 }
+
+
+/* Ajustes finales de los controles de selección de compra */
+.product-entry-grid {
+  grid-template-columns: 360px 290px 130px 160px minmax(130px, 1fr) 40px;
+  column-gap: 24px;
+}
+.product-entry-grid .product-picker {
+  width: 360px !important;
+  min-width: 360px !important;
+  max-width: 360px !important;
+}
+:host ::ng-deep .product-entry-grid .product-picker p-select,
+:host ::ng-deep .product-entry-grid .product-picker .p-select {
+  display: flex;
+  width: 360px !important;
+  min-width: 360px !important;
+  max-width: 360px !important;
+  box-sizing: border-box;
+}
+:host ::ng-deep .product-entry-grid .product-picker .p-select-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.product-selected-label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.product-entry-grid .presentation-field {
+  width: 290px;
+  min-width: 290px;
+}
+:host ::ng-deep .product-entry-grid .presentation-field p-select,
+:host ::ng-deep .product-entry-grid .presentation-field .p-select {
+  display: flex;
+  width: 290px !important;
+  min-width: 290px !important;
+  max-width: 290px !important;
+  height: 30px;
+  min-height: 30px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 13px;
+}
+:host ::ng-deep .product-entry-grid .presentation-field .p-select-label {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  font: inherit;
+}
+:host ::ng-deep .product-entry-grid .quantity-field p-inputnumber,
+:host ::ng-deep .product-entry-grid .quantity-field .p-inputnumber,
+:host ::ng-deep .product-entry-grid .quantity-field .p-inputnumber-input {
+  display: block;
+  width: 130px !important;
+  min-width: 130px !important;
+  max-width: 130px !important;
+  box-sizing: border-box;
+}
+@media (max-width: 1250px) {
+  .product-entry-grid {
+    grid-template-columns: 360px 290px 130px 160px;
+  }
+  .product-entry-grid .product-picker,
+  .product-entry-grid .presentation-field {
+    grid-column: auto;
+  }
+}
+@media (max-width: 700px) {
+  .product-entry-grid .product-picker,
+  .product-entry-grid .presentation-field {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  :host ::ng-deep .product-entry-grid .product-picker p-select,
+  :host ::ng-deep .product-entry-grid .product-picker .p-select,
+  :host ::ng-deep .product-entry-grid .presentation-field p-select,
+  :host ::ng-deep .product-entry-grid .presentation-field .p-select {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  :host ::ng-deep .product-entry-grid .quantity-field p-inputnumber,
+  :host ::ng-deep .product-entry-grid .quantity-field .p-inputnumber,
+  :host ::ng-deep .product-entry-grid .quantity-field .p-inputnumber-input {
+    width: 130px !important;
+    min-width: 130px !important;
+    max-width: 130px !important;
+  }
+}
