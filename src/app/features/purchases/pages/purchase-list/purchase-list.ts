@@ -29,7 +29,6 @@ export class PurchaseList implements OnInit {
   loading = false;
 
   supplierFilter: number | null = null;
-  supplierSearch = '';
   storeFilter: number | null = null;
   statusFilter: PurchaseStatus | null = null;
   dateFrom = '';
