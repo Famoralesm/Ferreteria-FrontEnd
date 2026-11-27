@@ -30,7 +30,7 @@
     } @else {
       <div class="history-heading">
         <div>
-          <h2>{{ modules.find(m => m.value === selectedModule)?.label }}</h2>
+          <h2>{{ selectedModuleLabel() }}</h2>
           <p>{{ result?.totalElements ?? 0 }} registros encontrados</p>
         </div>
         @if (result) {
