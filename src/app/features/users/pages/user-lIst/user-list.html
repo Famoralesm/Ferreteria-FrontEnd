@@ -51,7 +51,7 @@
         [paginator]="true"
         [rows]="7"
         [rowsPerPageOptions]="[7, 10, 20]"
-        [globalFilterFields]="['name', 'email', 'role']"
+        [globalFilterFields]="['name', 'email', 'role', 'storeName']"
         dataKey="id"
         responsiveLayout="scroll">
 
@@ -138,7 +138,7 @@
         <ng-template pTemplate="emptymessage">
 
           <tr>
-            <td colspan="5" class="empty-message">
+            <td colspan="6" class="empty-message">
               No hay usuarios registrados.
             </td>
           </tr>
