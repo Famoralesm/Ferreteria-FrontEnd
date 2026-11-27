@@ -186,7 +186,8 @@ export class UserForm implements OnInit {
     this.loadingStores = true;
     this.storeService.findActive().subscribe({
       next: stores => {
-        this.stores = stores ?? [];
+        const activeStores = stores ?? [];
+        this.stores = [...activeStores, ...this.stores.filter(existing => !activeStores.some(store => store.id === existing.id))];
         this.loadingStores = false;
       },
       error: error => {
