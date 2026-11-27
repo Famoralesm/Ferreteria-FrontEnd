@@ -35,6 +35,16 @@ export interface AuditLogFilters {
   productQuery?: string;
   userId?: number;
   userName?: string;
+  customerRut?: string;
+  customerQuery?: string;
+  customerCommune?: string;
+  customerCity?: string;
+  userQuery?: string;
+  userRole?: string;
+  supplierQuery?: string;
+  supplierRut?: string;
+  supplierCommune?: string;
+  supplierCity?: string;
   action?: string;
   storeId?: number;
   fromDate?: string;
