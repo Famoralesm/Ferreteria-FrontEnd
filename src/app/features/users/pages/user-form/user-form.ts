@@ -25,6 +25,8 @@ import { UserService } from '../../../../core/services/user.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { take } from 'rxjs';
 import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error';
+import { Store } from '../../../../core/models/store/store';
+import { StoreService } from '../../../../core/services/store.service';
 
 const passwordConfirmationValidator: ValidatorFn = (
   control: AbstractControl
@@ -86,6 +88,8 @@ export class UserForm implements OnInit {
   avatarPreview?: string;
   currentAvatarUrl?: string | null;
   uploadingAvatar = false;
+  stores: Store[] = [];
+  loadingStores = false;
 
   private readonly maxAvatarSize = 2 * 1024 * 1024;
 
@@ -102,7 +106,8 @@ export class UserForm implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private currentUserService: CurrentUserService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private storeService: StoreService
   ) {
 
     this.userForm = this.fb.group({
@@ -126,6 +131,8 @@ export class UserForm implements OnInit {
 
       role: [Role.SELLER, Validators.required],
 
+      storeId: [null, Validators.required],
+
       active: [true]
 
     }, {
@@ -136,6 +143,7 @@ export class UserForm implements OnInit {
 
   ngOnInit(): void {
 
+    this.loadStores();
     const idParam = this.route.snapshot.paramMap.get('id');
 
     if (idParam) {
@@ -174,6 +182,21 @@ export class UserForm implements OnInit {
 
   }
 
+  private loadStores(): void {
+    this.loadingStores = true;
+    this.storeService.findActive().subscribe({
+      next: stores => {
+        this.stores = stores ?? [];
+        this.loadingStores = false;
+      },
+      error: error => {
+        console.error('Error cargando sucursales:', error);
+        this.loadingStores = false;
+        this.notificationService.error('No fue posible cargar las sucursales.');
+      }
+    });
+  }
+
   private loadUser(): void {
 
     if (!this.id) {
@@ -187,12 +210,20 @@ export class UserForm implements OnInit {
       next: user => {
 
         this.currentAvatarUrl = user.avatarUrl ?? null;
+        if (user.storeId && !this.stores.some(store => store.id === user.storeId)) {
+          this.stores = [...this.stores, {
+            id: user.storeId,
+            nombre: user.storeName ?? 'Sucursal asignada (inactiva)',
+            codigo: '', direccion: '', activa: false
+          }];
+        }
 
         this.userForm.patchValue({
 
           name: user.name,
           email: user.email,
           role: user.role,
+          storeId: user.storeId,
           active: user.active
 
         });
@@ -281,6 +312,8 @@ export class UserForm implements OnInit {
         : undefined,
 
       role: value.role as Role,
+
+      storeId: Number(value.storeId),
 
       active: Boolean(value.active)
 
