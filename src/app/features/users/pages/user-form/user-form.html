@@ -189,6 +189,7 @@
             [filter]="true"
             filterBy="nombre,codigo"
             [loading]="loadingStores"
+            [disabled]="loadingStores || stores.length === 0"
             placeholder="Seleccionar sucursal"
             appendTo="body"
             class="w-full">
@@ -198,6 +199,9 @@
             </ng-template>
           </p-select>
           <app-field-error [control]="userForm.get('storeId')" [messages]="{ required: 'Selecciona una sucursal para el usuario.' }" />
+          @if (!loadingStores && stores.length === 0) {
+            <small class="field-error">No hay sucursales activas disponibles para asignar.</small>
+          }
         </div>
 
         <!-- ESTADO -->
