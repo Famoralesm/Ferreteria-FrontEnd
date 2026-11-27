@@ -37,6 +37,7 @@ export class InitialStock implements OnInit, OnDestroy {
   movementQuantity: number | null = null;
   movementReason = '';
   savingMovement = false;
+  movementFormSubmitted = false;
   movementHistory: InventoryMovement[] = [];
   loadingHistory = false;
   private readonly savingIds = new Set<number>();
@@ -133,6 +134,7 @@ export class InitialStock implements OnInit, OnDestroy {
 
   registerManualMovement(): void {
     if (!this.selectedStore || this.savingMovement) return;
+    this.movementFormSubmitted = true;
     const productId = Number(this.movementProductId);
     const quantity = Number(this.movementQuantity);
     const reason = this.movementReason.trim();
@@ -159,6 +161,7 @@ export class InitialStock implements OnInit, OnDestroy {
             this.savingMovement = false;
             this.movementQuantity = null;
             this.movementReason = '';
+            this.movementFormSubmitted = false;
             this.notificationService.success(`Movimiento registrado. Nuevo stock: ${movement.stockNuevo}.`);
             this.onMovementProductChange(productId);
             this.cdr.markForCheck();
