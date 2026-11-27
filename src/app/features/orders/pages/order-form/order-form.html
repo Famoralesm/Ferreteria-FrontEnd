@@ -191,7 +191,7 @@
             <ng-template #item let-product>
               <div class="order-product-option">
                 <div class="order-product-main">
-                  <strong>{{ product.name }}</strong><small>{{ product.sku }}</small>
+                  <strong>{{ product.name }}</strong>
                 </div>
                 <div class="order-product-stock">
                   <strong [class.stock-low]="product.stock <= (product.stockMinimo ?? 0)"
