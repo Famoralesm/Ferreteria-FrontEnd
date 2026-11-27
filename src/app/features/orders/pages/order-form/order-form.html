@@ -193,6 +193,7 @@
               <div class="order-product-option">
                 <div class="order-product-main">
                   <strong>{{ product.name }}</strong>
+                  <small>{{ product.sku }}</small>
                 </div>
                 <div class="order-product-stock">
                   <strong [class.stock-low]="product.stock <= (product.stockMinimo ?? 0)"
