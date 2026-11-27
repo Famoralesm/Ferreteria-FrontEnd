@@ -54,6 +54,10 @@ export class History implements OnInit {
 
   ngOnInit(): void {}
 
+  selectedModuleLabel(): string {
+    return this.modules.find(module => module.value === this.selectedModule)?.label ?? '';
+  }
+
   selectModule(module: string): void {
     if (this.selectedModule === module) return;
     this.selectedModule = module;
