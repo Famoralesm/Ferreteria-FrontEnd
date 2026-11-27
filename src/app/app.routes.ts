@@ -23,7 +23,7 @@ import { SupplierPriceComparison } from './features/suppliers/pages/supplier-pri
 import { PurchaseList } from './features/purchases/pages/purchase-list/purchase-list';
 import { PurchaseDetail } from './features/purchases/pages/purchase-detail/purchase-detail';
 import { PurchaseForm } from './features/purchases/pages/purchase-form/purchase-form';
-import { History } from './features/history/pages/history/history';
+import { History } from './features/history/page/history';
 
 export const routes: Routes = [
   {

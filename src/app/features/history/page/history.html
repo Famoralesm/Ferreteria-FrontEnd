@@ -1,0 +1,16 @@
+<div class="page-shell history-page">
+<header class="page-header"><div class="page-header-content"><span class="page-kicker">Historial</span><p>Consulta los cambios y acontecimientos registrados en el sistema.</p></div></header>
+<section class="page-card history-tabs-card"><nav class="history-tabs" role="tablist" aria-label="Módulos del historial">
+<button type="button" role="tab" [attr.aria-selected]="activeTab==='orders'" [class.active]="activeTab==='orders'" (click)="selectTab('orders')">Pedidos</button>
+<button type="button" role="tab" [attr.aria-selected]="activeTab==='products'" [class.active]="activeTab==='products'" (click)="selectTab('products')">Productos</button>
+<button type="button" role="tab" [attr.aria-selected]="activeTab==='customers'" [class.active]="activeTab==='customers'" (click)="selectTab('customers')">Clientes</button>
+<button type="button" role="tab" [attr.aria-selected]="activeTab==='users'" [class.active]="activeTab==='users'" (click)="selectTab('users')">Usuarios</button>
+<button type="button" role="tab" [attr.aria-selected]="activeTab==='suppliers'" [class.active]="activeTab==='suppliers'" (click)="selectTab('suppliers')">Proveedores</button>
+</nav></section>
+<section class="history-tab-panel" role="tabpanel">
+@if(activeTab==='orders'){<app-history-orders/>}
+@if(activeTab==='products'){<app-history-products/>}
+@if(activeTab==='customers'){<app-history-customers/>}
+@if(activeTab==='users'){<app-history-users/>}
+@if(activeTab==='suppliers'){<app-history-suppliers/>}
+</section></div>
