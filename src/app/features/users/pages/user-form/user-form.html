@@ -145,11 +145,10 @@
             Solo debes completar este campo cuando cambies la contraseña.
           </small>
 
-          <small
-            class="field-error"
-            *ngIf="userForm.hasError('confirmationRequired') && confirmPasswordControl?.touched">
-            Debes confirmar la contraseña.
-          </small>
+          <app-field-error [control]="confirmPasswordControl" [messages]="{ required: 'Debes confirmar la contraseña.' }" />
+          @if (id && userForm.hasError('confirmationRequired') && confirmPasswordControl?.touched) {
+            <small class="field-error">Debes confirmar la contraseña.</small>
+          }
 
           <small
             class="field-error"
