@@ -10,6 +10,8 @@ export interface UserRequest {
 
   role: Role;
 
+  storeId: number;
+
   active: boolean;
 
 }
