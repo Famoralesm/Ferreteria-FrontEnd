@@ -1,97 +1,84 @@
 <div class="page-shell history-page">
-  <div class="page-header">
-    <div class="page-header-content">
-      <span class="page-kicker">AUDITORÍA</span>
-      <h1>Historial</h1>
-      <p>Consulta los acontecimientos registrados en Ferretería FC.</p>
-    </div>
-  </div>
+  <header class="history-header">
+    <div class="history-title">Historial</div>
+    <p>Consulta los cambios y acontecimientos registrados en el sistema.</p>
+  </header>
 
-  <section class="page-card history-filters">
-    <div class="filter-grid">
-      <label>Módulo
-        <select [(ngModel)]="selectedModule">
-          @for (module of modules; track module.value) {
-            <option [value]="module.value">{{ module.label }}</option>
-          }
-        </select>
-      </label>
-      <label>Número o identificador
-        <input type="text" [(ngModel)]="entityId" placeholder="Ej: 125 o A0001">
-      </label>
-      <label>Acción
-        <input type="text" [(ngModel)]="action" placeholder="Ej: CREATED, UPDATED">
-      </label>
-      <label>Desde
-        <input type="datetime-local" [(ngModel)]="fromDate">
-      </label>
-      <label>Hasta
-        <input type="datetime-local" [(ngModel)]="toDate">
-      </label>
-    </div>
-    <div class="filter-actions">
-      <button pButton type="button" label="Buscar" icon="pi pi-search" [loading]="loading" (click)="applyFilters()"></button>
-      <button pButton type="button" label="Limpiar filtros" icon="pi pi-filter-slash" severity="secondary" [outlined]="true" (click)="clearFilters()"></button>
+  <section class="page-card module-card">
+    <div class="section-title">Módulo</div>
+    <div class="module-selector" role="group" aria-label="Seleccionar módulo">
+      @for (module of modules; track module.value) {
+        <button
+          type="button"
+          class="module-option"
+          [class.selected]="selectedModule === module.value"
+          [attr.aria-pressed]="selectedModule === module.value"
+          (click)="selectModule(module.value)">
+          {{ module.label }}
+        </button>
+      }
     </div>
   </section>
 
   <section class="page-card history-results">
-    <div class="history-heading">
-      <div>
-        <h2>Línea de tiempo</h2>
-        <p>{{ result?.totalElements ?? 0 }} acontecimientos encontrados</p>
-      </div>
-      @if (result) { <span class="page-counter">Página {{ result.number + 1 }} de {{ result.totalPages || 1 }}</span> }
-    </div>
-
-    @if (loading && !result) {
-      <div class="history-empty">Cargando historial...</div>
-    } @else if (result?.content?.length) {
-      <div class="timeline">
-        @for (event of result!.content; track event.id) {
-          <article class="timeline-event">
-            <div class="timeline-marker"><i class="pi pi-history"></i></div>
-            <div class="event-content">
-              <div class="event-topline">
-                <span class="event-module">{{ moduleLabel(event.module) }}</span>
-                <time>{{ event.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}</time>
-              </div>
-              <h3>{{ event.description || actionLabel(event.action) }}</h3>
-              <p class="event-summary">
-                <strong>{{ event.userName || 'Proceso automático' }}</strong>
-                @if (event.storeName) { <span> · {{ event.storeName }}</span> }
-                <span> · {{ event.entityType }} {{ event.entityId ? '#' + event.entityId : '' }}</span>
-              </p>
-              <div class="event-footer">
-                <span class="event-action">{{ actionLabel(event.action) }}</span>
-                <button type="button" class="details-button" (click)="toggleDetails(event)">
-                  {{ expandedEventId === event.id ? 'Ocultar detalle' : 'Ver detalle' }}
-                  <i [class]="expandedEventId === event.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"></i>
-                </button>
-              </div>
-              @if (expandedEventId === event.id) {
-                <div class="event-details">
-                  <div><strong>Origen:</strong> {{ event.origin }}</div>
-                  @if (event.oldValues) {
-                    <section><h4>Valores anteriores</h4><pre>{{ event.oldValues | json }}</pre></section>
-                  }
-                  @if (event.newValues) {
-                    <section><h4>Valores nuevos</h4><pre>{{ event.newValues | json }}</pre></section>
-                  }
-                  @if (!event.oldValues && !event.newValues) { <p>No hay valores adicionales para este acontecimiento.</p> }
-                  <small>ID de evento: {{ event.eventUuid }}</small>
-                </div>
-              }
-            </div>
-          </article>
-        }
-      </div>
-      <div class="history-pagination">
-        <button pButton type="button" icon="pi pi-chevron-left" label="Anterior" severity="secondary" [outlined]="true" [disabled]="result!.first || loading" (click)="changePage(currentPage - 1)"></button>
-        <button pButton type="button" icon="pi pi-chevron-right" iconPos="right" label="Siguiente" severity="secondary" [outlined]="true" [disabled]="result!.last || loading" (click)="changePage(currentPage + 1)"></button>
+    @if (!selectedModule) {
+      <div class="history-placeholder">
+        <i class="pi pi-history"></i>
+        <strong>Selecciona un módulo</strong>
+        <span>Elige Pedidos, Productos, Clientes, Usuarios o Proveedores para consultar su historial.</span>
       </div>
     } @else {
-      <div class="history-empty">{{ loading ? 'Consultando historial...' : 'No hay acontecimientos que coincidan con los filtros.' }}</div>
+      <div class="history-heading">
+        <div>
+          <h2>{{ modules.find(m => m.value === selectedModule)?.label }}</h2>
+          <p>{{ result?.totalElements ?? 0 }} registros encontrados</p>
+        </div>
+        @if (result) {
+          <span class="page-counter">Página {{ result.number + 1 }} de {{ result.totalPages || 1 }}</span>
+        }
+      </div>
+
+      <div class="history-table-wrapper">
+        <table class="history-table">
+          <thead>
+            <tr>
+              @for (column of initialColumns; track column.key) {
+                <th>{{ column.label }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @if (loading && !result) {
+              <tr><td colspan="5" class="table-message">Cargando historial...</td></tr>
+            } @else if (result?.content?.length) {
+              @for (event of result!.content; track event.id) {
+                <tr>
+                  @for (column of initialColumns; track column.key) {
+                    <td>
+                      @if (column.key === 'date') {
+                        {{ event.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}
+                      } @else {
+                        {{ cellValue(event, column) }}
+                      }
+                    </td>
+                  }
+                </tr>
+              }
+            } @else {
+              <tr><td colspan="5" class="table-message">
+                {{ loading ? 'Consultando historial...' : 'No hay registros para este módulo.' }}
+              </td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (result && result.totalPages > 1) {
+        <div class="history-pagination">
+          <button pButton type="button" label="Anterior" icon="pi pi-chevron-left" severity="secondary" [outlined]="true" [disabled]="result.first || loading" (click)="changePage(currentPage - 1)"></button>
+          <button pButton type="button" label="Siguiente" icon="pi pi-chevron-right" iconPos="right" severity="secondary" [outlined]="true" [disabled]="result.last || loading" (click)="changePage(currentPage + 1)"></button>
+        </div>
+      }
     }
   </section>
 </div>
