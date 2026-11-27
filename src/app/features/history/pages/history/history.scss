@@ -10,23 +10,6 @@
   gap: 16px;
 }
 
-.history-header {
-  padding: 4px 2px 2px;
-}
-
-.history-title {
-  color: #e0a800;
-  font-size: 25px;
-  font-weight: 700;
-  line-height: 1.25;
-}
-
-.history-header p {
-  margin: 5px 0 0;
-  color: #64748b;
-  font-size: 13px;
-}
-
 .module-card,
 .history-results {
   min-width: 0;
@@ -166,7 +149,6 @@
 }
 
 @media (max-width: 650px) {
-  .history-title { font-size: 22px; }
   .module-selector { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .module-option { padding-inline: 8px; }
   .history-heading { align-items: flex-start; flex-direction: column; }
