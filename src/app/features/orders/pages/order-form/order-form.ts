@@ -15,7 +15,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { ORDER_STATUSES,OrderStatus } from '../../../../core/models/order/order-status';
 import { OrderSummary } from '../../../../core/models/order/order-summary';
 import { StoreService } from '../../../../core/services/store.service';
-import { NotificationService } from '../../../../core/services/notification.service';   
+import { NotificationService } from '../../../../core/services/notification.service';
+import { ConfirmationService } from 'primeng/api';   
 import { CustomerService } from '../../../../core/services/customer.service';
 import { Customer } from '../../../../core/models/customer/customer';
 import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error';
@@ -207,7 +208,8 @@ export class OrderForm implements OnInit , OnDestroy {
 
   constructor(
     private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private confirmationService: ConfirmationService
   ) {
 
     this.form = this.fb.group({
@@ -549,12 +551,21 @@ private loadProducts(): void {
   }
 
   exit(): void {
-    if ((this.form.dirty || this.itemsChanged) &&
-        !window.confirm('Hay cambios sin guardar. ¿Seguro que deseas salir sin guardar?')) {
+    if (!(this.form.dirty || this.itemsChanged)) {
+      this.router.navigate(['/orders']);
       return;
     }
 
-    this.router.navigate(['/orders']);
+    this.confirmationService.confirm({
+      header: 'Cambios sin guardar',
+      message: 'Hay cambios sin guardar. ¿Seguro que deseas salir sin guardar?',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Salir sin guardar',
+      rejectLabel: 'Continuar editando',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-secondary p-button-outlined',
+      accept: () => this.router.navigate(['/orders'])
+    });
   }
 
   get deliveryPaymentError(): boolean {
