@@ -43,7 +43,7 @@
       [showClear]="true"
       [disabled]="!!id"
       placeholder="Buscar cliente por nombre o RUT"
-      class="w-full"
+      class="w-full ff-select ff-select--search"
       (onChange)="onCustomerSelected($event.value)">
       <ng-template #item let-customer>
         <div class="customer-option">
@@ -89,7 +89,7 @@
     <label for="status">Estado</label>
     <p-select id="status" [options]="orderStatuses" optionLabel="label"
       optionValue="value" formControlName="status"
-      placeholder="Seleccione estado" class="w-full">
+      placeholder="Seleccione estado" class="w-full ff-select">
     </p-select>
   </div>
   @if (deliveryPaymentError) {
@@ -106,7 +106,7 @@
     <label for="paymentMethod">Método de pago *</label>
     <p-select id="paymentMethod" [options]="paymentMethods" optionLabel="label"
       optionValue="value" formControlName="paymentMethod"
-      placeholder="Seleccione método de pago" class="w-full">
+      placeholder="Seleccione método de pago" class="w-full ff-select">
     </p-select>
     <div class="payment-state-row">
       @if (paymentStatus === 'PENDING') {
@@ -185,7 +185,7 @@
           <p-select id="product" [options]="products" optionLabel="name"
             [(ngModel)]="selectedProduct" [ngModelOptions]="{standalone: true}"
             [disabled]="isInRoute || paymentStatus !== 'PENDING'"
-            placeholder="Seleccione un producto" class="w-full"
+            placeholder="Seleccione un producto" class="w-full ff-select ff-select--search"
             [filter]="true" filterBy="name,sku" filterMatchMode="contains" filterPlaceholder="Buscar por nombre o SKU"
             (onChange)="onProductSelected($event.value)">
             <ng-template #item let-product>
@@ -201,7 +201,12 @@
               </div>
             </ng-template>
             <ng-template #selectedItem let-product>
-              @if (product) { <div>{{ product.name }}</div> }
+              @if (product) {
+                <div class="product-selected-value">
+                  <strong>{{ product.name }}</strong>
+                  <small>{{ product.sku }}</small>
+                </div>
+              }
             </ng-template>
           </p-select>
           @if (productSelectionError) {
@@ -215,7 +220,7 @@
               [(ngModel)]="selectedSaleUnit" [ngModelOptions]="{standalone: true}"
               (onChange)="onSaleUnitChange($event.value)" [loading]="productUnitsLoading"
               [disabled]="isInRoute || paymentStatus !== 'PENDING' || productUnitsLoading"
-              placeholder="Selecciona una presentación" class="w-full"></p-select>
+              placeholder="Selecciona una presentación" class="w-full ff-select"></p-select>
             
           </div>
         }
