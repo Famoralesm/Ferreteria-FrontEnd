@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe, JsonPipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -6,54 +6,74 @@ import { AuditLog, AuditLogFilters, AuditLogPage } from '../../../../core/models
 import { AuditLogService } from '../../../../core/services/audit-log.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 
+interface HistoryModule {
+  label: string;
+  value: string;
+}
+
+interface HistoryColumn {
+  key: 'date' | 'action' | 'description' | 'user' | 'store';
+  label: string;
+}
+
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, JsonPipe, ButtonModule],
+  imports: [CommonModule, FormsModule, DatePipe, ButtonModule],
   templateUrl: './history.html',
   styleUrl: './history.scss'
 })
 export class History implements OnInit {
   readonly pageSize = 20;
-  readonly modules = [
-    { label: 'Todos los módulos', value: '' },
+
+  readonly modules: HistoryModule[] = [
     { label: 'Pedidos', value: 'ORDERS' },
     { label: 'Productos', value: 'PRODUCTS' },
-    { label: 'Inventario', value: 'INVENTORY' },
     { label: 'Clientes', value: 'CUSTOMERS' },
-    { label: 'Proveedores', value: 'SUPPLIERS' },
-    { label: 'Compras', value: 'PURCHASES' }
+    { label: 'Usuarios', value: 'USERS' },
+    { label: 'Proveedores', value: 'SUPPLIERS' }
+  ];
+
+  readonly initialColumns: HistoryColumn[] = [
+    { key: 'date', label: 'Fecha de actualización' },
+    { key: 'action', label: 'Acción' },
+    { key: 'description', label: 'Observación' },
+    { key: 'user', label: 'Usuario' },
+    { key: 'store', label: 'Sucursal' }
   ];
 
   selectedModule = '';
-  entityId = '';
-  action = '';
-  fromDate = '';
-  toDate = '';
   currentPage = 0;
   result: AuditLogPage | null = null;
   loading = false;
-  expandedEventId: number | null = null;
 
   constructor(
     private readonly auditLogService: AuditLogService,
     private readonly notificationService: NotificationService
   ) {}
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
+
+  selectModule(module: string): void {
+    if (this.selectedModule === module) return;
+    this.selectedModule = module;
+    this.currentPage = 0;
+    this.result = null;
     this.search();
   }
 
   search(): void {
+    if (!this.selectedModule) {
+      this.result = null;
+      return;
+    }
+
     const filters: AuditLogFilters = {
-      module: this.selectedModule || undefined,
-      entityId: this.entityId.trim() || undefined,
-      action: this.action.trim() || undefined,
-      fromDate: this.fromDate ? (this.fromDate.length === 16 ? this.fromDate + ':00' : this.fromDate) : undefined,
-      toDate: this.toDate ? (this.toDate.length === 16 ? this.toDate + ':59' : this.toDate) : undefined,
+      module: this.selectedModule,
       page: this.currentPage,
       size: this.pageSize
     };
+
     this.loading = true;
     this.auditLogService.search(filters).subscribe({
       next: page => {
@@ -68,46 +88,35 @@ export class History implements OnInit {
     });
   }
 
-  applyFilters(): void {
-    this.currentPage = 0;
-    this.expandedEventId = null;
-    this.search();
-  }
-
-  clearFilters(): void {
-    this.selectedModule = '';
-    this.entityId = '';
-    this.action = '';
-    this.fromDate = '';
-    this.toDate = '';
-    this.applyFilters();
-  }
-
   changePage(page: number): void {
     if (!this.result || page < 0 || page >= this.result.totalPages) return;
     this.currentPage = page;
     this.search();
   }
 
-  toggleDetails(event: AuditLog): void {
-    this.expandedEventId = this.expandedEventId === event.id ? null : event.id;
+  cellValue(event: AuditLog, column: HistoryColumn): string {
+    switch (column.key) {
+      case 'action': return this.actionLabel(event);
+      case 'description': return event.description || '—';
+      case 'user': return event.userName || 'Proceso automático';
+      case 'store': return event.storeName || '—';
+      default: return '';
+    }
   }
 
-  moduleLabel(module: string): string {
-    const labels: Record<string, string> = {
-      ORDERS: 'Pedidos', PRODUCTS: 'Productos', INVENTORY: 'Inventario',
-      CUSTOMERS: 'Clientes', SUPPLIERS: 'Proveedores', PURCHASES: 'Compras'
+  actionLabel(event: AuditLog): string {
+    const actions: Record<string, string> = {
+      CREATED: 'Creación',
+      UPDATED: 'Actualización',
+      DEACTIVATED: 'Desactivación',
+      ACTIVATED: 'Activación',
+      ITEMS_UPDATED: 'Actualización de productos',
+      CUSTOMER_DATA_UPDATED: 'Actualización de datos del cliente',
+      STATUS_CHANGED: 'Actualización de estado',
+      PAYMENT_CONFIRMED: 'Confirmación de pago',
+      PAYMENT_REVERSED: 'Reversa de pago'
     };
-    return labels[module] ?? module;
-  }
-
-  actionLabel(action: string): string {
-    const labels: Record<string, string> = {
-      CREATED: 'Creado', UPDATED: 'Modificado', DEACTIVATED: 'Desactivado',
-      ACTIVATED: 'Activado', ITEMS_UPDATED: 'Productos del pedido modificados',
-      CUSTOMER_DATA_UPDATED: 'Datos del cliente modificados', STATUS_CHANGED: 'Estado cambiado'
-    };
-    return labels[action] ?? action.replaceAll('_', ' ');
+    return actions[event.action] ?? event.action.replaceAll('_', ' ').toLowerCase();
   }
 
   trackById(_index: number, event: AuditLog): number {
