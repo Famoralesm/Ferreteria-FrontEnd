@@ -44,7 +44,7 @@
         </label>
         <label>{{ movementType === 'ENTRY' ? 'Cantidad a ingresar' : 'Diferencia (+/-)' }} en unidad base
           <input type="number" step="0.0001" [(ngModel)]="movementQuantity" [placeholder]="movementType === 'ENTRY' ? 'Ej: 25' : 'Ej: -2 o 5'">
-          @if (movementFormSubmitted && (movementQuantity == null || !Number.isFinite(movementQuantity))) { <small class="field-error">Ingresa una cantidad válida.</small> }
+          @if (movementFormSubmitted && (movementQuantity == null)) { <small class="field-error">Ingresa una cantidad válida.</small> }
         </label>
         <label class="movement-reason">Motivo / observación
           <input type="text" maxlength="250" [(ngModel)]="movementReason" placeholder="Ej: Mercadería recibida sin factura">
