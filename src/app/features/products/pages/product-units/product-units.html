@@ -32,14 +32,17 @@
           <div class="form-field">
             <label for="measureCode">Código *</label>
             <input id="measureCode" pInputText type="text" maxlength="30" [(ngModel)]="measureForm.code" placeholder="Ej: LITRO">
+            @if (measureFormSubmitted && !measureForm.code.trim()) { <small class="field-error">El código es obligatorio.</small> }
           </div>
           <div class="form-field">
             <label for="measureName">Nombre *</label>
             <input id="measureName" pInputText type="text" maxlength="80" [(ngModel)]="measureForm.name" placeholder="Ej: Litro">
+            @if (measureFormSubmitted && !measureForm.name.trim()) { <small class="field-error">El nombre es obligatorio.</small> }
           </div>
           <div class="form-field">
             <label for="measureSymbol">Símbolo *</label>
             <input id="measureSymbol" pInputText type="text" maxlength="12" [(ngModel)]="measureForm.symbol" placeholder="Ej: L">
+            @if (measureFormSubmitted && !measureForm.symbol.trim()) { <small class="field-error">El símbolo es obligatorio.</small> }
           </div>
           <div class="editor-actions">
             <button pButton type="button" [label]="measureEditingId === null ? 'Agregar unidad' : 'Guardar cambios'"
