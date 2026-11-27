@@ -62,6 +62,7 @@
             <th>Nombre</th>
             <th>Correo electrónico</th>
             <th>Perfil</th>
+            <th>Sucursal</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
@@ -90,6 +91,8 @@
                 [severity]="roleSeverity(user.role)">
               </p-tag>
             </td>
+
+            <td>{{ user.storeName || '—' }}</td>
 
             <td>
               <p-tag
