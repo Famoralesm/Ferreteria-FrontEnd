@@ -234,3 +234,13 @@
     width: 100%;
   }
 }
+
+
+/* Estándar común para los selectores PrimeNG y sus overlays */
+.p-select .p-select-label,
+.p-select-overlay .p-select-option,
+.p-select-overlay .p-select-option-label {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+}
