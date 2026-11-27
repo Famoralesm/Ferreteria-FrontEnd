@@ -7,8 +7,8 @@ export interface User {
   email: string;
   role: Role;
   active: boolean;
-  storeId: number | null;
-  storeName: string | null;
+  storeId?: number | null;
+  storeName?: string | null;
 
   avatarUrl?: string | null;
 
