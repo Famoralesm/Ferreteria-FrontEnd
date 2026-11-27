@@ -619,3 +619,41 @@
     min-height: calc(100vh - 60px);
   }
 }
+
+
+/* Mantener el selector de producto en una sola línea dentro de la grilla. */
+.product-entry-grid .product-picker .purchase-product-select {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  min-height: 30px;
+  box-sizing: border-box;
+}
+.product-entry-grid .product-picker .purchase-product-select .p-select-label {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  min-width: 0;
+  height: 100%;
+  padding: 0 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.product-entry-grid .product-picker .purchase-product-select .p-select-dropdown {
+  display: flex;
+  flex: 0 0 2.25rem;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  height: 100%;
+  margin: 0;
+}
+.product-entry-grid .product-picker .purchase-product-select .p-select-dropdown-icon {
+  display: block;
+  width: 12px;
+  height: 12px;
+  margin: 0;
+}
