@@ -528,3 +528,94 @@
     max-width: 100% !important;
   }
 }
+
+
+/* Ajustes finales del selector de productos: contenido completo y controles alineados. */
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.purchase-form-page {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.purchase-form-page > .form-card {
+  flex: 1 0 auto;
+  min-width: 0;
+}
+
+:host ::ng-deep .product-entry-grid .product-picker .p-select-label {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 8px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 28px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+:host ::ng-deep .product-entry-grid .product-picker .p-select-label.p-placeholder {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+:host ::ng-deep .product-entry-grid .product-picker .p-select-clear-icon {
+  flex: 0 0 auto;
+  margin-inline: 4px;
+}
+
+:host ::ng-deep .product-entry-grid .product-picker .p-select-dropdown {
+  display: flex;
+  flex: 0 0 2.5rem;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 100%;
+}
+
+.product-selected-value {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.product-selected-value strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-selected-value small {
+  flex: 0 0 auto;
+  color: #64748b;
+  font-size: 11px;
+}
+
+@media (max-width: 700px) {
+  .purchase-form-page {
+    min-height: calc(100vh - 60px);
+  }
+}
