@@ -1,11 +1,16 @@
 :host {
   display: block;
+  width: 100%;
+  min-width: 0;
 }
 
 .field-error {
   display: block;
-  margin-top: 0.35rem;
-  color: var(--p-red-500, #dc2626);
-  font-size: 0.78rem;
+  margin: 0;
+  padding: 0;
+  color: #dc2626;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
   line-height: 1.35;
 }
