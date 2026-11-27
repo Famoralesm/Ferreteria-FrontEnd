@@ -16,7 +16,8 @@ import { ORDER_STATUSES,OrderStatus } from '../../../../core/models/order/order-
 import { OrderSummary } from '../../../../core/models/order/order-summary';
 import { StoreService } from '../../../../core/services/store.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { ConfirmationService } from 'primeng/api';   
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';   
 import { CustomerService } from '../../../../core/services/customer.service';
 import { Customer } from '../../../../core/models/customer/customer';
 import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error';
@@ -53,7 +54,8 @@ type SaleUnitOption = {
     FormsModule,
     CommonModule,
     InputNumberModule,
-    FieldErrorComponent
+    FieldErrorComponent,
+    ConfirmDialogModule
 
     
   ],
