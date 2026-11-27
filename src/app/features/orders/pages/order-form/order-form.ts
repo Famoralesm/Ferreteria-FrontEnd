@@ -105,6 +105,7 @@ export class OrderForm implements OnInit , OnDestroy {
   savingOrder = false;
   paymentTotalAmount = 0;
   itemsChanged = false;
+  private initialFormSnapshot = '';
 
   customers: Customer[] = [];
   customerOptions: CustomerOption[] = [];
@@ -236,10 +237,9 @@ export class OrderForm implements OnInit , OnDestroy {
       createdBy: [{ value: '', disabled: true }],
       updated_at: [{ value: '', disabled: true }],
       totalAmount: [{ value: '', disabled: true }],
-  
-
 
     });
+    this.initialFormSnapshot = this.currentFormSnapshot();
 
   }
 
@@ -399,6 +399,7 @@ private loadProducts(): void {
           this.statusChangedAt = order.statusChangedAt
           this.updateElapsedTime();
           this.updateMapLinks();
+          this.initialFormSnapshot = this.currentFormSnapshot();
 
 
         },
@@ -552,8 +553,31 @@ private loadProducts(): void {
     return this.paymentMethods.find(item => item.value === method)?.label ?? 'No seleccionado';
   }
 
+  private currentFormSnapshot(): string {
+    const value = this.form.getRawValue();
+    return JSON.stringify({
+      customerName: value.customerName,
+      phone: value.phone,
+      address: value.address,
+      city: value.city,
+      commune: value.commune,
+      latitude: value.latitude,
+      longitude: value.longitude,
+      deliveryDate: value.deliveryDate,
+      paymentMethod: value.paymentMethod,
+      notes: value.notes,
+      status: value.status,
+      customerId: this.selectedCustomerOption?.id ?? null,
+      customerRut: this.selectedCustomerOption?.rut ?? ''
+    });
+  }
+
+  get hasUnsavedChanges(): boolean {
+    return this.form.dirty || this.itemsChanged || this.currentFormSnapshot() !== this.initialFormSnapshot;
+  }
+
   exit(): void {
-    if (!(this.form.dirty || this.itemsChanged)) {
+    if (!this.hasUnsavedChanges) {
       this.router.navigate(['/orders']);
       return;
     }
