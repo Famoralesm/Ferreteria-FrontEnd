@@ -282,7 +282,7 @@
             icon="pi pi-save"
             [label]="id ? 'Guardar cambios' : 'Crear usuario'"
             [loading]="saving"
-            [disabled]="saving || loadingUser">
+            [disabled]="saving || loadingUser || loadingStores || stores.length === 0">
           </button>
 
         </div>
