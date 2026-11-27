@@ -30,6 +30,10 @@ export interface AuditLogFilters {
   module?: string;
   entityType?: string;
   entityId?: string;
+  orderNumber?: string;
+  productSku?: string;
+  productQuery?: string;
+  userId?: number;
   action?: string;
   storeId?: number;
   fromDate?: string;
