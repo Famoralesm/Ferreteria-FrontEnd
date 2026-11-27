@@ -6,10 +6,12 @@ import { authInterceptor } from './core/interceptors/auth-interceptor';
 import { LOCALE_ID } from '@angular/core';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
+import { ConfirmationService } from 'primeng/api';
 
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    ConfirmationService,
       providePrimeNG({
       theme: {
           preset: Aura
