@@ -78,3 +78,28 @@
 .filters-grid .p-select-label { padding-top: 5px; padding-bottom: 5px; }
 
 .page-header h1 { margin: 0; color: #fff; font-size: 25px; font-weight: 700; }
+
+
+/* La vista ocupa el alto disponible y la tarjeta de resultados completa el body. */
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.purchase-page {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.purchases-table-card {
+  flex: 1 0 auto;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .purchase-page {
+    min-height: calc(100vh - 60px);
+  }
+}
