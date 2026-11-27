@@ -244,3 +244,148 @@
   font-size: 13px;
   font-weight: 400;
 }
+
+
+/* =========================================================
+   ESTÁNDAR GLOBAL DE CAMPOS Y CONTROLES PRIME NG
+   Referencia visual: Nuevo Pedido (Estado y Producto).
+   Solo presentación: no altera opciones, filtros ni eventos.
+   ========================================================= */
+
+.page-shell .form-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  min-width: 0;
+}
+
+.page-shell .form-field > label {
+  display: block;
+  margin: 0;
+  color: #34495e;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.page-shell .form-field > input,
+.page-shell .form-field > textarea,
+.page-shell .form-field > p-select,
+.page-shell .form-field > p-inputnumber,
+.page-shell .form-field > .p-select,
+.page-shell .form-field > .p-inputnumber {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* PrimeNG Select: mismo alto, tipografía y distribución interna. */
+.page-shell .form-field p-select,
+.page-shell .form-field .p-select {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 30px;
+  height: 30px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.page-shell .form-field .p-select-label {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0 8px;
+  overflow: hidden;
+  color: #334155;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 28px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.page-shell .form-field .p-select-label.p-placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+.page-shell .form-field .p-select-dropdown {
+  display: flex;
+  flex: 0 0 2.25rem;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 100%;
+}
+
+.page-shell .form-field .p-select-clear-icon {
+  flex: 0 0 auto;
+  margin-inline: 4px;
+}
+
+/* Panel y opciones de listas simples y listas con búsqueda. */
+.p-select-overlay {
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.p-select-overlay .p-select-option,
+.p-select-overlay .p-select-option-label {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.p-select-overlay .p-select-filter {
+  min-height: 30px;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+/* Errores: mismo aspecto tanto para app-field-error como mensajes directos. */
+.page-shell .form-field > .field-error,
+.page-shell .form-field app-field-error,
+.page-shell .field-error {
+  display: block;
+  margin: 0;
+  padding: 0;
+  color: #dc2626;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.page-shell .form-field app-field-error .field-error {
+  margin: 0;
+}
+
+/* Campos deshabilitados mantienen el mismo tamaño y estructura. */
+.page-shell .form-field .p-select.p-disabled {
+  opacity: 0.65;
+}
+
+/* Layout fluido: evita que el texto o el control empujen otras columnas. */
+.page-shell .form-field,
+.page-shell .form-field .p-select,
+.page-shell .form-field .p-select-label {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+  .page-shell .form-field .p-select-dropdown {
+    flex-basis: 2rem;
+    width: 2rem;
+  }
+}
