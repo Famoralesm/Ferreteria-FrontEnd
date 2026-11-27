@@ -34,6 +34,7 @@ export interface AuditLogFilters {
   productSku?: string;
   productQuery?: string;
   userId?: number;
+  userName?: string;
   action?: string;
   storeId?: number;
   fromDate?: string;
