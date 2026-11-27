@@ -39,6 +39,7 @@ export class ProductUnits implements OnInit, OnDestroy {
   measureUnits: UnitOfMeasure[] = [];
   measureLoading = false;
   measureSaving = false;
+  measureFormSubmitted = false;
   measureEditingId: number | null = null;
   measureForm: UnitOfMeasureRequest = this.emptyMeasureForm();
   measurePage = 0;
@@ -154,6 +155,7 @@ export class ProductUnits implements OnInit, OnDestroy {
   }
 
   saveMeasureUnit(): void {
+    this.measureFormSubmitted = true;
     const request: UnitOfMeasureRequest = {
       code: this.measureForm.code.trim().toUpperCase(),
       name: this.measureForm.name.trim(),
@@ -239,6 +241,7 @@ export class ProductUnits implements OnInit, OnDestroy {
   }
 
   resetMeasureForm(): void {
+    this.measureFormSubmitted = false;
     this.measureEditingId = null;
     this.measureForm = this.emptyMeasureForm();
   }
