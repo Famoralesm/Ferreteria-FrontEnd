@@ -177,6 +177,29 @@
 
         </div>
 
+        <!-- SUCURSAL -->
+        <div class="form-field">
+          <label for="storeId">Sucursal *</label>
+          <p-select
+            inputId="storeId"
+            [options]="stores"
+            optionLabel="nombre"
+            optionValue="id"
+            formControlName="storeId"
+            [filter]="true"
+            filterBy="nombre,codigo"
+            [loading]="loadingStores"
+            placeholder="Seleccionar sucursal"
+            appendTo="body"
+            class="w-full">
+            <ng-template #item let-store>
+              <span>{{ store.nombre }}</span>
+              @if (!store.activa) { <small> · Inactiva (asignación existente)</small> }
+            </ng-template>
+          </p-select>
+          <app-field-error [control]="userForm.get('storeId')" [messages]="{ required: 'Selecciona una sucursal para el usuario.' }" />
+        </div>
+
         <!-- ESTADO -->
         <div class="form-field user-status-field">
 
