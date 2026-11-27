@@ -13,7 +13,7 @@ abstract class HistoryModuleBase {
  readonly filters={entityId:'',orderNumber:'',productSku:'',productQuery:'',userName:'',action:'',fromDate:'',toDate:''};
  result:AuditLogPage|null=null; loading=false; currentPage=0; users:User[]=[];
  protected constructor(private readonly module:string,private readonly audit:AuditLogService,private readonly notifications:NotificationService,private readonly cdr:ChangeDetectorRef,private readonly userService:UserService) {}
- loadUsers():void{this.userService.findAll().subscribe({next:users=>{this.users=users.filter(user=>user.active);this.cdr.markForCheck();},error:error=>{console.error('Error cargando usuarios para historial',error);this.cdr.markForCheck();}});}
+ loadUsers():void{this.userService.findAll().subscribe({next:users=>{this.users=users;this.cdr.markForCheck();},error:error=>{console.error('Error cargando usuarios para historial',error);this.cdr.markForCheck();}});}
  search():void{
   const params:AuditLogFilters={module:this.module,entityId:this.filters.entityId.trim()||undefined,orderNumber:this.filters.orderNumber.trim()||undefined,productSku:this.filters.productSku.trim()||undefined,productQuery:this.filters.productQuery.trim()||undefined,userName:this.filters.userName.trim()||undefined,action:this.filters.action||undefined,fromDate:this.filters.fromDate||undefined,toDate:this.filters.toDate||undefined,page:this.currentPage,size:this.pageSize};
   this.loading=true;this.cdr.markForCheck();
