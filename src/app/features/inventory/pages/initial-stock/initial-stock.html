@@ -37,15 +37,18 @@
             <ng-template #item let-product><div class="movement-product-option"><strong>{{ product.name }}</strong><small>{{ product.sku }} · {{ product.active ? 'Activo' : 'Inactivo — solo historial' }}</small></div></ng-template>
             <ng-template #selectedItem let-product>{{ product?.name }}</ng-template>
           </p-select>
+          @if (movementFormSubmitted && !movementProductId) { <small class="field-error">Selecciona un producto.</small> }
         </label>
         <label>Tipo de movimiento
           <select [(ngModel)]="movementType"><option value="ENTRY">Ingreso manual</option><option value="ADJUSTMENT">Ajuste de inventario (+/-)</option></select>
         </label>
         <label>{{ movementType === 'ENTRY' ? 'Cantidad a ingresar' : 'Diferencia (+/-)' }} en unidad base
           <input type="number" step="0.0001" [(ngModel)]="movementQuantity" [placeholder]="movementType === 'ENTRY' ? 'Ej: 25' : 'Ej: -2 o 5'">
+          @if (movementFormSubmitted && (movementQuantity == null || !Number.isFinite(movementQuantity))) { <small class="field-error">Ingresa una cantidad válida.</small> }
         </label>
         <label class="movement-reason">Motivo / observación
           <input type="text" maxlength="250" [(ngModel)]="movementReason" placeholder="Ej: Mercadería recibida sin factura">
+          @if (movementFormSubmitted && !movementReason.trim()) { <small class="field-error">El motivo es obligatorio.</small> }
         </label>
       </div>
       <div class="editor-actions">
